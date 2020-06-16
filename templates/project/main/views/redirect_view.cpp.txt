@@ -1,0 +1,11 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#include "./redirect_view.h"
+
+
+RedirectView::RedirectView(<% .FrameworkNamespace %>::conf::Settings* settings)
+	: <% .FrameworkNamespace %>::views::RedirectView(settings, "/index", false, false)
+{
+}

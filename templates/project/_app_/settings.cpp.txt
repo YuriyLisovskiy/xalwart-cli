@@ -1,0 +1,21 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#include "./settings.h"
+
+#include <<% .FrameworkName %>/core/path.h>
+
+#include "../main/app.h"
+
+
+Settings::Settings() : <% .FrameworkNamespace %>::conf::Settings(
+	<% .FrameworkNamespace %>::core::path::dirname(<% .FrameworkNamespace %>::core::path::dirname(__FILE__))
+)
+{
+}
+
+void Settings::register_apps()
+{
+	this->app<MainAppConfig>("MainApp");
+}

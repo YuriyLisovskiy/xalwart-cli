@@ -1,0 +1,18 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#pragma once
+
+#include <<% .FrameworkName %>/views/template_view.h>
+
+
+class MainView : public <% .FrameworkNamespace %>::views::TemplateView
+{
+public:
+	explicit MainView(<% .FrameworkNamespace %>::conf::Settings* settings);
+
+	std::shared_ptr<<% .FrameworkNamespace %>::render::IContext> get_context(
+		<% .FrameworkNamespace %>::http::HttpRequest* request, <% .FrameworkNamespace %>::views::Args* args
+	) override;
+};

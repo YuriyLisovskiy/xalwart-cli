@@ -1,0 +1,24 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#include "./main_view.h"
+
+#include <<% .FrameworkName %>/core/types/value.h>
+#include <<% .FrameworkName %>/render/context.h>
+
+
+MainView::MainView(<% .FrameworkNamespace %>::conf::Settings* settings)
+	: TemplateView({"get"}, settings)
+{
+	this->_template_name = "main/index.html";
+}
+
+std::shared_ptr<<% .FrameworkNamespace %>::render::IContext> MainView::get_context(
+	<% .FrameworkNamespace %>::http::HttpRequest* request, <% .FrameworkNamespace %>::views::Args* args
+)
+{
+	return std::make_shared<Context>(Context::scope_t{{
+		"user", std::make_shared<<% .FrameworkNamespace %>::core::types::Value<std::string>>("<% .Username %>")
+	}});
+}

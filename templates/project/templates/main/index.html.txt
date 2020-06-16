@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><% .ProjectName %> | Index</title>
+    <link rel="stylesheet" type="text/css" href="{% static('css/main/index.css') %}"/>
+</head>
+<body>
+<ul>
+    <h3 class="center">Welcome, {{ user }}!</h3>
+</ul>
+</body>
+</html>

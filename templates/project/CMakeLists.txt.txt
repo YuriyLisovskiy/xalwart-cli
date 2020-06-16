@@ -1,0 +1,35 @@
+cmake_minimum_required(VERSION <% .CMakeMinimumVersion %>)
+
+set(CMAKE_CXX_STANDARD <% .CMakeCPPStandard %>)
+
+project(<% .ProjectName %>)
+set(BINARY ${CMAKE_PROJECT_NAME})
+
+# Load and filter project sources.
+file(
+    GLOB_RECURSE SOURCES
+    LIST_DIRECTORIES true
+    */*.h */*.cpp
+)
+list_exclude(SOURCES "^.*/(include|lib)/?.*")
+remove_dirs(SOURCES)
+
+add_executable(${BINARY} ${SOURCES} "./main.cpp")
+
+# Setup and link <% .FrameworkName %> library.
+set(<% .FrameworkName | upper %>_LIBRARY "<% .FrameworkName %>")
+set(LIB_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
+if (WIN32)
+    set(DLL ${LIB_DIRECTORY}/${<% .FrameworkName | upper %>_LIBRARY}.lib)
+else()
+    set(DLL ${LIB_DIRECTORY}/lib${<% .FrameworkName | upper %>_LIBRARY}.so)
+endif()
+set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(${BINARY} PUBLIC ${INCLUDE_DIR}/${<% .FrameworkName | upper %>_LIBRARY}/vendor/yaml)
+target_include_directories(${BINARY} PUBLIC ${INCLUDE_DIR})
+target_link_libraries(${BINARY} ${DLL})
+
+# Required for <experimental/filesystem> on Linux.
+if (UNIX)
+    target_link_libraries(${BINARY} stdc++fs)
+endif()

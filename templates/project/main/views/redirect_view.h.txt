@@ -1,0 +1,14 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#pragma once
+
+#include <<% .FrameworkName %>/views/redirect_view.h>
+
+
+class RedirectView : public <% .FrameworkNamespace %>::views::RedirectView
+{
+public:
+	explicit RedirectView(<% .FrameworkNamespace %>::conf::Settings* settings);
+};

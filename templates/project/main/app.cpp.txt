@@ -1,0 +1,19 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#include "./app.h"
+
+#include "./main_view.h"
+
+
+MainAppConfig::MainAppConfig(<% .FrameworkNamespace %>::conf::Settings* settings)
+	: AppConfig(__FILE__, settings)
+{
+	this->init(this->__type__());
+}
+
+void MainAppConfig::urlpatterns()
+{
+	this->url<MainView>(R"(index/?)", "index");
+}

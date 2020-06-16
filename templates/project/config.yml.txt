@@ -1,0 +1,32 @@
+debug: true
+
+allowed_hosts:
+  - 127.0.0.1
+  - ::1
+
+installed_apps:
+  - MainApp
+
+middleware:
+  - xw::middleware::SecurityMiddleware
+  - xw::middleware::CommonMiddleware
+  - xw::middleware::XFrameOptionsMiddleware
+  - xw::middleware::CookieMiddleware
+
+logger:
+  out:
+    console: true
+
+templates_env:
+  directories:
+    - templates
+  use_app_directories: true
+  auto_escape: true
+
+static:
+  root: static
+  url: /static/
+
+media:
+  root: media
+  url: /media/
