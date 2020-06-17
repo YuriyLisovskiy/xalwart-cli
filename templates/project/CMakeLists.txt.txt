@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION <% .CMakeMinimumVersion %>)
 set(CMAKE_CXX_STANDARD <% .CMakeCPPStandard %>)
 
 project(<% .ProjectName %>)
-set(BINARY ${CMAKE_PROJECT_NAME})
+set(BINARY application)
 
 # Load and filter project sources.
 file(
@@ -11,8 +11,15 @@ file(
     LIST_DIRECTORIES true
     */*.h */*.cpp
 )
-list_exclude(SOURCES "^.*/(include|lib)/?.*")
-remove_dirs(SOURCES)
+list(
+	FILTER SOURCES
+	EXCLUDE REGEX "^.*/(include|lib|media|static|templates|main.cpp|cmake-build-*)/?.*"
+)
+foreach(entry ${SOURCES})
+    if (IS_DIRECTORY ${entry})
+        list(REMOVE_ITEM SOURCES ${entry})
+    endif()
+endforeach()
 
 add_executable(${BINARY} ${SOURCES} "./main.cpp")
 

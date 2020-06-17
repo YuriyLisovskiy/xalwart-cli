@@ -1,6 +1,14 @@
 package config
 
-import "github.com/gobuffalo/packr"
+import (
+	"github.com/gobuffalo/packr"
+	"strings"
+	"text/template"
+)
+
+var DefaultFunctions = template.FuncMap {
+	"upper": strings.ToUpper,
+}
 
 type Project struct {
 	Year int
@@ -9,8 +17,10 @@ type Project struct {
 
 	FrameworkName string
 	FrameworkNamespace string
+	FrameworkVersion string
 
 	ProjectName string
+	ProjectRoot string
 
 	SecretKey string
 

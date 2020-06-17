@@ -18,6 +18,7 @@ std::shared_ptr<<% .FrameworkNamespace %>::render::IContext> MainView::get_conte
 	<% .FrameworkNamespace %>::http::HttpRequest* request, <% .FrameworkNamespace %>::views::Args* args
 )
 {
+	using Context = <% .FrameworkNamespace %>::render::Context;
 	return std::make_shared<Context>(Context::scope_t{{
 		"user", std::make_shared<<% .FrameworkNamespace %>::core::types::Value<std::string>>("<% .Username %>")
 	}});

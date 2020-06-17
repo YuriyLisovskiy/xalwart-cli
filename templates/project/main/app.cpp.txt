@@ -4,7 +4,8 @@
 
 #include "./app.h"
 
-#include "./main_view.h"
+#include "./views/main_view.h"
+#include "./views/redirect_view.h"
 
 
 MainAppConfig::MainAppConfig(<% .FrameworkNamespace %>::conf::Settings* settings)
@@ -16,4 +17,8 @@ MainAppConfig::MainAppConfig(<% .FrameworkNamespace %>::conf::Settings* settings
 void MainAppConfig::urlpatterns()
 {
 	this->url<MainView>(R"(index/?)", "index");
+
+	// Register views here.
+
+	this->url<RedirectView>(R"(/?)", "root");
 }

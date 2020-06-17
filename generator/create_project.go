@@ -1,6 +1,0 @@
-package generator
-
-
-func createProject() {
-
-}
