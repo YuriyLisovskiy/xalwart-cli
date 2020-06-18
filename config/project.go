@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/gobuffalo/packr"
+	"github.com/gobuffalo/packr/v2"
 	"strings"
 	"text/template"
 )
@@ -19,6 +19,9 @@ type Project struct {
 	FrameworkNamespace string
 	FrameworkVersion string
 
+	// Example: v2/, v3/, ...
+	FrameworkVersionSubDir string
+
 	ProjectName string
 	ProjectRoot string
 
@@ -27,5 +30,5 @@ type Project struct {
 	CMakeCPPStandard int
 	CMakeMinimumVersion string
 
-	Templates packr.Box
+	Templates* packr.Box
 }

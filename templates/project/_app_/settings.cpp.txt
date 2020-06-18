@@ -6,7 +6,7 @@
 
 #include <<% .FrameworkName %>/core/path.h>
 
-#include "../main/app.h"
+#include "../main_app/app.h"
 
 
 Settings::Settings() : <% .FrameworkNamespace %>::conf::Settings(
