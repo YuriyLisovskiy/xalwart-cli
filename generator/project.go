@@ -8,12 +8,14 @@ import (
 	"strings"
 	"text/template"
 	"xalwart-cli/config"
+	"xalwart-cli/utils"
 )
 
 
 func (g *Generator) projectMakeRoot(cfg *config.Project) {
 	if len(cfg.ProjectName) == 0 {
 		cfg.ProjectRoot = cfg.WorkingDirectory
+		cfg.ProjectName = path.Base(cfg.ProjectRoot)
 	} else {
 		cfg.ProjectRoot = path.Join(cfg.WorkingDirectory, cfg.ProjectName)
 	}
@@ -60,10 +62,7 @@ func (g *Generator) NewProject(cfg *config.Project) error {
 		return err
 	}
 
-	err = g.makeDirs(
-		cfg.ProjectRoot,
-		[]string{"include", "lib", "media"},
-	)
+	err = utils.MakeDirs(cfg.ProjectRoot, []string{"media"})
 	if err != nil {
 		return err
 	}

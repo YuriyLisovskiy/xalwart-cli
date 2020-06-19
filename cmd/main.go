@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"xalwart-cli/cmd/commands"
 )
 
 func main() {
@@ -11,11 +12,11 @@ func main() {
 		os.Exit(1)
 	} else {
 		switch os.Args[1] {
-		case newProjectCmd.Name():
-			if newProjectCmd.Parse(os.Args[2:]) != nil {
-				newProjectCmd.Usage()
+		case commands.NewProjectCmd.Name():
+			if commands.NewProjectCmd.Parse(os.Args[2:]) != nil {
+				commands.NewProjectCmd.Usage()
 			} else {
-				err := createProject()
+				err := commands.CreateProject()
 				if err != nil {
 					panic(err)
 				}
