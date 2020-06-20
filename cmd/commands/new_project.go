@@ -12,25 +12,27 @@ import (
 	"time"
 	"xalwart-cli/config"
 	"xalwart-cli/generator"
-	"xalwart-cli/manager"
+	"xalwart-cli/managers"
 	"xalwart-cli/utils"
 )
 
-var (
-	NewProjectCmd = flag.NewFlagSet("new-project", flag.ExitOnError)
+const newProjectCmdName = "new-project"
 
-	qFlag = NewProjectCmd.Bool(
-		"q",
-		true,
-		"Execute 'new-project' command with questions or use arguments",
+var (
+	NewProjectCmd = flag.NewFlagSet(newProjectCmdName, flag.ExitOnError)
+
+	npAFlag = NewProjectCmd.Bool(
+		"a",
+		false,
+		"Execute '" + newProjectCmdName + "' command using arguments",
 	)
-	nameFlag = NewProjectCmd.String("name", "", "Project name")
-	rootFlag = NewProjectCmd.String("root", "", "Project root")
-	cMakeMinVersionFlag = NewProjectCmd.String(
+	npNameFlag = NewProjectCmd.String("name", "", "Project name")
+	npRootFlag = NewProjectCmd.String("root", "", "Project root")
+	npCMakeMinVersionFlag = NewProjectCmd.String(
 		"cmake-version", config.MinimumCmakeVersion, "Cmake minimum version",
 	)
-	cppStandardFlag = NewProjectCmd.Int("cpp", config.MinimumCppVersion, "C++ standard")
-	frameworkVersionFlag = NewProjectCmd.String(
+	npCppStandardFlag = NewProjectCmd.Int("cpp", config.MinimumCppVersion, "C++ standard")
+	npFrameworkVersionFlag = NewProjectCmd.String(
 		"fw-version",
 		"latest",
 		"A version of '" + config.FrameworkName + "' framework to install",
@@ -63,14 +65,14 @@ func normalizeAndCheckProjectConfig(cfg *config.Project) error {
 	// Check version of framework.
 	if cfg.FrameworkVersion == "latest" {
 		var err error
-		cfg.FrameworkVersion, err = manager.GetLatestVersionOfFramework()
+		cfg.FrameworkVersion, err = managers.GetLatestVersionOfFramework()
 		if err != nil {
 			return errors.New(
 				"unable to retrieve latest release of '" + config.FrameworkName + "' framework",
 			)
 		}
 	} else {
-		isAvailable, err := manager.CheckIfVersionIsAvailable(cfg.FrameworkVersion)
+		isAvailable, err := managers.CheckIfVersionIsAvailable(cfg.FrameworkVersion)
 		if err != nil {
 			return err
 		}
@@ -80,7 +82,7 @@ func normalizeAndCheckProjectConfig(cfg *config.Project) error {
 				"Warning: release v" + cfg.FrameworkVersion + " is not available, latest is used instead",
 			)
 
-			cfg.FrameworkVersion, err = manager.GetLatestVersionOfFramework()
+			cfg.FrameworkVersion, err = managers.GetLatestVersionOfFramework()
 			if err != nil {
 				fmt.Println(err)
 				return errors.New(
@@ -122,7 +124,7 @@ func CreateProject() error {
 		cmakeMinVer string
 	)
 
-	if *qFlag {
+	if !*npAFlag {
 		var err error
 		reader := utils.NewIO()
 		if projectRoot, err = reader.ReadString(
@@ -167,11 +169,11 @@ func CreateProject() error {
 			cmakeMinVer = config.MinimumCmakeVersion
 		}
 	} else {
-		projectRoot = *rootFlag
-		projectName = *nameFlag
-		frameworkVer = *frameworkVersionFlag
-		cppStandard = *cppStandardFlag
-		cmakeMinVer = *cMakeMinVersionFlag
+		projectRoot = *npRootFlag
+		projectName = *npNameFlag
+		frameworkVer = *npFrameworkVersionFlag
+		cppStandard = *npCppStandardFlag
+		cmakeMinVer = *npCMakeMinVersionFlag
 	}
 
 	if len(projectRoot) == 0 {
@@ -214,7 +216,7 @@ func CreateProject() error {
 		return err
 	}
 
-	err = manager.InstallFramework(cfg.ProjectRoot, cfg.FrameworkVersion)
+	err = managers.InstallFramework(cfg.ProjectRoot, cfg.FrameworkVersion)
 	if err != nil {
 		return err
 	}

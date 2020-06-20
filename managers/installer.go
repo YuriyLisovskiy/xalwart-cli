@@ -1,4 +1,4 @@
-package manager
+package managers
 
 import (
 	"archive/tar"
@@ -110,18 +110,6 @@ func GetLatestVersionOfFramework() (string, error) {
 	}
 
 	defer response.Body.Close()
-
-//	fmt.Println(response.StatusCode)
-
-//	bodyAsBytes := make([]byte, response.ContentLength)
-//	_, err = response.Body.Read(bodyAsBytes)
-//	if err != nil {
-//		return "", err
-//	}
-
-//	var data map[string]interface{}
-//	err = json.Unmarshal(bodyAsBytes, &data)
-
 	target := Releases{}
 	err = json.NewDecoder(response.Body).Decode(&target)
 	if err != nil {
@@ -140,7 +128,7 @@ func InstallFramework(targetDir string, version string) error {
 		return err
 	}
 
-	fmt.Println("Done.")
+	fmt.Println(" Done.")
 	fmt.Print("Installing...")
 	reader, err := os.Open(archiveFile)
 	if err != nil {
@@ -152,7 +140,7 @@ func InstallFramework(targetDir string, version string) error {
 		return err
 	}
 
-	fmt.Println("Done.")
+	fmt.Println(" Done.")
 
 	err = os.Remove(archiveFile)
 	if err != nil {
