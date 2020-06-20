@@ -1,12 +1,12 @@
 package commands
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/gobuffalo/packr/v2"
 	"os"
 	"os/user"
-	"path"
 	"regexp"
 	"strconv"
 	"time"
@@ -16,31 +16,24 @@ import (
 	"xalwart-cli/utils"
 )
 
-const (
-	frameworkName = "xalwart"
-	frameworkNamespace = "xw"
-	minimumCmakeVersion = "3.13"
-	minimumCppVersion = 17
-)
-
 var (
 	NewProjectCmd = flag.NewFlagSet("new-project", flag.ExitOnError)
 
-	newProjectAskQuestions = NewProjectCmd.Bool(
+	qFlag = NewProjectCmd.Bool(
 		"q",
 		true,
 		"Execute 'new-project' command with questions or use arguments",
 	)
-	newProjectName = NewProjectCmd.String("name", "", "Project name")
-	newProjectRoot = NewProjectCmd.String("root", "", "Project root")
-	newProjectCMakeMinVersion = NewProjectCmd.String(
-		"cmake-min-v", minimumCmakeVersion, "Cmake minimum version",
+	nameFlag = NewProjectCmd.String("name", "", "Project name")
+	rootFlag = NewProjectCmd.String("root", "", "Project root")
+	cMakeMinVersionFlag = NewProjectCmd.String(
+		"cmake-version", config.MinimumCmakeVersion, "Cmake minimum version",
 	)
-	newProjectCppStandard = NewProjectCmd.Int("cpp", minimumCppVersion, "C++ standard")
-	newProjectFrameworkVersion = NewProjectCmd.String(
-		frameworkName + "-version",
+	cppStandardFlag = NewProjectCmd.Int("cpp", config.MinimumCppVersion, "C++ standard")
+	frameworkVersionFlag = NewProjectCmd.String(
+		"fw-version",
 		"latest",
-		"A version of 'xalwart' framework to install",
+		"A version of '" + config.FrameworkName + "' framework to install",
 	)
 )
 
@@ -69,21 +62,46 @@ func normalizeAndCheckProjectConfig(cfg *config.Project) error {
 
 	// Check version of framework.
 	if cfg.FrameworkVersion == "latest" {
-		// TODO: retrieve latest version of xalwart framework from github
-	} else {
-		expr, _ := regexp.Compile(
-			"(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)(-(?P<pre_release>(alpha|beta)))?",
-		)
-		match, ver := reSubMatchMap(expr, cfg.FrameworkVersion)
-		if match {
-			if ver["major"] != "1" {
-				cfg.FrameworkVersionSubDir = "v" + ver["major"] + "/"
-			}
-		} else {
-			fmt.Println(
-				"Warning: invalid version of '" + frameworkName + "' framework. Used latest by default.",
+		var err error
+		cfg.FrameworkVersion, err = manager.GetLatestVersionOfFramework()
+		if err != nil {
+			return errors.New(
+				"unable to retrieve latest release of '" + config.FrameworkName + "' framework",
 			)
 		}
+	} else {
+		isAvailable, err := manager.CheckIfVersionIsAvailable(cfg.FrameworkVersion)
+		if err != nil {
+			return err
+		}
+
+		if !isAvailable {
+			fmt.Println(
+				"Warning: release v" + cfg.FrameworkVersion + " is not available, latest is used instead",
+			)
+
+			cfg.FrameworkVersion, err = manager.GetLatestVersionOfFramework()
+			if err != nil {
+				fmt.Println(err)
+				return errors.New(
+					"unable to retrieve latest release of '" + config.FrameworkName + "' framework",
+				)
+			}
+		}
+	}
+
+	expr, _ := regexp.Compile(
+		"(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)(-(?P<pre_release>(alpha|beta)))?",
+	)
+	match, ver := reSubMatchMap(expr, cfg.FrameworkVersion)
+	if match {
+		if ver["major"] > "1" {
+			cfg.FrameworkVersionSubDir = "v" + ver["major"] + "/"
+		}
+	} else {
+		fmt.Println(
+			"Warning: invalid version of '" + config.FrameworkName + "' framework. Used latest by default.",
+		)
 	}
 
 	return nil
@@ -104,7 +122,7 @@ func CreateProject() error {
 		cmakeMinVer string
 	)
 
-	if *newProjectAskQuestions {
+	if *qFlag {
 		var err error
 		reader := utils.NewIO()
 		if projectRoot, err = reader.ReadString(
@@ -120,7 +138,7 @@ func CreateProject() error {
 		}
 
 		if frameworkVer, err = reader.ReadString(
-			"Input a version of '" + frameworkName + "' framework which you want to use (default is latest): ",
+			"Input a version of '" + config.FrameworkName + "' framework which you want to use (default is latest): ",
 		); err != nil {
 			return err
 		}
@@ -130,30 +148,30 @@ func CreateProject() error {
 		}
 
 		if cppStandard, err = reader.ReadInt(
-			"Setup C++ standard (minimum required is " + strconv.Itoa(minimumCppVersion) + "): ",
+			"Setup C++ standard (minimum required is " + strconv.Itoa(config.MinimumCppVersion) + "): ",
 		); err != nil {
 			return err
 		}
 
 		if cppStandard == 0 {
-			cppStandard = minimumCppVersion
+			cppStandard = config.MinimumCppVersion
 		}
 
 		if cmakeMinVer, err = reader.ReadString(
-			"Type minimum version of cmake (default is " + minimumCmakeVersion + "): ",
+			"Type minimum version of cmake (default is " + config.MinimumCmakeVersion + "): ",
 		); err != nil {
 			return err
 		}
 
 		if len(cmakeMinVer) == 0 {
-			cmakeMinVer = minimumCmakeVersion
+			cmakeMinVer = config.MinimumCmakeVersion
 		}
 	} else {
-		projectRoot = *newProjectRoot
-		projectName = *newProjectName
-		frameworkVer = *newProjectFrameworkVersion
-		cppStandard = *newProjectCppStandard
-		cmakeMinVer = *newProjectCMakeMinVersion
+		projectRoot = *rootFlag
+		projectName = *nameFlag
+		frameworkVer = *frameworkVersionFlag
+		cppStandard = *cppStandardFlag
+		cmakeMinVer = *cMakeMinVersionFlag
 	}
 
 	if len(projectRoot) == 0 {
@@ -174,12 +192,12 @@ func CreateProject() error {
 		Year:                      time.Now().Year(),
 		Username:                  usr.Username,
 		WorkingDirectory:          projectRoot,
-		FrameworkName:             frameworkName,
-		FrameworkNamespace:        frameworkNamespace,
+		FrameworkName:             config.FrameworkName,
+		FrameworkNamespace:        config.FrameworkNamespace,
 		FrameworkVersion:          frameworkVer,
 		FrameworkVersionSubDir:    frameworkVerSubDir,
 		ProjectName:               projectName,
-		SecretKey:                 generateSecretKey(50),
+		SecretKey:                 generateSecretKey(config.SecretKeyLength),
 		CMakeCPPStandard:          cppStandard,
 		CMakeMinimumVersion:       cmakeMinVer,
 		Templates:                 packr.New("Project Templates Box", "../templates/project"),
@@ -196,11 +214,7 @@ func CreateProject() error {
 		return err
 	}
 
-	err = manager.InstallFramework(
-		path.Join(cfg.ProjectRoot, "include"),
-		path.Join(cfg.ProjectRoot, "lib/" + frameworkName + "/" + frameworkVer),
-		cfg.FrameworkVersion,
-	)
+	err = manager.InstallFramework(cfg.ProjectRoot, cfg.FrameworkVersion)
 	if err != nil {
 		return err
 	}

@@ -1,14 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"xalwart-cli/cmd/commands"
 )
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("expected 'new-project' sub-command")
+		commands.NewProjectCmd.Usage()
 		os.Exit(1)
 	} else {
 		switch os.Args[1] {
@@ -22,7 +21,7 @@ func main() {
 				}
 			}
 		default:
-			fmt.Println("expected 'new-project' sub-command")
+			commands.NewProjectCmd.Usage()
 			os.Exit(1)
 		}
 	}

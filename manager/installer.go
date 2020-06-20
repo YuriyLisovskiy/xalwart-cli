@@ -1,121 +1,163 @@
 package manager
 
 import (
+	"archive/tar"
+	"compress/gzip"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"net/http"
 	"os"
-	"path/filepath"
-	"syscall"
+	"path"
+	"strings"
+	"time"
+	"xalwart-cli/config"
 )
 
-func copyDir(scrDir, destDir string) error {
-	entries, err := ioutil.ReadDir(scrDir)
+func downloadGithubRelease(archiveFile string, version string) error {
+	output, err := os.Create(archiveFile)
+	if output != nil {
+		defer output.Close()
+	}
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	response, err := client.Get(
+		strings.Replace(config.DownloadReleaseUrl, "<version>", version, 1),
+	)
 	if err != nil {
 		return err
 	}
 
-	for _, entry := range entries {
-		sourcePath := filepath.Join(scrDir, entry.Name())
-		destPath := filepath.Join(destDir, entry.Name())
+	defer response.Body.Close()
+	_, err = io.Copy(output, response.Body)
+	if err != nil {
+		return err
+	}
 
-		fileInfo, err := os.Stat(sourcePath)
+	return nil
+}
+
+func extractTarGz(targetDir string, gzipStream io.Reader) error {
+	uncompressedStream, err := gzip.NewReader(gzipStream)
+	if err != nil {
+		return err
+	}
+
+	tarReader := tar.NewReader(uncompressedStream)
+	for {
+		header, err := tarReader.Next()
+		if err == io.EOF {
+			break
+		}
+
 		if err != nil {
 			return err
 		}
 
-		stat, ok := fileInfo.Sys().(*syscall.Stat_t)
-		if !ok {
-			return fmt.Errorf("failed to get raw syscall.Stat_t data for '%s'", sourcePath)
-		}
+		absPath := path.Join(targetDir, header.Name)
+		switch header.Typeflag {
+		case tar.TypeDir:
+			if err := os.MkdirAll(absPath, os.ModePerm); err != nil {
+				return err
+			}
+		case tar.TypeReg:
+			if err := os.MkdirAll(path.Dir(absPath), os.ModePerm); err != nil {
+				return err
+			}
 
-		switch fileInfo.Mode() & os.ModeType{
-		case os.ModeDir:
-			if err := createIfNotExists(destPath, 0755); err != nil {
+			outFile, err := os.Create(absPath)
+			if err != nil {
 				return err
 			}
-			if err := copyDir(sourcePath, destPath); err != nil {
+
+			if _, err := io.Copy(outFile, tarReader); err != nil {
 				return err
 			}
-		case os.ModeSymlink:
-			if err := copySymLink(sourcePath, destPath); err != nil {
+
+			err = outFile.Close()
+			if err != nil {
 				return err
 			}
 		default:
-			if err := copyFile(sourcePath, destPath); err != nil {
-				return err
-			}
-		}
-
-		if err := os.Lchown(destPath, int(stat.Uid), int(stat.Gid)); err != nil {
-			return err
-		}
-
-		isSymlink := entry.Mode()&os.ModeSymlink != 0
-		if !isSymlink {
-			if err := os.Chmod(destPath, entry.Mode()); err != nil {
-				return err
-			}
+			return errors.New("extractTarGz: unknown type in " + header.Name)
 		}
 	}
+
 	return nil
 }
 
-func copyFile(srcFile, dstFile string) error {
-	out, err := os.Create(dstFile)
+func CheckIfVersionIsAvailable(version string) (bool, error) {
+	client := &http.Client{Timeout: 10 * time.Second}
+	response, err := client.Get(strings.Replace(config.ReleaseByTagUrl, "<version>", version, 1))
+	if err != nil {
+		return false, err
+	}
+
+	defer response.Body.Close()
+	return response.StatusCode == 200, nil
+}
+
+type Releases struct {
+	VersionTag string `json:"tag_name"`
+}
+
+func GetLatestVersionOfFramework() (string, error) {
+	client := &http.Client{Timeout: 10 * time.Second}
+	response, err := client.Get(config.LatestReleaseUrl)
+	if err != nil {
+		return "", err
+	}
+
+	defer response.Body.Close()
+
+//	fmt.Println(response.StatusCode)
+
+//	bodyAsBytes := make([]byte, response.ContentLength)
+//	_, err = response.Body.Read(bodyAsBytes)
+//	if err != nil {
+//		return "", err
+//	}
+
+//	var data map[string]interface{}
+//	err = json.Unmarshal(bodyAsBytes, &data)
+
+	target := Releases{}
+	err = json.NewDecoder(response.Body).Decode(&target)
+	if err != nil {
+		return "", err
+	}
+
+	return strings.TrimLeft(target.VersionTag, "v"), nil
+}
+
+func InstallFramework(targetDir string, version string) error {
+	archiveFile := "/tmp/" + config.FrameworkName + "-framework.tar.gz"
+
+	fmt.Print("Downloading '" + config.FrameworkName + "' framework...")
+	err := downloadGithubRelease(archiveFile, version)
 	if err != nil {
 		return err
 	}
 
-	defer out.Close()
-	in, err := os.Open(srcFile)
-	if in != nil {
-		defer in.Close()
-		if err != nil {
-			return err
-		}
-
-		_, err = io.Copy(out, in)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func exists(filePath string) bool {
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		return false
-	}
-
-	return true
-}
-
-func createIfNotExists(dir string, perm os.FileMode) error {
-	if exists(dir) {
-		return nil
-	}
-
-	if err := os.MkdirAll(dir, perm); err != nil {
-		return fmt.Errorf("failed to create directory: '%s', error: '%s'", dir, err.Error())
-	}
-
-	return nil
-}
-
-func copySymLink(source, dest string) error {
-	link, err := os.Readlink(source)
+	fmt.Println("Done.")
+	fmt.Print("Installing...")
+	reader, err := os.Open(archiveFile)
 	if err != nil {
 		return err
 	}
 
-	return os.Symlink(link, dest)
-}
+	err = extractTarGz(targetDir, reader)
+	if err != nil {
+		return err
+	}
 
-func InstallFramework(includeDir string, libDir string, version string) error {
+	fmt.Println("Done.")
 
-	// TODO
+	err = os.Remove(archiveFile)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
