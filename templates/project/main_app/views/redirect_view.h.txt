@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <<% .FrameworkName %>/views/redirect_view.h>
+#include <<% .FrameworkName %>/<% .FrameworkVersionSubDir %>views/redirect_view.h>
 
 
 class RedirectView : public <% .FrameworkNamespace %>::views::RedirectView

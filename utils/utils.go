@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"io/ioutil"
 	"os"
 	"path"
 )
@@ -21,4 +22,35 @@ func MakeDirs(rootDir string, dirsToCreate []string) error {
 	}
 
 	return nil
+}
+
+func FileExists(fileName string) bool {
+	info, err := os.Stat(fileName)
+	if os.IsNotExist(err) {
+		return false
+	}
+
+	return !info.IsDir()
+}
+
+func DirExists(dirName string) bool {
+	info, err := os.Stat(dirName)
+	if os.IsNotExist(err) {
+		return false
+	}
+
+	return info.IsDir()
+}
+
+func DirIsEmpty(dirName string) bool {
+	if !DirExists(dirName) {
+		return true
+	}
+
+	entries, err := ioutil.ReadDir(dirName)
+	if err != nil {
+		return false
+	}
+
+	return len(entries) == 0
 }

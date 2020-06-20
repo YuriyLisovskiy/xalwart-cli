@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <<% .FrameworkName %>/conf/settings.h>
+#include <<% .FrameworkName %>/<% .FrameworkVersionSubDir %>conf/settings.h>
 
 
 class Settings final: public <% .FrameworkNamespace %>::conf::Settings

@@ -1,0 +1,20 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#include "./app.h"
+
+#include "./views/main_view.h"
+#include "./views/redirect_view.h"
+
+
+<% .AppName | to_camel_case %>Config::<% .AppName | to_camel_case %>Config(<% .FrameworkNamespace %>::conf::Settings* settings)
+	: AppConfig(__FILE__, settings)
+{
+	this->init(this->__type__());
+}
+
+void <% .AppName | to_camel_case %>Config::urlpatterns()
+{
+	// Register views here.
+}

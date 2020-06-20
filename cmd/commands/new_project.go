@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gobuffalo/packr/v2"
+	"math/rand"
 	"os"
 	"os/user"
 	"regexp"
@@ -55,37 +56,31 @@ func reSubMatchMap(r *regexp.Regexp, str string) (bool, map[string]string) {
 	return false, nil
 }
 
-func normalizeAndCheckProjectConfig(cfg *config.Project) error {
-	// Check C++ standard.
-	if cfg.CMakeCPPStandard < 17 {
-		fmt.Println("Warning: minimum required C++ standard is 17")
-		cfg.CMakeCPPStandard = 17
-	}
-
-	// Check version of framework.
-	if cfg.FrameworkVersion == "latest" {
+func getFWVersionAndSubDir(version string, verbose bool) (string, string, error) {
+	if version == "latest" {
 		var err error
-		cfg.FrameworkVersion, err = managers.GetLatestVersionOfFramework()
+		version, err = managers.GetLatestVersionOfFramework()
 		if err != nil {
-			return errors.New(
+			return "", "", errors.New(
 				"unable to retrieve latest release of '" + config.FrameworkName + "' framework",
 			)
 		}
 	} else {
-		isAvailable, err := managers.CheckIfVersionIsAvailable(cfg.FrameworkVersion)
+		isAvailable, err := managers.CheckIfVersionIsAvailable(version)
 		if err != nil {
-			return err
+			return "", "", err
 		}
 
 		if !isAvailable {
-			fmt.Println(
-				"Warning: release v" + cfg.FrameworkVersion + " is not available, latest is used instead",
-			)
+			if verbose {
+				fmt.Println(
+					"Warning: release v" + version + " is not available, latest is used instead",
+				)
+			}
 
-			cfg.FrameworkVersion, err = managers.GetLatestVersionOfFramework()
+			version, err = managers.GetLatestVersionOfFramework()
 			if err != nil {
-				fmt.Println(err)
-				return errors.New(
+				return "", "", errors.New(
 					"unable to retrieve latest release of '" + config.FrameworkName + "' framework",
 				)
 			}
@@ -95,28 +90,55 @@ func normalizeAndCheckProjectConfig(cfg *config.Project) error {
 	expr, _ := regexp.Compile(
 		"(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)(-(?P<pre_release>(alpha|beta)))?",
 	)
-	match, ver := reSubMatchMap(expr, cfg.FrameworkVersion)
+	match, ver := reSubMatchMap(expr, version)
+	verSubDir := ""
 	if match {
 		if ver["major"] > "1" {
-			cfg.FrameworkVersionSubDir = "v" + ver["major"] + "/"
+			verSubDir = "v" + ver["major"] + "/"
 		}
 	} else {
-		fmt.Println(
-			"Warning: invalid version of '" + config.FrameworkName + "' framework. Used latest by default.",
-		)
+		if verbose {
+			fmt.Println(
+				"Warning: invalid version of '" + config.FrameworkName + "' framework. Used latest by default.",
+			)
+		}
+	}
+
+	return version, verSubDir, nil
+}
+
+func normalizeAndCheckProjectConfig(cfg *config.Project) error {
+	// Check C++ standard.
+	if cfg.CMakeCPPStandard < config.MinimumCppVersion {
+		fmt.Println("Warning: minimum required C++ standard is " + strconv.Itoa(config.MinimumCppVersion))
+		cfg.CMakeCPPStandard = config.MinimumCppVersion
+	}
+
+	var err error
+	cfg.FrameworkVersion, cfg.FrameworkVersionSubDir, err = getFWVersionAndSubDir(
+		cfg.FrameworkVersion, true,
+	)
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
 func generateSecretKey(n int) string {
-	// TODO add random key generation.
-	return "+s6cv712&nw4gsk)1dmgpje+f#%^4lhp@!up+=p3ts+hxz(fr2"
+	charset := "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
+	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+
+	return string(b)
 }
 
 func CreateProject() error {
 	var (
-		projectRoot string
+		projectPath string
 		projectName string
 		frameworkVerSubDir = ""
 		frameworkVer string
@@ -127,8 +149,8 @@ func CreateProject() error {
 	if !*npAFlag {
 		var err error
 		reader := utils.NewIO()
-		if projectRoot, err = reader.ReadString(
-			"Type root folder of a new project (default is current working directory): ",
+		if projectPath, err = reader.ReadString(
+			"Type path to folder where a new project will be created (default is current working directory): ",
 		); err != nil {
 			return err
 		}
@@ -169,20 +191,20 @@ func CreateProject() error {
 			cmakeMinVer = config.MinimumCmakeVersion
 		}
 	} else {
-		projectRoot = *npRootFlag
+		projectPath = *npRootFlag
 		projectName = *npNameFlag
 		frameworkVer = *npFrameworkVersionFlag
 		cppStandard = *npCppStandardFlag
 		cmakeMinVer = *npCMakeMinVersionFlag
 	}
 
-	if len(projectRoot) == 0 {
+	if len(projectPath) == 0 {
 		cwd, err := os.Getwd()
 		if err != nil {
 			return err
 		}
 
-		projectRoot = cwd
+		projectPath = cwd
 	}
 
 	usr, err := user.Current()
@@ -192,8 +214,8 @@ func CreateProject() error {
 
 	cfg := config.Project{
 		Year:                      time.Now().Year(),
-		Username:                  usr.Username,
-		WorkingDirectory:          projectRoot,
+		Username:                  usr.Name,
+		WorkingDirectory:          projectPath,
 		FrameworkName:             config.FrameworkName,
 		FrameworkNamespace:        config.FrameworkNamespace,
 		FrameworkVersion:          frameworkVer,
@@ -203,6 +225,11 @@ func CreateProject() error {
 		CMakeCPPStandard:          cppStandard,
 		CMakeMinimumVersion:       cmakeMinVer,
 		Templates:                 packr.New("Project Templates Box", "../templates/project"),
+	}
+
+	cfg.MakeRoot()
+	if !utils.DirIsEmpty(cfg.ProjectRoot) {
+		return errors.New("root directory of a new project is not empty")
 	}
 
 	err = normalizeAndCheckProjectConfig(&cfg)

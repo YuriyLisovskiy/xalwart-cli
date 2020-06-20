@@ -1,5 +1,11 @@
 package config
 
+import (
+	"github.com/iancoleman/strcase"
+	"strings"
+	"text/template"
+)
+
 const (
 	FrameworkName = "xalwart"
 	FrameworkNamespace = "xw"
@@ -14,3 +20,8 @@ const (
 	ReleaseByTagUrl = baseUrl + "/tags/v<version>"
 	LatestReleaseUrl = baseUrl + "/latest"
 )
+
+var DefaultFunctions = template.FuncMap {
+	"upper": strings.ToUpper,
+	"to_camel_case": strcase.ToCamel,
+}

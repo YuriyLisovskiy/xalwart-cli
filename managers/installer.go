@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 	"xalwart-cli/config"
+	"xalwart-cli/utils"
 )
 
 func downloadGithubRelease(archiveFile string, version string) error {
@@ -122,13 +123,18 @@ func GetLatestVersionOfFramework() (string, error) {
 func InstallFramework(targetDir string, version string) error {
 	archiveFile := "/tmp/" + config.FrameworkName + "-framework.tar.gz"
 
-	fmt.Print("Downloading '" + config.FrameworkName + "' framework...")
-	err := downloadGithubRelease(archiveFile, version)
-	if err != nil {
-		return err
+	if !utils.FileExists(archiveFile) {
+		fmt.Print("Downloading '" + config.FrameworkName + "' framework...")
+		err := downloadGithubRelease(archiveFile, version)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println(" Done.")
+	} else {
+		fmt.Println("Using cached archive: '" + archiveFile + "'.")
 	}
 
-	fmt.Println(" Done.")
 	fmt.Print("Installing...")
 	reader, err := os.Open(archiveFile)
 	if err != nil {
@@ -141,11 +147,5 @@ func InstallFramework(targetDir string, version string) error {
 	}
 
 	fmt.Println(" Done.")
-
-	err = os.Remove(archiveFile)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }

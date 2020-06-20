@@ -55,7 +55,12 @@ func main() {
 			if commands.NewAppCmd.Parse(os.Args[2:]) != nil {
 				commands.NewAppCmd.Usage()
 			} else {
-				fmt.Println("Not implemented.")
+				err := commands.CreateApp()
+				if err != nil {
+					panic(err)
+					// TODO: uncomment in release version
+					// fmt.Println("Error: " + err.Error())
+				}
 			}
 		default:
 			usage()

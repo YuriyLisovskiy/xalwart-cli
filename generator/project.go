@@ -11,19 +11,9 @@ import (
 	"xalwart-cli/utils"
 )
 
-
-func (g *Generator) projectMakeRoot(cfg *config.Project) {
-	if len(cfg.ProjectName) == 0 {
-		cfg.ProjectRoot = cfg.WorkingDirectory
-		cfg.ProjectName = path.Base(cfg.ProjectRoot)
-	} else {
-		cfg.ProjectRoot = path.Join(cfg.WorkingDirectory, cfg.ProjectName)
-	}
-}
-
 func (g *Generator) projectCreateTemplate(fp string, file packd.File, cfg *config.Project) error {
 	filePath, fileName := path.Split(fp)
-	filePath = strings.Replace(filePath, "_app_", cfg.ProjectName, -1)
+	filePath = strings.Replace(filePath, "_proj_name_", cfg.ProjectName, -1)
 	filePath = path.Join(cfg.ProjectRoot, filePath)
 	err := os.MkdirAll(filePath, os.ModePerm)
 	if err != nil {
@@ -54,7 +44,6 @@ func (g *Generator) projectCreateTemplate(fp string, file packd.File, cfg *confi
 }
 
 func (g *Generator) NewProject(cfg *config.Project) error {
-	g.projectMakeRoot(cfg)
 	err := cfg.Templates.Walk(func(fp string, file packd.File) error {
 		return g.projectCreateTemplate(fp, file, cfg)
 	})

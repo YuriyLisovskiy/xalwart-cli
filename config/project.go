@@ -2,13 +2,8 @@ package config
 
 import (
 	"github.com/gobuffalo/packr/v2"
-	"strings"
-	"text/template"
+	"path"
 )
-
-var DefaultFunctions = template.FuncMap {
-	"upper": strings.ToUpper,
-}
 
 type Project struct {
 	Year int
@@ -31,4 +26,13 @@ type Project struct {
 	CMakeMinimumVersion string
 
 	Templates* packr.Box
+}
+
+func (p *Project) MakeRoot() {
+	if len(p.ProjectName) == 0 {
+		p.ProjectRoot = p.WorkingDirectory
+		p.ProjectName = path.Base(p.ProjectRoot)
+	} else {
+		p.ProjectRoot = path.Join(p.WorkingDirectory, p.ProjectName)
+	}
 }
