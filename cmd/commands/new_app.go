@@ -3,7 +3,6 @@ package commands
 import (
 	"errors"
 	"flag"
-	"fmt"
 	"github.com/gobuffalo/packr/v2"
 	"os"
 	"os/user"
@@ -33,7 +32,7 @@ func CreateApp() error {
 		return err
 	}
 
-	unitCfg := config.ProjectUnit{
+	unitCfg := generator.ProjectUnit{
 		Year:                      time.Now().Year(),
 		Username:                  usr.Name,
 		FrameworkName:             config.FrameworkName,
@@ -41,7 +40,7 @@ func CreateApp() error {
 		Name:                      *naNameFlag,
 		ProjectRoot:               cwd,
 		Templates:                 packr.New("App Templates Box", "../templates/app"),
-		Customize: func(pu *config.ProjectUnit) {
+		Customize: func(pu *generator.ProjectUnit) {
 			if !strings.HasSuffix(strings.ToLower(pu.Name), "_app") {
 				pu.Name += "_app"
 			}
@@ -52,17 +51,17 @@ func CreateApp() error {
 
 	meta, err := loadMeta(unitCfg.ProjectRoot)
 	if err != nil {
-		fmt.Println("Warning: " + err.Error())
+		return err
 	}
 
 	unitCfg.ProjectName = meta.ProjectName
 
 	_, unitCfg.FrameworkVersionSubDir, _ = getFWVersionAndSubDir(
-		meta.Version, false,
+		meta.FrameworkVersion, false,
 	)
 	g := generator.Generator{
-		CheckIfUnitExists: true,
-		UnitExists: func(unit *config.ProjectUnit) error {
+		CheckIfNameIsSet: true,
+		UnitExists: func(unit *generator.ProjectUnit) error {
 			if _, err := os.Stat(unit.Root); !os.IsNotExist(err) {
 				return errors.New("'" + unit.Name + "' application already exists")
 			}

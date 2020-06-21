@@ -3,7 +3,6 @@ package commands
 import (
 	"errors"
 	"flag"
-	"fmt"
 	"github.com/gobuffalo/packr/v2"
 	"os"
 	"os/user"
@@ -34,7 +33,7 @@ func CreateLibrary() error {
 		return err
 	}
 
-	unitCfg := config.ProjectUnit{
+	unitCfg := generator.ProjectUnit{
 		Year:                      time.Now().Year(),
 		Username:                  usr.Name,
 		FrameworkName:             config.FrameworkName,
@@ -42,7 +41,7 @@ func CreateLibrary() error {
 		Name:                      *nlNameFlag,
 		ProjectRoot:               cwd,
 		Templates:                 packr.New("Library Templates Box", "../templates/library"),
-		Customize: func(pu *config.ProjectUnit) {
+		Customize: func(pu *generator.ProjectUnit) {
 			libPath := *nlLibPathFlag
 			if len(libPath) != 0 {
 				pu.Root = libPath
@@ -54,17 +53,17 @@ func CreateLibrary() error {
 
 	meta, err := loadMeta(unitCfg.ProjectRoot)
 	if err != nil {
-		fmt.Println("Warning: " + err.Error())
+		return err
 	}
 
 	unitCfg.ProjectName = meta.ProjectName
 
 	_, unitCfg.FrameworkVersionSubDir, _ = getFWVersionAndSubDir(
-		meta.Version, false,
+		meta.FrameworkVersion, false,
 	)
 	g := generator.Generator{
-		CheckIfUnitExists: true,
-		UnitExists: func(unit *config.ProjectUnit) error {
+		CheckIfNameIsSet: true,
+		UnitExists: func(unit *generator.ProjectUnit) error {
 			if utils.DirExists(unit.Root) {
 				return errors.New("'" + unit.Name + "' library already exists")
 			}

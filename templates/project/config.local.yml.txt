@@ -1,1 +1,1 @@
-secret_key: <% .SecretKey %>
+secret_key: "<% .SecretKey %>"

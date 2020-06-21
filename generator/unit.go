@@ -1,4 +1,4 @@
-package config
+package generator
 
 import (
 	"github.com/gobuffalo/packr/v2"
@@ -23,6 +23,17 @@ type ProjectUnit struct {
 	Templates* packr.Box
 
 	Customize func (pu *ProjectUnit)
+
+
+
+	WorkingDirectory string
+
+	FrameworkVersion string
+
+	SecretKey string
+
+	CMakeCPPStandard int
+	CMakeMinimumVersion string
 }
 
 func (pu *ProjectUnit) Init() {

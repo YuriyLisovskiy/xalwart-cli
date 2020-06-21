@@ -13,16 +13,16 @@ import (
 )
 
 type Generator struct {
-	UnitExists func (cfg *config.ProjectUnit) error
+	UnitExists func (cfg *ProjectUnit) error
 	EmptyDirsToCreateInUnit []string
 
 	FilePathSetup func (fp string, fn string) (string, string)
 	ErrorIfFileExists func () error
 
-	CheckIfUnitExists bool
+	CheckIfNameIsSet bool
 }
 
-func (g *Generator) createTemplate(fp string, file packd.File, cfg *config.ProjectUnit) error {
+func (g *Generator) createTemplate(fp string, file packd.File, cfg *ProjectUnit) error {
 	filePath, fileName := path.Split(fp)
 	if g.FilePathSetup != nil {
 		filePath, fileName = g.FilePathSetup(filePath, fileName)
@@ -62,9 +62,9 @@ func (g *Generator) createTemplate(fp string, file packd.File, cfg *config.Proje
 	return nil
 }
 
-func (g *Generator) NewUnit(cfg *config.ProjectUnit, unitName string) error {
+func (g *Generator) NewUnit(cfg *ProjectUnit, unitName string) error {
 	cfg.Init()
-	if g.CheckIfUnitExists && len(cfg.Name) == 0 {
+	if g.CheckIfNameIsSet && len(cfg.Name) == 0 {
 		return errors.New("name of a new " + unitName + " is now set")
 	}
 

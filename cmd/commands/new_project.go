@@ -8,8 +8,10 @@ import (
 	"math/rand"
 	"os"
 	"os/user"
+	"path"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 	"xalwart-cli/config"
 	"xalwart-cli/generator"
@@ -107,7 +109,7 @@ func getFWVersionAndSubDir(version string, verbose bool) (string, string, error)
 	return version, verSubDir, nil
 }
 
-func normalizeAndCheckProjectConfig(cfg *config.Project) error {
+func normalizeAndCheckProjectConfig(cfg *generator.ProjectUnit) error {
 	// Check C++ standard.
 	if cfg.CMakeCPPStandard < config.MinimumCppVersion {
 		fmt.Println("Warning: minimum required C++ standard is " + strconv.Itoa(config.MinimumCppVersion))
@@ -212,7 +214,7 @@ func CreateProject() error {
 		return err
 	}
 
-	cfg := config.Project{
+	cfg := generator.ProjectUnit{
 		Year:                      time.Now().Year(),
 		Username:                  usr.Name,
 		WorkingDirectory:          projectPath,
@@ -225,11 +227,14 @@ func CreateProject() error {
 		CMakeCPPStandard:          cppStandard,
 		CMakeMinimumVersion:       cmakeMinVer,
 		Templates:                 packr.New("Project Templates Box", "../templates/project"),
-	}
-
-	cfg.MakeRoot()
-	if !utils.DirIsEmpty(cfg.ProjectRoot) {
-		return errors.New("root directory of a new project is not empty")
+		Customize: func(pu *generator.ProjectUnit) {
+			if len(pu.ProjectName) == 0 {
+				pu.Root = pu.WorkingDirectory
+				pu.ProjectName = path.Base(pu.Root)
+			} else {
+				pu.Root = path.Join(pu.WorkingDirectory, pu.ProjectName)
+			}
+		},
 	}
 
 	err = normalizeAndCheckProjectConfig(&cfg)
@@ -237,13 +242,25 @@ func CreateProject() error {
 		return err
 	}
 
-	g := generator.Generator{}
-	err = g.NewProject(&cfg)
+	g := generator.Generator{
+		UnitExists: func(cfg *generator.ProjectUnit) error {
+			if !utils.DirIsEmpty(cfg.Root) {
+				return errors.New("root directory of a new project is not empty")
+			}
+
+			return nil
+		},
+		FilePathSetup: func(fp string, fn string) (string, string) {
+			return strings.Replace(fp, "_proj_name_", cfg.ProjectName, -1), fn
+		},
+		EmptyDirsToCreateInUnit: []string{"media"},
+	}
+	err = g.NewUnit(&cfg, "project")
 	if err != nil {
 		return err
 	}
 
-	err = managers.InstallFramework(cfg.ProjectRoot, cfg.FrameworkVersion)
+	err = managers.InstallFramework(cfg.Root, cfg.FrameworkVersion)
 	if err != nil {
 		return err
 	}
