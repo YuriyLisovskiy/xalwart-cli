@@ -7,6 +7,8 @@ import (
 )
 
 const (
+	AppVersion = "0.0.1"
+
 	FrameworkName = "xalwart"
 	FrameworkNamespace = "xw"
 	MinimumCmakeVersion = "3.13"

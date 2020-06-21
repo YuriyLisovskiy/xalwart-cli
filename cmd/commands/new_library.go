@@ -8,21 +8,22 @@ import (
 	"os"
 	"os/user"
 	"path"
-	"strings"
 	"time"
 	"xalwart-cli/config"
 	"xalwart-cli/generator"
+	"xalwart-cli/utils"
 )
 
-const newAppCmdName = "new-app"
+const newLibraryCmdName = "new-lib"
 
 var (
-	NewAppCmd = flag.NewFlagSet(newAppCmdName, flag.ExitOnError)
+	NewLibraryCmd = flag.NewFlagSet(newLibraryCmdName, flag.ExitOnError)
 
-	naNameFlag = NewAppCmd.String("name", "", "Name of a new application")
+	nlLibPathFlag = NewLibraryCmd.String("path", "", "Location of a new library")
+	nlNameFlag = NewLibraryCmd.String("name", "", "Name of a new library")
 )
 
-func CreateApp() error {
+func CreateLibrary() error {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return err
@@ -38,15 +39,16 @@ func CreateApp() error {
 		Username:                  usr.Name,
 		FrameworkName:             config.FrameworkName,
 		FrameworkNamespace:        config.FrameworkNamespace,
-		Name:                      *naNameFlag,
+		Name:                      *nlNameFlag,
 		ProjectRoot:               cwd,
-		Templates:                 packr.New("App Templates Box", "../templates/app"),
+		Templates:                 packr.New("Library Templates Box", "../templates/library"),
 		Customize: func(pu *config.ProjectUnit) {
-			if !strings.HasSuffix(strings.ToLower(pu.Name), "_app") {
-				pu.Name += "_app"
+			libPath := *nlLibPathFlag
+			if len(libPath) != 0 {
+				pu.Root = libPath
+			} else {
+				pu.Root = path.Join(pu.ProjectRoot, pu.ProjectName, "libs", pu.Name)
 			}
-
-			pu.Root = path.Join(pu.ProjectRoot, pu.Name)
 		},
 	}
 
@@ -63,15 +65,15 @@ func CreateApp() error {
 	g := generator.Generator{
 		CheckIfUnitExists: true,
 		UnitExists: func(unit *config.ProjectUnit) error {
-			if _, err := os.Stat(unit.Root); !os.IsNotExist(err) {
-				return errors.New("'" + unit.Name + "' application already exists")
+			if utils.DirExists(unit.Root) {
+				return errors.New("'" + unit.Name + "' library already exists")
 			}
 
 			return nil
 		},
-		EmptyDirsToCreateInUnit: []string{"views"},
+		EmptyDirsToCreateInUnit: []string{"tags", "filters"},
 	}
-	err = g.NewUnit(&unitCfg, "application")
+	err = g.NewUnit(&unitCfg, "library")
 	if err != nil {
 		return err
 	}

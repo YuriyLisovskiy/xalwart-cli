@@ -13,11 +13,13 @@ file(
 )
 list(
 	FILTER SOURCES
-	EXCLUDE REGEX "^.*/(include|lib|media|static|templates|main.cpp|cmake-build-*)/?.*"
+	EXCLUDE REGEX "^.*/(include|lib$|media|static|templates|cmake-build-*)/?.*"
 )
 foreach(entry ${SOURCES})
     if (IS_DIRECTORY ${entry})
         list(REMOVE_ITEM SOURCES ${entry})
+    else()
+        message(${entry})
     endif()
 endforeach()
 

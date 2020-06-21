@@ -1,0 +1,4 @@
+{
+	"version": "<% .FrameworkVersion %>",
+	"project_name": "<% .ProjectName %>"
+}

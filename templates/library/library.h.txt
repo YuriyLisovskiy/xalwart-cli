@@ -1,0 +1,19 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#pragma once
+
+#include <memory>
+
+#include <<% .FrameworkName %>/<% .FrameworkVersionSubDir %>render/library/library.h>
+
+
+class <% .Name | to_camel_case %> : public <% .FrameworkNamespace %>::render::lib::Library
+{
+public:
+	explicit <% .Name | to_camel_case %>(<% .FrameworkNamespace %>::conf::Settings* settings);
+	std::string name() override;
+	std::shared_ptr<<% .FrameworkNamespace %>::render::lib::Filters> get_filters() override;
+	std::shared_ptr<<% .FrameworkNamespace %>::render::lib::Tags> get_tags() override;
+};

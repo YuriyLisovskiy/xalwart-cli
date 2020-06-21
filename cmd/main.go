@@ -8,14 +8,20 @@ import (
 	"xalwart-cli/config"
 )
 
-func usage() {
-	fmt.Println(
-		"Welcome to CLI tool for managing projects written in '" +
-		config.FrameworkName + "' framework.",
-	)
-	println()
+func usage(printWelcome bool) {
+	if printWelcome {
+		fmt.Println(
+			"Welcome to CLI tool for managing projects written in '" +
+			config.FrameworkName + "' framework.",
+		)
+		println()
+	}
+
 	fmt.Println("General usage:")
-	fmt.Println("  xalwart <command> [arguments]")
+	fmt.Println(
+		"  " + config.FrameworkName + " [--version] [--help]\n  " +
+		strings.Repeat(" ", len(config.FrameworkName)) +" <command> [arguments]",
+	)
 	println()
 	fmt.Println(
 		"Use \"" + strings.ToLower(config.FrameworkName) +
@@ -28,16 +34,19 @@ func usage() {
 		"  " + commands.NewAppCmd.Name() +
 		":\tadds a new application to existing '" + config.FrameworkName + "' application",
 	)
+	fmt.Println("  " + commands.NewLibraryCmd.Name() + ":\tcreates a new library for template engine")
 	println()
 	commands.NewProjectCmd.Usage()
 	println()
 	commands.NewAppCmd.Usage()
 	println()
+	commands.NewLibraryCmd.Usage()
+	println()
 }
 
 func main() {
 	if len(os.Args) < 2 {
-		usage()
+		usage(true)
 	} else {
 		switch os.Args[1] {
 		case commands.NewProjectCmd.Name():
@@ -62,8 +71,26 @@ func main() {
 					// fmt.Println("Error: " + err.Error())
 				}
 			}
+		case commands.NewLibraryCmd.Name():
+			if commands.NewLibraryCmd.Parse(os.Args[2:]) != nil {
+				commands.NewLibraryCmd.Usage()
+			} else {
+				err := commands.CreateLibrary()
+				if err != nil {
+					panic(err)
+					// TODO: uncomment in release version
+					// fmt.Println("Error: " + err.Error())
+				}
+			}
+		case "-h", "--help", "help":
+			usage(false)
+		case "-v", "--version", "version":
+			fmt.Println(config.FrameworkName + " version " + config.AppVersion)
 		default:
-			usage()
+			fmt.Println(
+				config.FrameworkName + ": '" + os.Args[1] + "' is not a " +
+				config.FrameworkName + " command. See '" + config.FrameworkName + " --help'.",
+			)
 		}
 	}
 }

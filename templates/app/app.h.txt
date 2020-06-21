@@ -7,9 +7,9 @@
 #include <<% .FrameworkName %>/<% .FrameworkVersionSubDir %>apps/config.h>
 
 
-class <% .AppName | to_camel_case %>Config : public <% .FrameworkNamespace %>::apps::AppConfig
+class <% .Name | to_camel_case %>Config : public <% .FrameworkNamespace %>::apps::AppConfig
 {
 public:
-	explicit <% .AppName | to_camel_case %>Config(<% .FrameworkNamespace %>::conf::Settings* settings);
+	explicit <% .Name | to_camel_case %>Config(<% .FrameworkNamespace %>::conf::Settings* settings);
 	void urlpatterns() override;
 };

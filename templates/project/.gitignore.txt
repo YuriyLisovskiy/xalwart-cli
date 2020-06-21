@@ -45,3 +45,4 @@ lib/
 include/
 media/
 config.local.yml
+.xalwart.meta
