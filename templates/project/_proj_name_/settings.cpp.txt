@@ -4,7 +4,7 @@
 
 #include "./settings.h"
 
-#include <<% .FrameworkName %>/<% .FrameworkVersionSubDir %>core/path.h>
+#include <<% .FrameworkName %>/core/path.h>
 
 #include "../main_app/app.h"
 

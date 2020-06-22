@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <<% .FrameworkName %>/<% .FrameworkVersionSubDir %>views/template_view.h>
+#include <<% .FrameworkName %>/views/template_view.h>
 
 
 class MainView : public <% .FrameworkNamespace %>::views::TemplateView

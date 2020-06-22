@@ -2,7 +2,7 @@
  * Copyright (c) <% .Year %> <% .Username %>
  */
 
-#include <<% .FrameworkName %>/<% .FrameworkVersionSubDir %>apps/<% .FrameworkName %>.h>
+#include <<% .FrameworkName %>/apps/<% .FrameworkName %>.h>
 
 #include "./<% .ProjectName %>/settings.h"
 

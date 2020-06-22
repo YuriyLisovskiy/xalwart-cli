@@ -7,9 +7,7 @@ import (
 	"github.com/gobuffalo/packr/v2"
 	"math/rand"
 	"os"
-	"os/user"
 	"path"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -27,101 +25,26 @@ var (
 	npAFlag = NewProjectCmd.Bool(
 		"a",
 		false,
-		"Execute '" + newProjectCmdName + "' command using arguments",
+		"Execute '"+newProjectCmdName+"' command using arguments",
 	)
-	npNameFlag = NewProjectCmd.String("name", "", "Project name")
-	npRootFlag = NewProjectCmd.String("root", "", "Project root")
+	npNameFlag            = NewProjectCmd.String("name", "", "Project name")
+	npRootFlag            = NewProjectCmd.String("root", "", "Project root")
 	npCMakeMinVersionFlag = NewProjectCmd.String(
 		"cmake-version", config.MinimumCmakeVersion, "Cmake minimum version",
 	)
-	npCppStandardFlag = NewProjectCmd.Int("cpp", config.MinimumCppVersion, "C++ standard")
+	npCppStandardFlag      = NewProjectCmd.Int("cpp", config.MinimumCppVersion, "C++ standard")
 	npFrameworkVersionFlag = NewProjectCmd.String(
 		"fw-version",
 		"latest",
-		"A version of '" + config.FrameworkName + "' framework to install",
+		"A version of '"+config.FrameworkName+"' framework to install",
 	)
 )
-
-func reSubMatchMap(r *regexp.Regexp, str string) (bool, map[string]string) {
-	if r.MatchString(str) {
-		match := r.FindStringSubmatch(str)
-		subMatchMap := make(map[string]string)
-		for i, name := range r.SubexpNames() {
-			if i != 0 {
-				subMatchMap[name] = match[i]
-			}
-		}
-
-		return true, subMatchMap
-	}
-
-	return false, nil
-}
-
-func getFWVersionAndSubDir(version string, verbose bool) (string, string, error) {
-	if version == "latest" {
-		var err error
-		version, err = managers.GetLatestVersionOfFramework()
-		if err != nil {
-			return "", "", errors.New(
-				"unable to retrieve latest release of '" + config.FrameworkName + "' framework",
-			)
-		}
-	} else {
-		isAvailable, err := managers.CheckIfVersionIsAvailable(version)
-		if err != nil {
-			return "", "", err
-		}
-
-		if !isAvailable {
-			if verbose {
-				fmt.Println(
-					"Warning: release v" + version + " is not available, latest is used instead",
-				)
-			}
-
-			version, err = managers.GetLatestVersionOfFramework()
-			if err != nil {
-				return "", "", errors.New(
-					"unable to retrieve latest release of '" + config.FrameworkName + "' framework",
-				)
-			}
-		}
-	}
-
-	expr, _ := regexp.Compile(
-		"(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)(-(?P<pre_release>(alpha|beta)))?",
-	)
-	match, ver := reSubMatchMap(expr, version)
-	verSubDir := ""
-	if match {
-		if ver["major"] > "1" {
-			verSubDir = "v" + ver["major"] + "/"
-		}
-	} else {
-		if verbose {
-			fmt.Println(
-				"Warning: invalid version of '" + config.FrameworkName + "' framework. Used latest by default.",
-			)
-		}
-	}
-
-	return version, verSubDir, nil
-}
 
 func normalizeAndCheckProjectConfig(cfg *generator.ProjectUnit) error {
 	// Check C++ standard.
 	if cfg.CMakeCPPStandard < config.MinimumCppVersion {
 		fmt.Println("Warning: minimum required C++ standard is " + strconv.Itoa(config.MinimumCppVersion))
 		cfg.CMakeCPPStandard = config.MinimumCppVersion
-	}
-
-	var err error
-	cfg.FrameworkVersion, cfg.FrameworkVersionSubDir, err = getFWVersionAndSubDir(
-		cfg.FrameworkVersion, true,
-	)
-	if err != nil {
-		return err
 	}
 
 	return nil
@@ -138,14 +61,13 @@ func generateSecretKey(n int) string {
 	return string(b)
 }
 
-func CreateProject() error {
+func (c *Cmd) CreateProject() error {
 	var (
-		projectPath string
-		projectName string
-		frameworkVerSubDir = ""
-		frameworkVer string
-		cppStandard int
-		cmakeMinVer string
+		projectPath        string
+		projectName        string
+		frameworkVer       string
+		cppStandard        int
+		cmakeMinVer        string
 	)
 
 	if !*npAFlag {
@@ -209,58 +131,57 @@ func CreateProject() error {
 		projectPath = cwd
 	}
 
-	usr, err := user.Current()
-	if err != nil {
-		return err
-	}
-
-	cfg := generator.ProjectUnit{
-		Year:                      time.Now().Year(),
-		Username:                  usr.Name,
-		WorkingDirectory:          projectPath,
-		FrameworkName:             config.FrameworkName,
-		FrameworkNamespace:        config.FrameworkNamespace,
-		FrameworkVersion:          frameworkVer,
-		FrameworkVersionSubDir:    frameworkVerSubDir,
-		ProjectName:               projectName,
-		SecretKey:                 generateSecretKey(config.SecretKeyLength),
-		CMakeCPPStandard:          cppStandard,
-		CMakeMinimumVersion:       cmakeMinVer,
-		Templates:                 packr.New("Project Templates Box", "../templates/project"),
-		Customize: func(pu *generator.ProjectUnit) {
+	c.customizeUnit = func(cwd string, unit *generator.ProjectUnit) error {
+		unit.WorkingDirectory = projectPath
+		unit.ProjectName = projectName
+		unit.FrameworkVersion = frameworkVer
+		unit.CMakeCPPStandard = cppStandard
+		unit.CMakeMinimumVersion = cmakeMinVer
+		unit.SecretKey = generateSecretKey(config.SecretKeyLength)
+		unit.Templates = packr.New("Project Templates Box", "../../templates/project")
+		unit.Customize = func(pu *generator.ProjectUnit) {
 			if len(pu.ProjectName) == 0 {
 				pu.Root = pu.WorkingDirectory
 				pu.ProjectName = path.Base(pu.Root)
 			} else {
 				pu.Root = path.Join(pu.WorkingDirectory, pu.ProjectName)
 			}
-		},
+		}
+
+		err := normalizeAndCheckProjectConfig(unit)
+		if err != nil {
+			return err
+		}
+
+		return nil
 	}
 
-	err = normalizeAndCheckProjectConfig(&cfg)
-	if err != nil {
-		return err
+	c.makeGenerator = func(unit *generator.ProjectUnit) generator.Generator {
+		return generator.Generator{
+			UnitExists: func(cfg *generator.ProjectUnit) error {
+				if !utils.DirIsEmpty(cfg.Root) {
+					return errors.New("root directory of a new project is not empty")
+				}
+
+				return nil
+			},
+			FilePathSetup: func(fp string, fn string) (string, string) {
+				return strings.Replace(fp, "_proj_name_", unit.ProjectName, -1), fn
+			},
+			EmptyDirsToCreateInUnit: []string{"media"},
+		}
 	}
 
-	g := generator.Generator{
-		UnitExists: func(cfg *generator.ProjectUnit) error {
-			if !utils.DirIsEmpty(cfg.Root) {
-				return errors.New("root directory of a new project is not empty")
-			}
+	c.postProcess = func(unit *generator.ProjectUnit) error {
+		err := managers.InstallFramework(unit.Root, unit.FrameworkVersion)
+		if err != nil {
+			return err
+		}
 
-			return nil
-		},
-		FilePathSetup: func(fp string, fn string) (string, string) {
-			return strings.Replace(fp, "_proj_name_", cfg.ProjectName, -1), fn
-		},
-		EmptyDirsToCreateInUnit: []string{"media"},
-	}
-	err = g.NewUnit(&cfg, "project")
-	if err != nil {
-		return err
+		return nil
 	}
 
-	err = managers.InstallFramework(cfg.Root, cfg.FrameworkVersion)
+	err := c.execute("project", true)
 	if err != nil {
 		return err
 	}

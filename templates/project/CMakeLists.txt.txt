@@ -34,7 +34,7 @@ else()
     set(DLL ${LIB_DIRECTORY}/<% .FrameworkName %>/<% .FrameworkVersion %>/lib${<% .FrameworkName | upper %>_LIBRARY}.so)
 endif()
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-target_include_directories(${BINARY} PUBLIC ${INCLUDE_DIR}/${<% .FrameworkName | upper %>_LIBRARY}/<% .FrameworkVersionSubDir %>vendor/yaml)
+target_include_directories(${BINARY} PUBLIC ${INCLUDE_DIR}/${<% .FrameworkName | upper %>_LIBRARY}/vendor/yaml)
 target_include_directories(${BINARY} PUBLIC ${INCLUDE_DIR})
 target_link_libraries(${BINARY} ${DLL})
 

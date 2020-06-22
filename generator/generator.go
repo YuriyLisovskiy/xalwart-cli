@@ -22,7 +22,7 @@ type Generator struct {
 	CheckIfNameIsSet bool
 }
 
-func (g *Generator) createTemplate(fp string, file packd.File, cfg *ProjectUnit) error {
+func (g *Generator) executeTemplate(fp string, file packd.File, cfg *ProjectUnit) error {
 	filePath, fileName := path.Split(fp)
 	if g.FilePathSetup != nil {
 		filePath, fileName = g.FilePathSetup(filePath, fileName)
@@ -80,7 +80,7 @@ func (g *Generator) NewUnit(cfg *ProjectUnit, unitName string) error {
 	}
 
 	err = cfg.Templates.Walk(func(fp string, file packd.File) error {
-		return g.createTemplate(fp, file, cfg)
+		return g.executeTemplate(fp, file, cfg)
 	})
 	if err != nil {
 		return err

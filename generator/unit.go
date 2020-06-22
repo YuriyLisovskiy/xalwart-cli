@@ -18,7 +18,7 @@ type ProjectUnit struct {
 	Root string
 
 	// Example: v2/, v3/, ...
-	FrameworkVersionSubDir string
+//	FrameworkVersionSubDir string
 
 	Templates* packr.Box
 

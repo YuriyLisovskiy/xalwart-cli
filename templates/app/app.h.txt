@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <<% .FrameworkName %>/<% .FrameworkVersionSubDir %>apps/config.h>
+#include <<% .FrameworkName %>/apps/config.h>
 
 
 class <% .Name | to_camel_case %>Config : public <% .FrameworkNamespace %>::apps::AppConfig

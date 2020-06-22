@@ -48,39 +48,26 @@ func main() {
 	if len(os.Args) < 2 {
 		usage(true)
 	} else {
+		var err error
+		cmd := commands.Cmd{}
 		switch os.Args[1] {
 		case commands.NewProjectCmd.Name():
 			if commands.NewProjectCmd.Parse(os.Args[2:]) != nil {
 				commands.NewProjectCmd.Usage()
 			} else {
-				err := commands.CreateProject()
-				if err != nil {
-					panic(err)
-					// TODO: uncomment in release version
-					// fmt.Println("Error: " + err.Error())
-				}
+				err = cmd.CreateProject()
 			}
 		case commands.NewAppCmd.Name():
 			if commands.NewAppCmd.Parse(os.Args[2:]) != nil {
 				commands.NewAppCmd.Usage()
 			} else {
-				err := commands.CreateApp()
-				if err != nil {
-					panic(err)
-					// TODO: uncomment in release version
-					// fmt.Println("Error: " + err.Error())
-				}
+				err = cmd.CreateApp()
 			}
 		case commands.NewLibraryCmd.Name():
 			if commands.NewLibraryCmd.Parse(os.Args[2:]) != nil {
 				commands.NewLibraryCmd.Usage()
 			} else {
-				err := commands.CreateLibrary()
-				if err != nil {
-					panic(err)
-					// TODO: uncomment in release version
-					// fmt.Println("Error: " + err.Error())
-				}
+				err = cmd.CreateLibrary()
 			}
 		case "-h", "--help", "help":
 			usage(false)
@@ -91,6 +78,12 @@ func main() {
 				config.FrameworkName + ": '" + os.Args[1] + "' is not a " +
 				config.FrameworkName + " command. See '" + config.FrameworkName + " --help'.",
 			)
+		}
+
+		if err != nil {
+			//panic(err)
+			// TODO: uncomment in release version
+			fmt.Println("Error: " + err.Error())
 		}
 	}
 }

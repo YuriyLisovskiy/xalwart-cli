@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include <<% .FrameworkName %>/<% .FrameworkVersionSubDir %>render/library/library.h>
+#include <<% .FrameworkName %>/render/library/library.h>
 
 
 class <% .Name | to_camel_case %> : public <% .FrameworkNamespace %>::render::lib::Library

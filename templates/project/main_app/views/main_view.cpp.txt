@@ -4,8 +4,8 @@
 
 #include "./main_view.h"
 
-#include <<% .FrameworkName %>/<% .FrameworkVersionSubDir %>core/types/value.h>
-#include <<% .FrameworkName %>/<% .FrameworkVersionSubDir %>render/context.h>
+#include <<% .FrameworkName %>/core/types/value.h>
+#include <<% .FrameworkName %>/render/context.h>
 
 
 MainView::MainView(<% .FrameworkNamespace %>::conf::Settings* settings)
