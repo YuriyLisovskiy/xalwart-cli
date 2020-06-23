@@ -29,12 +29,15 @@ func usage(printWelcome bool) {
 	)
 	println()
 	fmt.Println("The commands are:")
+	fmt.Println("  " + commands.InstallCmdDescription)
 	fmt.Println("  " + commands.NewProjectCmd.Name() + ":\tcreates a new project based on cmake lists")
 	fmt.Println(
 		"  " + commands.NewAppCmd.Name() +
 		":\tadds a new application to existing '" + config.FrameworkName + "' application",
 	)
 	fmt.Println("  " + commands.NewLibraryCmd.Name() + ":\tcreates a new library for template engine")
+	println()
+	commands.InstallCmd.Usage()
 	println()
 	commands.NewProjectCmd.Usage()
 	println()
@@ -51,6 +54,12 @@ func main() {
 		var err error
 		cmd := commands.Cmd{}
 		switch os.Args[1] {
+		case commands.InstallCmd.Name():
+			if commands.InstallCmd.Parse(os.Args[2:]) != nil {
+				commands.InstallCmd.Usage()
+			} else {
+				err = cmd.InstallFramework()
+			}
 		case commands.NewProjectCmd.Name():
 			if commands.NewProjectCmd.Parse(os.Args[2:]) != nil {
 				commands.NewProjectCmd.Usage()
@@ -81,9 +90,9 @@ func main() {
 		}
 
 		if err != nil {
-			//panic(err)
+			panic(err)
 			// TODO: uncomment in release version
-			fmt.Println("Error: " + err.Error())
+			// fmt.Println("Error: " + err.Error())
 		}
 	}
 }

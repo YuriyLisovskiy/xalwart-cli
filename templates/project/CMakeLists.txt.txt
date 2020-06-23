@@ -25,16 +25,16 @@ endforeach()
 
 add_executable(${BINARY} ${SOURCES} "./main.cpp")
 <% if .InstallFramework %>
-# Setup and link '<% .FrameworkName %>' library.
-set(<% .FrameworkName | upper %>_LIBRARY "<% .FrameworkName %>")
+# Setup and link '<% .FrameworkName %>' framework.
+set(<% .FrameworkName | upper %>_FRAMEWORK "<% .FrameworkName %>")
 set(LIB_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 if (WIN32)
-    set(DLL ${LIB_DIRECTORY}/<% .FrameworkName %>/<% .FrameworkVersion %>/${<% .FrameworkName | upper %>_LIBRARY}.lib)
+    set(DLL ${LIB_DIRECTORY}/<% .FrameworkName %>/<% .FrameworkVersion %>/${<% .FrameworkName | upper %>_FRAMEWORK}.lib)
 else()
-    set(DLL ${LIB_DIRECTORY}/<% .FrameworkName %>/<% .FrameworkVersion %>/lib${<% .FrameworkName | upper %>_LIBRARY}.so)
+    set(DLL ${LIB_DIRECTORY}/<% .FrameworkName %>/<% .FrameworkVersion %>/lib${<% .FrameworkName | upper %>_FRAMEWORK}.so)
 endif()
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-target_include_directories(${BINARY} PUBLIC ${INCLUDE_DIR}/${<% .FrameworkName | upper %>_LIBRARY}/vendor/yaml)
+target_include_directories(${BINARY} PUBLIC ${INCLUDE_DIR}/${<% .FrameworkName | upper %>_FRAMEWORK}/vendor/yaml)
 target_include_directories(${BINARY} PUBLIC ${INCLUDE_DIR})
 target_link_libraries(${BINARY} ${DLL})
 
@@ -43,5 +43,5 @@ if (UNIX)
     target_link_libraries(${BINARY} stdc++fs)
 endif()
 <% else %>
-# TODO: setup and link '<% .FrameworkName %>' library.
+<% .CMakeListsTxtToDoLine %>
 <% end %>

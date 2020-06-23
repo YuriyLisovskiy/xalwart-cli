@@ -9,6 +9,7 @@ type ProjectUnit struct {
 	FrameworkName string
 	FrameworkNamespace string
 	InstallFramework bool
+	CMakeListsTxtToDoLine string
 
 	ProjectName string
 	ProjectRoot string

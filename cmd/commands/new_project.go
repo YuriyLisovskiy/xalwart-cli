@@ -152,6 +152,7 @@ func (c *Cmd) CreateProject() error {
 			unit.FrameworkVersion = frameworkVer
 		}
 
+		unit.CMakeListsTxtToDoLine = config.CMakeListsTxtToDoLine
 		unit.CMakeCPPStandard = cppStandard
 		unit.CMakeMinimumVersion = cmakeMinVer
 		unit.SecretKey = generateSecretKey(config.SecretKeyLength)
