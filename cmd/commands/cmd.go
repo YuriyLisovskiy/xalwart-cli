@@ -65,11 +65,15 @@ func (c *Cmd) execute(unitName string, isProject bool) error {
 		initFWVer = meta.FrameworkVersion
 	}
 
-	cfg.FrameworkVersion, err = c.getVersionOfFramework(
-		initFWVer, isProject,
-	)
-	if isProject && err != nil {
-		return err
+	if cfg.InstallFramework {
+		cfg.FrameworkVersion, err = c.getVersionOfFramework(
+			initFWVer, isProject,
+		)
+		if isProject && err != nil {
+			return err
+		}
+	} else {
+		cfg.FrameworkVersion = "null"
 	}
 
 	var g generator.Generator
@@ -114,6 +118,21 @@ func (c *Cmd) loadMeta(projectRoot string) (projectMeta, error) {
 	return obj, nil
 }
 
+func (c *Cmd) saveMeta(projectRoot string, meta projectMeta) error {
+	savingErr := errors.New("unable to update project meta, file: '" + metaFilePath + "'")
+	content, err := json.MarshalIndent(meta, "", " ")
+	if err != nil {
+		return savingErr
+	}
+
+	err = ioutil.WriteFile(path.Join(projectRoot, metaFilePath), content, 0644)
+	if err != nil {
+		return savingErr
+	}
+
+	return nil
+}
+
 func (c *Cmd) reSubMatchMap(r *regexp.Regexp, str string) (bool, map[string]string) {
 	if r.MatchString(str) {
 		match := r.FindStringSubmatch(str)
@@ -136,10 +155,12 @@ func (c *Cmd) getVersionOfFramework(version string, verbose bool) (string, error
 	)
 	if version == "latest" {
 		var err error
-		version, err = managers.GetLatestVersionOfFramework()
+		release, err := managers.GetLatestRelease()
 		if err != nil {
 			return "", retrieveErr
 		}
+
+		version = release.VersionTag
 	} else {
 		isAvailable, err := managers.CheckIfVersionIsAvailable(version)
 		if err != nil {
@@ -153,10 +174,12 @@ func (c *Cmd) getVersionOfFramework(version string, verbose bool) (string, error
 				)
 			}
 
-			version, err = managers.GetLatestVersionOfFramework()
+			release, err := managers.GetLatestRelease()
 			if err != nil {
 				return "", retrieveErr
 			}
+
+			version = release.VersionTag
 		}
 	}
 

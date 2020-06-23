@@ -1,0 +1,17 @@
+# Setup and link '<% .FrameworkName %>' framework.
+set(<% .FrameworkName | upper %>_FRAMEWORK "<% .FrameworkName %>")
+set(LIB_DIRECTORY <% .InstallationRoot %>/lib)
+if (WIN32)
+    set(DLL ${LIB_DIRECTORY}/<% .FrameworkName %>/${<% .FrameworkName | upper %>_FRAMEWORK}-<% .FrameworkVersion %>.lib)
+else()
+    set(DLL ${LIB_DIRECTORY}/<% .FrameworkName %>/lib${<% .FrameworkName | upper %>_FRAMEWORK}-<% .FrameworkVersion %>.so)
+endif()
+set(INCLUDE_DIR <% .InstallationRoot %>/include)
+target_include_directories(${BINARY} PUBLIC ${INCLUDE_DIR}/${<% .FrameworkName | upper %>_FRAMEWORK}/vendor/yaml)
+target_include_directories(${BINARY} PUBLIC ${INCLUDE_DIR})
+target_link_libraries(${BINARY} ${DLL})
+
+# Required for <experimental/filesystem> on Linux which is used by '<% .FrameworkName %>'
+if (UNIX)
+    target_link_libraries(${BINARY} stdc++fs)
+endif()

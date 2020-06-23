@@ -21,6 +21,8 @@ const (
 	DownloadReleaseUrl = "https://github.com/YuriyLisovskiy/TestRepo/releases/download/v<version>/" + tarArchive
 	ReleaseByTagUrl = baseUrl + "/tags/v<version>"
 	LatestReleaseUrl = baseUrl + "/latest"
+
+	CMakeListsTxtToDoLine = "# TODO: setup and link '" + FrameworkName + "' framework."
 )
 
 var DefaultFunctions = template.FuncMap {

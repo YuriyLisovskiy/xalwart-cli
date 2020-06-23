@@ -9,22 +9,29 @@ import (
 	"xalwart-cli/utils"
 )
 
-const newLibraryCmdName = "new-lib"
+const (
+	newLibraryCmdName = "new-lib"
+	NewLibraryCmdDescription = newLibraryCmdName + ":\tcreates a new library for template engine"
+)
 
 var (
 	NewLibraryCmd = flag.NewFlagSet(newLibraryCmdName, flag.ExitOnError)
-
-	nlLibPathFlag = NewLibraryCmd.String("path", "", "Location of a new library")
-	nlNameFlag = NewLibraryCmd.String("name", "", "Name of a new library")
+	nlLibPathFlag string
+	nlNameFlag string
 )
+
+func InitNewLibraryCmd() {
+	NewLibraryCmd.StringVar(&nlLibPathFlag, "l", "", "Location of a new library")
+	NewLibraryCmd.StringVar(&nlNameFlag, "n", "", "Name of a new library")
+}
 
 func (c *Cmd) CreateLibrary() error {
 	c.customizeUnit = func(cwd string, unit *generator.ProjectUnit) error {
-		unit.Name = *nlNameFlag
+		unit.Name = nlNameFlag
 		unit.ProjectRoot = cwd
 		unit.Templates = packr.New("Library Templates Box", "../../templates/library")
 		unit.Customize = func(pu *generator.ProjectUnit) {
-			libPath := *nlLibPathFlag
+			libPath := nlLibPathFlag
 			if len(libPath) != 0 {
 				pu.Root = libPath
 			} else {
