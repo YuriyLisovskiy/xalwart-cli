@@ -30,20 +30,23 @@ func usage(printWelcome bool) {
 	println()
 	fmt.Println("The commands are:")
 	fmt.Println("  " + commands.InstallCmdDescription)
-	fmt.Println("  " + commands.NewProjectCmd.Name() + ":\tcreates a new project based on cmake lists")
-	fmt.Println(
-		"  " + commands.NewAppCmd.Name() +
-		":\tadds a new application to existing '" + config.FrameworkName + "' application",
-	)
-	fmt.Println("  " + commands.NewLibraryCmd.Name() + ":\tcreates a new library for template engine")
+	fmt.Println("  " + commands.NewAppCmdDescription)
+	fmt.Println("  " + commands.NewLibraryCmdDescription)
+	fmt.Println("  " + commands.NewProjectCmdDescription)
 	println()
+
+	commands.InitInstallCmd()
+	commands.InitNewAppCmd()
+	commands.InitNewLibraryCmd()
+	commands.InitNewProjectCmd()
+	
 	commands.InstallCmd.Usage()
-	println()
-	commands.NewProjectCmd.Usage()
 	println()
 	commands.NewAppCmd.Usage()
 	println()
 	commands.NewLibraryCmd.Usage()
+	println()
+	commands.NewProjectCmd.Usage()
 	println()
 }
 
@@ -55,28 +58,32 @@ func main() {
 		cmd := commands.Cmd{}
 		switch os.Args[1] {
 		case commands.InstallCmd.Name():
+			commands.InitInstallCmd()
 			if commands.InstallCmd.Parse(os.Args[2:]) != nil {
 				commands.InstallCmd.Usage()
 			} else {
 				err = cmd.InstallFramework()
 			}
-		case commands.NewProjectCmd.Name():
-			if commands.NewProjectCmd.Parse(os.Args[2:]) != nil {
-				commands.NewProjectCmd.Usage()
-			} else {
-				err = cmd.CreateProject()
-			}
 		case commands.NewAppCmd.Name():
+			commands.InitNewAppCmd()
 			if commands.NewAppCmd.Parse(os.Args[2:]) != nil {
 				commands.NewAppCmd.Usage()
 			} else {
 				err = cmd.CreateApp()
 			}
 		case commands.NewLibraryCmd.Name():
+			commands.InitNewLibraryCmd()
 			if commands.NewLibraryCmd.Parse(os.Args[2:]) != nil {
 				commands.NewLibraryCmd.Usage()
 			} else {
 				err = cmd.CreateLibrary()
+			}
+		case commands.NewProjectCmd.Name():
+			commands.InitNewProjectCmd()
+			if commands.NewProjectCmd.Parse(os.Args[2:]) != nil {
+				commands.NewProjectCmd.Usage()
+			} else {
+				err = cmd.CreateProject()
 			}
 		case "-h", "--help", "help":
 			usage(false)

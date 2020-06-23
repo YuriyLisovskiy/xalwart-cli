@@ -17,31 +17,43 @@ import (
 	"xalwart-cli/utils"
 )
 
-const newProjectCmdName = "new-project"
+const (
+	newProjectCmdName = "new-project"
+	NewProjectCmdDescription = newProjectCmdName + ":\tcreates a new project based on cmake lists"
+)
 
 var (
 	NewProjectCmd = flag.NewFlagSet(newProjectCmdName, flag.ExitOnError)
+	npAFlag bool
+	npNameFlag string
+	npRootFlag string
+	npCMakeMinVersionFlag string
+	npCppStandardFlag int
+	npInstall bool
+	npFrameworkVersionFlag string
+)
 
-	npAFlag = NewProjectCmd.Bool(
+func InitNewProjectCmd() {
+	NewProjectCmd.BoolVar(&npAFlag,
 		"a",
 		false,
 		"Execute '"+newProjectCmdName+"' command using arguments",
 	)
-	npNameFlag            = NewProjectCmd.String("name", "", "Project name")
-	npRootFlag            = NewProjectCmd.String("root", "", "Project root")
-	npCMakeMinVersionFlag = NewProjectCmd.String(
-		"cmake-version", config.MinimumCmakeVersion, "Cmake minimum version",
+	NewProjectCmd.StringVar(&npNameFlag, "n", "", "Project name")
+	NewProjectCmd.StringVar(&npRootFlag, "r", "", "Project root")
+	NewProjectCmd.StringVar(&npCMakeMinVersionFlag,
+		"cmake", config.MinimumCmakeVersion, "Cmake minimum version",
 	)
-	npCppStandardFlag      = NewProjectCmd.Int("cpp", config.MinimumCppVersion, "C++ standard")
-	npInstall = NewProjectCmd.Bool(
-		"install", true, "Install '" + config.FrameworkName + "' framework locally",
+	NewProjectCmd.IntVar(&npCppStandardFlag, "cpp", config.MinimumCppVersion, "C++ standard")
+	NewProjectCmd.BoolVar(&npInstall,
+		"i", true, "Install '" + config.FrameworkName + "' framework locally",
 	)
-	npFrameworkVersionFlag = NewProjectCmd.String(
-		"framework-version",
+	NewProjectCmd.StringVar(&npFrameworkVersionFlag,
+		"v",
 		"latest",
 		"A version of '"+config.FrameworkName+"' framework to install",
 	)
-)
+}
 
 func normalizeAndCheckProjectConfig(cfg *generator.ProjectUnit) error {
 	// Check C++ standard.
@@ -74,7 +86,7 @@ func (c *Cmd) CreateProject() error {
 		installFramework   bool
 	)
 
-	if !*npAFlag {
+	if !npAFlag {
 		var err error
 		reader := utils.NewIO()
 		if projectPath, err = reader.ReadString(
@@ -127,12 +139,12 @@ func (c *Cmd) CreateProject() error {
 			cmakeMinVer = config.MinimumCmakeVersion
 		}
 	} else {
-		projectPath = *npRootFlag
-		projectName = *npNameFlag
-		frameworkVer = *npFrameworkVersionFlag
-		cppStandard = *npCppStandardFlag
-		cmakeMinVer = *npCMakeMinVersionFlag
-		installFramework = *npInstall
+		projectPath = npRootFlag
+		projectName = npNameFlag
+		frameworkVer = npFrameworkVersionFlag
+		cppStandard = npCppStandardFlag
+		cmakeMinVer = npCMakeMinVersionFlag
+		installFramework = npInstall
 	}
 
 	if len(projectPath) == 0 {

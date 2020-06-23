@@ -7,20 +7,28 @@ import (
 	"os"
 	"path"
 	"strings"
+	"xalwart-cli/config"
 	"xalwart-cli/generator"
 )
 
-const newAppCmdName = "new-app"
+const (
+	newAppCmdName = "new-app"
+	NewAppCmdDescription = newAppCmdName +
+		":\tadds a new application to existing '" + config.FrameworkName + "' application"
+)
 
 var (
 	NewAppCmd = flag.NewFlagSet(newAppCmdName, flag.ExitOnError)
-
-	naNameFlag = NewAppCmd.String("name", "", "Name of a new application")
+	naNameFlag string
 )
+
+func InitNewAppCmd() {
+	NewAppCmd.StringVar(&naNameFlag, "n", "", "Name of a new application")
+}
 
 func (c *Cmd) CreateApp() error {
 	c.customizeUnit = func(cwd string, unit *generator.ProjectUnit) error {
-		unit.Name = *naNameFlag
+		unit.Name = naNameFlag
 		unit.ProjectRoot = cwd
 		unit.Templates = packr.New("App Templates Box", "../../templates/app")
 		unit.Customize = func(pu *generator.ProjectUnit) {
@@ -33,7 +41,7 @@ func (c *Cmd) CreateApp() error {
 
 		return nil
 	}
-	
+
 	c.makeGenerator = func(pu *generator.ProjectUnit) generator.Generator {
 		return generator.Generator{
 			CheckIfNameIsSet: true,

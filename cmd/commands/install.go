@@ -17,35 +17,53 @@ import (
 
 const (
 	installCmdName = "install"
-	InstallCmdDescription = "Installs '" + config.FrameworkName + "' framework"
+	InstallCmdDescription = installCmdName + ":\tinstalls '" + config.FrameworkName + "' framework"
 )
 
 var (
 	InstallCmd = flag.NewFlagSet(installCmdName, flag.ExitOnError)
-
-	iVerbose = InstallCmd.Bool("verbose", true, "Print steps during the installation")
-	iLocal = InstallCmd.Bool("local", true, "Local installation, using '--project-root' value")
-	iGlobal = InstallCmd.Bool(
-		"global", false, "Global installation at '" + config.GlobalInstallationRoot + "'",
-	)
-	iCustom = InstallCmd.Bool(
-		"custom", false, "Custom installation, '--root' argument is required",
-	)
-	iRoot = InstallCmd.String(
-		"root", "", "Path to '" + config.FrameworkName + "' framework installation directory",
-	)
-	iProjectRoot = InstallCmd.String(
-		"project-root", "", "Root directory of a project (default is current working directory)",
-	)
-	iVersion = InstallCmd.String(
-		"version", "latest", "Version of '" + config.FrameworkName + "' framework to install",
-	)
-	iUpdateProject = InstallCmd.Bool(
-		"update-project",
-		false,
-		"Append framework setup to 'CMakeLists.txt' and update '.project.xw' if this files exist",
-	)
+	iVerbose bool
+	iLocal bool
+	iGlobal bool
+	iCustom bool
+	iRoot string
+	iProjectRoot string
+	iVersion string
+	iUpdateProject bool
 )
+
+func InitInstallCmd() {
+	description := "Print steps during the installation"
+	InstallCmd.BoolVar(&iVerbose, "verbose", true, description)
+
+	description = "Local installation, using '-p' value"
+//	InstallCmd.BoolVar(&iLocal, "local", true, description)
+	InstallCmd.BoolVar(&iLocal, "l", true, description)
+
+	description = "Global installation at '" + config.GlobalInstallationRoot + "'"
+//	InstallCmd.BoolVar(&iGlobal, "global", false, description)
+	InstallCmd.BoolVar(&iGlobal, "g", false, description)
+
+	description = "Custom installation, '-i' argument is required"
+//	InstallCmd.BoolVar(&iCustom, "custom", false, description)
+	InstallCmd.BoolVar(&iCustom, "c", false, description)
+
+	description = "Path to '" + config.FrameworkName + "' framework installation directory"
+//	InstallCmd.StringVar(&iRoot, "root", "", description)
+	InstallCmd.StringVar(&iRoot, "i", "", description)
+
+	description = "Root directory of a project (default is current working directory)"
+//	InstallCmd.StringVar(&iProjectRoot, "project-root", "", description)
+	InstallCmd.StringVar(&iProjectRoot, "p", "", description)
+
+	description = "Version of '" + config.FrameworkName + "' framework to install"
+//	InstallCmd.StringVar(&iVersion, "version", "latest", description)
+	InstallCmd.StringVar(&iVersion, "v", "latest", description)
+
+	description = "Append framework setup to 'CMakeLists.txt' and update '.project.xw' if this files exist"
+//	InstallCmd.BoolVar(&iUpdateProject, "update-project", false,	description)
+	InstallCmd.BoolVar(&iUpdateProject, "u", false,	description)
+}
 
 type templateModel struct {
 	FrameworkName string
@@ -55,56 +73,52 @@ type templateModel struct {
 
 func (c *Cmd) InstallFramework() error {
 	b2i := map[bool]int8{true: 1, false: 0}
-	if (b2i[*iLocal] + b2i[*iGlobal] + b2i[*iCustom]) != 1 {
+	if (b2i[iLocal] + b2i[iGlobal] + b2i[iCustom]) != 1 {
 		return errors.New(
 			"unknown installation type use exactly one of '--local', '--global' or '--custom'",
 		)
 	}
 
-	root := *iRoot
-	projectRoot := *iProjectRoot
-	if *iGlobal {
-		root = config.GlobalInstallationRoot
+	if iGlobal {
+		iRoot = config.GlobalInstallationRoot
 	}
 
-	if *iCustom && len(root) == 0 {
+	if iCustom && len(iRoot) == 0 {
 		return errors.New("'--root' argument is required when custom installation is chosen")
 	}
 
-	if *iUpdateProject && len(projectRoot) == 0 {
+	if iUpdateProject && len(iProjectRoot) == 0 {
 		cwd, err := os.Getwd()
 		if err != nil {
 			return err
 		}
 
-		projectRoot = cwd
+		iProjectRoot = cwd
 	}
 
-	if *iLocal {
-		root = projectRoot
+	if iLocal {
+		iRoot = iProjectRoot
 	}
 
-	version := *iVersion
-	if len(version) == 0 {
-		version = "latest"
+	if len(iVersion) == 0 {
+		iVersion = "latest"
 	}
 
-	verbose := *iVerbose
-	version, err := c.getVersionOfFramework(version, verbose)
+	version, err := c.getVersionOfFramework(iVersion, iVerbose)
 	if err != nil {
 		return err
 	}
 
-	err = managers.InstallFramework(root, version, verbose)
+	err = managers.InstallFramework(iRoot, version, iVerbose)
 	if err != nil {
 		return err
 	}
 
-	if *iUpdateProject {
+	if iUpdateProject {
 		var msgEnding string
-		meta, err := c.loadMeta(projectRoot)
+		meta, err := c.loadMeta(iProjectRoot)
 		if err != nil {
-			if verbose {
+			if iVerbose {
 				fmt.Println("Warning: " + err.Error())
 			}
 		} else {
@@ -113,18 +127,18 @@ func (c *Cmd) InstallFramework() error {
 			}
 
 			meta.FrameworkVersion = version
-			err = c.saveMeta(projectRoot, meta)
+			err = c.saveMeta(iProjectRoot, meta)
 			if err != nil {
-				if verbose {
+				if iVerbose {
 					fmt.Println("Warning: " + err.Error())
 				}
 			}
 		}
 
-		cMakeListsPath := path.Join(projectRoot, "CMakeLists.txt")
+		cMakeListsPath := path.Join(iProjectRoot, "CMakeLists.txt")
 		cMakeListsTxtBytes, err := ioutil.ReadFile(cMakeListsPath)
 		if err != nil {
-			if verbose {
+			if iVerbose {
 				fmt.Println("Warning: unable to update 'CMakeLists.txt'" + msgEnding)
 			}
 		} else {
@@ -132,12 +146,12 @@ func (c *Cmd) InstallFramework() error {
 				FrameworkName:    config.FrameworkName,
 				FrameworkVersion: version,
 			}
-			if *iLocal {
+			if iLocal {
 				model.InstallationRoot = "${PROJECT_SOURCE_DIR}"
-			} else if *iGlobal {
+			} else if iGlobal {
 				model.InstallationRoot = config.GlobalInstallationRoot
-			} else if *iCustom {
-				model.InstallationRoot = root
+			} else if iCustom {
+				model.InstallationRoot = iRoot
 			}
 
 			tmplBox := packr.New("Installation Templates Box", "../../templates/install")
@@ -169,7 +183,7 @@ func (c *Cmd) InstallFramework() error {
 
 			err = ioutil.WriteFile(cMakeListsPath, []byte(cMakeListsTxt), 0644)
 			if err != nil {
-				if verbose {
+				if iVerbose {
 					fmt.Println("Warning: unable to update 'CMakeLists.txt'" + msgEnding)
 				}
 			}
