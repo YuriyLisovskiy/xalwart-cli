@@ -1,8 +1,6 @@
 package generator
 
-import (
-	"github.com/gobuffalo/packr/v2"
-)
+import "github.com/gobuffalo/packr/v2"
 
 type ProjectUnit struct {
 	Year int
@@ -10,6 +8,7 @@ type ProjectUnit struct {
 
 	FrameworkName string
 	FrameworkNamespace string
+	InstallFramework bool
 
 	ProjectName string
 	ProjectRoot string
@@ -17,14 +16,9 @@ type ProjectUnit struct {
 	Name string
 	Root string
 
-	// Example: v2/, v3/, ...
-//	FrameworkVersionSubDir string
-
 	Templates* packr.Box
 
 	Customize func (pu *ProjectUnit)
-
-
 
 	WorkingDirectory string
 

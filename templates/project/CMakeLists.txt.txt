@@ -24,8 +24,8 @@ foreach(entry ${SOURCES})
 endforeach()
 
 add_executable(${BINARY} ${SOURCES} "./main.cpp")
-
-# Setup and link <% .FrameworkName %> library.
+<% if .InstallFramework %>
+# Setup and link '<% .FrameworkName %>' library.
 set(<% .FrameworkName | upper %>_LIBRARY "<% .FrameworkName %>")
 set(LIB_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 if (WIN32)
@@ -38,7 +38,10 @@ target_include_directories(${BINARY} PUBLIC ${INCLUDE_DIR}/${<% .FrameworkName |
 target_include_directories(${BINARY} PUBLIC ${INCLUDE_DIR})
 target_link_libraries(${BINARY} ${DLL})
 
-# Required for <experimental/filesystem> on Linux.
+# Required for <experimental/filesystem> on Linux which is used by '<% .FrameworkName %>'
 if (UNIX)
     target_link_libraries(${BINARY} stdc++fs)
 endif()
+<% else %>
+# TODO: setup and link '<% .FrameworkName %>' library.
+<% end %>

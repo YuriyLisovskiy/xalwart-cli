@@ -33,8 +33,11 @@ var (
 		"cmake-version", config.MinimumCmakeVersion, "Cmake minimum version",
 	)
 	npCppStandardFlag      = NewProjectCmd.Int("cpp", config.MinimumCppVersion, "C++ standard")
+	npInstall = NewProjectCmd.Bool(
+		"install", true, "Install '" + config.FrameworkName + "' framework locally",
+	)
 	npFrameworkVersionFlag = NewProjectCmd.String(
-		"fw-version",
+		"framework-version",
 		"latest",
 		"A version of '"+config.FrameworkName+"' framework to install",
 	)
@@ -68,6 +71,7 @@ func (c *Cmd) CreateProject() error {
 		frameworkVer       string
 		cppStandard        int
 		cmakeMinVer        string
+		installFramework   bool
 	)
 
 	if !*npAFlag {
@@ -85,14 +89,22 @@ func (c *Cmd) CreateProject() error {
 			return err
 		}
 
-		if frameworkVer, err = reader.ReadString(
-			"Input a version of '" + config.FrameworkName + "' framework which you want to use (default is latest): ",
+		if installFramework, err = reader.ReadBool(
+			"Do you want to install '" + config.FrameworkName + "' framework? [Y/n] ",
 		); err != nil {
 			return err
 		}
 
-		if len(frameworkVer) == 0 {
-			frameworkVer = "latest"
+		if installFramework {
+			if frameworkVer, err = reader.ReadString(
+				"Type version which you want to use (default is latest): ",
+			); err != nil {
+				return err
+			}
+
+			if len(frameworkVer) == 0 {
+				frameworkVer = "latest"
+			}
 		}
 
 		if cppStandard, err = reader.ReadInt(
@@ -106,7 +118,7 @@ func (c *Cmd) CreateProject() error {
 		}
 
 		if cmakeMinVer, err = reader.ReadString(
-			"Type minimum version of cmake (default is " + config.MinimumCmakeVersion + "): ",
+			"Input minimum version of cmake (default is " + config.MinimumCmakeVersion + "): ",
 		); err != nil {
 			return err
 		}
@@ -120,6 +132,7 @@ func (c *Cmd) CreateProject() error {
 		frameworkVer = *npFrameworkVersionFlag
 		cppStandard = *npCppStandardFlag
 		cmakeMinVer = *npCMakeMinVersionFlag
+		installFramework = *npInstall
 	}
 
 	if len(projectPath) == 0 {
@@ -134,7 +147,11 @@ func (c *Cmd) CreateProject() error {
 	c.customizeUnit = func(cwd string, unit *generator.ProjectUnit) error {
 		unit.WorkingDirectory = projectPath
 		unit.ProjectName = projectName
-		unit.FrameworkVersion = frameworkVer
+		unit.InstallFramework = installFramework
+		if installFramework {
+			unit.FrameworkVersion = frameworkVer
+		}
+
 		unit.CMakeCPPStandard = cppStandard
 		unit.CMakeMinimumVersion = cmakeMinVer
 		unit.SecretKey = generateSecretKey(config.SecretKeyLength)
@@ -173,9 +190,11 @@ func (c *Cmd) CreateProject() error {
 	}
 
 	c.postProcess = func(unit *generator.ProjectUnit) error {
-		err := managers.InstallFramework(unit.Root, unit.FrameworkVersion)
-		if err != nil {
-			return err
+		if unit.InstallFramework {
+			err := managers.InstallFramework(unit.Root, unit.FrameworkVersion, true)
+			if err != nil {
+				return err
+			}
 		}
 
 		return nil

@@ -120,32 +120,44 @@ func GetLatestVersionOfFramework() (string, error) {
 	return strings.TrimLeft(target.VersionTag, "v"), nil
 }
 
-func InstallFramework(targetDir string, version string) error {
-	archiveFile := "/tmp/" + config.FrameworkName + "-framework.tar.gz"
-
+func InstallFramework(rootDir string, version string, verbose bool) error {
+	archiveFile := path.Join(config.TempDirectory, config.FrameworkName + "-framework.tar.gz")
 	if !utils.FileExists(archiveFile) {
-		fmt.Print("Downloading '" + config.FrameworkName + "' framework...")
+		if verbose {
+			fmt.Print("Downloading '" + config.FrameworkName + "' framework...")
+		}
+
 		err := downloadGithubRelease(archiveFile, version)
 		if err != nil {
 			return err
 		}
 
-		fmt.Println(" Done.")
+		if verbose {
+			fmt.Println(" Done.")
+		}
 	} else {
-		fmt.Println("Using cached archive: '" + archiveFile + "'.")
+		if verbose {
+			fmt.Println("Using cached archive: '" + archiveFile + "'.")
+		}
 	}
 
-	fmt.Print("Installing...")
+	if verbose {
+		fmt.Print("Installing...")
+	}
+
 	reader, err := os.Open(archiveFile)
 	if err != nil {
 		return err
 	}
 
-	err = extractTarGz(targetDir, reader)
+	err = extractTarGz(rootDir, reader)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(" Done.")
+	if verbose {
+		fmt.Println(" Done.")
+	}
+
 	return nil
 }

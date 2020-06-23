@@ -41,3 +41,21 @@ func (io *IO) ReadInt(question string) (int, error) {
 
 	return num, nil
 }
+
+func (io *IO) ReadBool(question string) (bool, error) {
+	text, err := io.ReadString(question)
+	if err != nil {
+		return false, err
+	}
+
+	if len(text) == 0 {
+		return false, nil
+	}
+
+	switch strings.ToLower(text) {
+	case "y", "yes", "yep", "yea", "yeah", "true", "t", "sure":
+		return true, nil
+	}
+
+	return false, nil
+}
