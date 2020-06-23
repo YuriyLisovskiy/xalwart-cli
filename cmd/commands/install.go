@@ -90,7 +90,12 @@ func (c *Cmd) InstallFramework() error {
 	}
 
 	verbose := *iVerbose
-	err := managers.InstallFramework(root, version, verbose)
+	version, err := c.getVersionOfFramework(version, verbose)
+	if err != nil {
+		return err
+	}
+
+	err = managers.InstallFramework(root, version, verbose)
 	if err != nil {
 		return err
 	}
@@ -157,7 +162,7 @@ func (c *Cmd) InstallFramework() error {
 			result := bytesResult.String()
 			cMakeListsTxt := string(cMakeListsTxtBytes)
 			if strings.Contains(cMakeListsTxt, config.CMakeListsTxtToDoLine) {
-				strings.Replace(cMakeListsTxt, config.CMakeListsTxtToDoLine, result, 1)
+				cMakeListsTxt = strings.Replace(cMakeListsTxt, config.CMakeListsTxtToDoLine, result, 1)
 			} else {
 				cMakeListsTxt += result
 			}

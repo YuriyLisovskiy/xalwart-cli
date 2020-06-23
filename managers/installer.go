@@ -22,7 +22,7 @@ func downloadGithubRelease(archiveFile string, version string) error {
 		defer output.Close()
 	}
 
-	client := &http.Client{Timeout: 10 * time.Second}
+	client := &http.Client{Timeout: 20 * time.Minute}
 	response, err := client.Get(
 		strings.Replace(config.DownloadReleaseUrl, "<version>", version, 1),
 	)

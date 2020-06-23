@@ -120,7 +120,6 @@ func (c *Cmd) loadMeta(projectRoot string) (projectMeta, error) {
 
 func (c *Cmd) saveMeta(projectRoot string, meta projectMeta) error {
 	savingErr := errors.New("unable to update project meta, file: '" + metaFilePath + "'")
-
 	content, err := json.MarshalIndent(meta, "", " ")
 	if err != nil {
 		return savingErr
