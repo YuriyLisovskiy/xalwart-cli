@@ -10,22 +10,31 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"runtime"
 	"strings"
 	"time"
 	"xalwart-cli/config"
 	"xalwart-cli/utils"
 )
 
-func downloadGithubRelease(archiveFile string, version string) error {
+type Asset struct {
+	Name string                 `json:"name"`
+	BrowserDownloadUrl string   `json:"browser_download_url"`
+}
+
+type Release struct {
+	VersionTag string   `json:"tag_name"`
+	Assets []Asset      `json:"assets"`
+}
+
+func downloadGithubRelease(archiveFile string, url string) error {
 	output, err := os.Create(archiveFile)
 	if output != nil {
 		defer output.Close()
 	}
 
 	client := &http.Client{Timeout: 20 * time.Minute}
-	response, err := client.Get(
-		strings.Replace(config.DownloadReleaseUrl, "<version>", version, 1),
-	)
+	response, err := client.Get(url)
 	if err != nil {
 		return err
 	}
@@ -88,8 +97,21 @@ func extractTarGz(targetDir string, gzipStream io.Reader) error {
 	return nil
 }
 
+func findSuitableAsset(assets []Asset) (Asset, error) {
+	for _, asset := range assets {
+		if strings.Contains(asset.Name, runtime.GOOS) {
+			return asset, nil
+		}
+	}
+
+	return Asset{}, errors.New(
+		"'" + config.FrameworkName + "' framework is not supported under '" +
+		runtime.GOOS + "' operating system",
+	)
+}
+
 func CheckIfVersionIsAvailable(version string) (bool, error) {
-	client := &http.Client{Timeout: 10 * time.Second}
+	client := &http.Client{Timeout: 1 * time.Minute}
 	response, err := client.Get(strings.Replace(config.ReleaseByTagUrl, "<version>", version, 1))
 	if err != nil {
 		return false, err
@@ -99,35 +121,52 @@ func CheckIfVersionIsAvailable(version string) (bool, error) {
 	return response.StatusCode == 200, nil
 }
 
-type Releases struct {
-	VersionTag string `json:"tag_name"`
-}
-
-func GetLatestVersionOfFramework() (string, error) {
-	client := &http.Client{Timeout: 10 * time.Second}
-	response, err := client.Get(config.LatestReleaseUrl)
+func GetRelease(url string) (Release, error) {
+	client := &http.Client{Timeout: 1 * time.Minute}
+	response, err := client.Get(url)
+	target := Release{}
 	if err != nil {
-		return "", err
+		return target, err
 	}
 
 	defer response.Body.Close()
-	target := Releases{}
 	err = json.NewDecoder(response.Body).Decode(&target)
 	if err != nil {
-		return "", err
+		return target, err
 	}
 
-	return strings.TrimLeft(target.VersionTag, "v"), nil
+	target.VersionTag = strings.TrimLeft(target.VersionTag, "v")
+	return target, nil
+}
+
+func GetLatestRelease() (Release, error) {
+	return GetRelease(config.LatestReleaseUrl)
+}
+
+func FrameworkExists(rootDir string) bool {
+	includeExists := !utils.DirIsEmpty(path.Join(rootDir, "include", config.FrameworkName))
+	libExists := !utils.DirIsEmpty(path.Join(rootDir, "lib", config.FrameworkName))
+	return includeExists || libExists
 }
 
 func InstallFramework(rootDir string, version string, verbose bool) error {
-	archiveFile := path.Join(config.TempDirectory, config.FrameworkName + "-framework.tar.gz")
+	release, err := GetRelease(strings.Replace(config.ReleaseByTagUrl, "<version>", version, 1))
+	if err != nil {
+		return err
+	}
+
+	asset, err := findSuitableAsset(release.Assets)
+	if err != nil {
+		return err
+	}
+
+	archiveFile := path.Join(config.TempDirectory, asset.Name)
 	if !utils.FileExists(archiveFile) {
 		if verbose {
 			fmt.Print("Downloading '" + config.FrameworkName + "' framework...")
 		}
 
-		err := downloadGithubRelease(archiveFile, version)
+		err := downloadGithubRelease(archiveFile, asset.BrowserDownloadUrl)
 		if err != nil {
 			return err
 		}

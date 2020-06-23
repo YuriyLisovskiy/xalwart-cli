@@ -39,7 +39,7 @@ func usage(printWelcome bool) {
 	commands.InitNewAppCmd()
 	commands.InitNewLibraryCmd()
 	commands.InitNewProjectCmd()
-	
+
 	commands.InstallCmd.Usage()
 	println()
 	commands.NewAppCmd.Usage()

@@ -155,10 +155,12 @@ func (c *Cmd) getVersionOfFramework(version string, verbose bool) (string, error
 	)
 	if version == "latest" {
 		var err error
-		version, err = managers.GetLatestVersionOfFramework()
+		release, err := managers.GetLatestRelease()
 		if err != nil {
 			return "", retrieveErr
 		}
+
+		version = release.VersionTag
 	} else {
 		isAvailable, err := managers.CheckIfVersionIsAvailable(version)
 		if err != nil {
@@ -172,10 +174,12 @@ func (c *Cmd) getVersionOfFramework(version string, verbose bool) (string, error
 				)
 			}
 
-			version, err = managers.GetLatestVersionOfFramework()
+			release, err := managers.GetLatestRelease()
 			if err != nil {
 				return "", retrieveErr
 			}
+
+			version = release.VersionTag
 		}
 	}
 
