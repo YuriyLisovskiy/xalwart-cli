@@ -24,7 +24,7 @@ const (
 
 var (
 	NewProjectCmd = flag.NewFlagSet(newProjectCmdName, flag.ExitOnError)
-	npAFlag bool
+	npQFlag bool
 	npNameFlag string
 	npRootFlag string
 	npCMakeMinVersionFlag string
@@ -34,10 +34,10 @@ var (
 )
 
 func InitNewProjectCmd() {
-	NewProjectCmd.BoolVar(&npAFlag,
-		"a",
+	NewProjectCmd.BoolVar(&npQFlag,
+		"q",
 		false,
-		"Execute '"+newProjectCmdName+"' command using arguments",
+		"Create project using questions instead of explicit arguments",
 	)
 	NewProjectCmd.StringVar(&npNameFlag, "n", "", "Project name")
 	NewProjectCmd.StringVar(&npRootFlag, "r", "", "Project root")
@@ -86,7 +86,7 @@ func (c *Cmd) CreateProject() error {
 		installFramework   bool
 	)
 
-	if !npAFlag {
+	if npQFlag {
 		var err error
 		reader := utils.NewIO()
 		if projectPath, err = reader.ReadString(

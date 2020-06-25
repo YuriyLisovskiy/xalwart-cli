@@ -97,9 +97,10 @@ func main() {
 		}
 
 		if err != nil {
+			println()
 			panic(err)
 			// TODO: uncomment in release version
-			// fmt.Println("Error: " + err.Error())
+			// fmt.Println("\nError: " + err.Error())
 		}
 	}
 }

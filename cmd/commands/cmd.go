@@ -26,9 +26,12 @@ type Cmd struct {
 	customizeUnit func (cwd string, unit *generator.ProjectUnit) error
 	makeGenerator func (unit *generator.ProjectUnit) generator.Generator
 	postProcess func (unit *generator.ProjectUnit) error
+	postCreateHelp func (unit *generator.ProjectUnit)
 }
 
 func (c *Cmd) execute(unitName string, isProject bool) error {
+	fmt.Printf("Generating %s...", unitName)
+
 	usr, err := user.Current()
 	if err != nil {
 		return err
@@ -86,11 +89,17 @@ func (c *Cmd) execute(unitName string, isProject bool) error {
 		return err
 	}
 
+	fmt.Println(" Done.")
+
 	if c.postProcess != nil {
 		err := c.postProcess(&cfg)
 		if err != nil {
 			return err
 		}
+	}
+
+	if c.postCreateHelp != nil {
+		c.postCreateHelp(&cfg)
 	}
 
 	return nil
@@ -170,7 +179,7 @@ func (c *Cmd) getVersionOfFramework(version string, verbose bool) (string, error
 		if !isAvailable {
 			if verbose {
 				fmt.Println(
-					"Warning: release v" + version + " is not available, latest is used instead",
+					"\nWarning: release v" + version + " is not available, latest is used instead",
 				)
 			}
 

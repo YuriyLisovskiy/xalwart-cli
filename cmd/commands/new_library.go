@@ -3,7 +3,9 @@ package commands
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"github.com/gobuffalo/packr/v2"
+	"github.com/iancoleman/strcase"
 	"path"
 	"xalwart-cli/generator"
 	"xalwart-cli/utils"
@@ -31,9 +33,14 @@ func (c *Cmd) CreateLibrary() error {
 		unit.ProjectRoot = cwd
 		unit.Templates = packr.New("Library Templates Box", "../../templates/library")
 		unit.Customize = func(pu *generator.ProjectUnit) {
-			libPath := nlLibPathFlag
-			if len(libPath) != 0 {
-				pu.Root = libPath
+			if len(nlLibPathFlag) != 0 {
+				if path.IsAbs(nlLibPathFlag) {
+					pu.Root = nlLibPathFlag
+				} else {
+					pu.Root = path.Join(pu.ProjectRoot, nlLibPathFlag)
+				}
+
+				pu.Root = path.Join(pu.Root, pu.Name)
 			} else {
 				pu.Root = path.Join(pu.ProjectRoot, pu.ProjectName, "libs", pu.Name)
 			}
@@ -46,7 +53,7 @@ func (c *Cmd) CreateLibrary() error {
 		return generator.Generator{
 			CheckIfNameIsSet: true,
 			UnitExists: func(unit *generator.ProjectUnit) error {
-				if utils.DirExists(unit.Root) {
+				if utils.DirExists(unit.Root)  {
 					return errors.New("'" + unit.Name + "' library already exists")
 				}
 
@@ -54,6 +61,29 @@ func (c *Cmd) CreateLibrary() error {
 			},
 			EmptyDirsToCreateInUnit: []string{"tags", "filters"},
 		}
+	}
+
+	c.postCreateHelp = func(unit *generator.ProjectUnit) {
+		fmt.Printf("\nTo use '%s' library to render engine it must be registered.\n", unit.Name)
+
+		var libPath string
+		if len(nlLibPathFlag) != 0 {
+			libPath = path.Join(unit.Root, "library.h")
+			if !path.IsAbs(nlLibPathFlag) {
+				libPath = path.Join("..", libPath)
+			}
+		} else {
+			libPath = "./libs/" + unit.Name + "/library.h"
+		}
+
+		fmt.Printf("\nInclude in 'Settings':\n  #include \"%s\"\n", libPath)
+		fmt.Println("\nRegister library in 'Settings::register_libraries()' method:")
+
+		libNameCamel := strcase.ToCamel(unit.Name)
+
+		fmt.Printf("  this->library<%s>(\"%s\");\n", libNameCamel, libNameCamel)
+		fmt.Println("\nActivate library in 'config.yml' in 'templates_env' -> 'libraries':")
+		fmt.Printf("  - %s\n", libNameCamel)
 	}
 
 	err := c.execute("library", false)
