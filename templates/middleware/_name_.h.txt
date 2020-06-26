@@ -1,0 +1,23 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#pragma once
+
+#include <<% .FrameworkName %>/middleware/middleware_mixin.h>
+
+
+class <% .Name | to_camel_case %>Middleware : public <% .FrameworkNamespace %>::middleware::MiddlewareMixin
+{
+public:
+	explicit <% .Name | to_camel_case %>Middleware(<% .FrameworkNamespace %>::conf::Settings* settings);
+	<% .Name | to_camel_case %>Middleware(nullptr_t) = delete;
+
+	std::unique_ptr<<% .FrameworkNamespace %>::http::IHttpResponse> process_request(
+		<% .FrameworkNamespace %>::http::HttpRequest* request
+	) override;
+
+	std::unique_ptr<<% .FrameworkNamespace %>::http::IHttpResponse> process_response(
+		<% .FrameworkNamespace %>::http::HttpRequest* request, <% .FrameworkNamespace %>::http::IHttpResponse* response
+	) override;
+};

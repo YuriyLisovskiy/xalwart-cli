@@ -28,4 +28,5 @@ const (
 var DefaultFunctions = template.FuncMap {
 	"upper": strings.ToUpper,
 	"to_camel_case": strcase.ToCamel,
+	"to_snake_case": strcase.ToSnake,
 }

@@ -1,0 +1,25 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#include "./<% .Name | to_snake_case %>.h"
+
+
+<% .Name | to_camel_case %>Middleware::<% .Name | to_camel_case %>Middleware(<% .FrameworkNamespace %>::conf::Settings* settings)
+	: MiddlewareMixin(settings)
+{
+}
+
+std::unique_ptr<<% .FrameworkNamespace %>::http::IHttpResponse> <% .Name | to_camel_case %>Middleware::process_request(
+	<% .FrameworkNamespace %>::http::HttpRequest* request
+)
+{
+	return nullptr;
+}
+
+std::unique_ptr<<% .FrameworkNamespace %>::http::IHttpResponse> <% .Name | to_camel_case %>Middleware::process_response(
+	<% .FrameworkNamespace %>::http::HttpRequest* request, <% .FrameworkNamespace %>::http::IHttpResponse* response
+)
+{
+	return nullptr;
+}
