@@ -31,6 +31,7 @@ func usage(printWelcome bool) {
 	fmt.Println("The commands are:")
 	fmt.Println("  " + commands.InstallCmdDescription)
 	fmt.Println("  " + commands.NewAppCmdDescription)
+	fmt.Println("  " + commands.NewCommandCmdDescription)
 	fmt.Println("  " + commands.NewLibraryCmdDescription)
 	fmt.Println("  " + commands.NewMiddlewareCmdDescription)
 	fmt.Println("  " + commands.NewProjectCmdDescription)
@@ -38,6 +39,7 @@ func usage(printWelcome bool) {
 
 	commands.InitInstallCmd()
 	commands.InitNewAppCmd()
+	commands.InitNewCommandCmd()
 	commands.InitNewLibraryCmd()
 	commands.InitNewMiddlewareCmd()
 	commands.InitNewProjectCmd()
@@ -45,6 +47,8 @@ func usage(printWelcome bool) {
 	commands.InstallCmd.Usage()
 	println()
 	commands.NewAppCmd.Usage()
+	println()
+	commands.NewCommandCmd.Usage()
 	println()
 	commands.NewLibraryCmd.Usage()
 	println()
@@ -74,6 +78,13 @@ func main() {
 				commands.NewAppCmd.Usage()
 			} else {
 				err = cmd.CreateApp()
+			}
+		case commands.NewCommandCmd.Name():
+			commands.InitNewCommandCmd()
+			if commands.NewCommandCmd.Parse(os.Args[2:]) != nil {
+				commands.NewCommandCmd.Usage()
+			} else {
+				err = cmd.CreateCommand()
 			}
 		case commands.NewLibraryCmd.Name():
 			commands.InitNewLibraryCmd()

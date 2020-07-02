@@ -29,6 +29,9 @@ func InitNewAppCmd() {
 }
 
 func trimAppSuffix(appName string) string {
+	appName = strings.TrimSuffix(appName, "config")
+	appName = strings.TrimSuffix(appName, "Config")
+	appName = strings.TrimSuffix(appName, "_")
 	appName = strings.TrimSuffix(appName, "app")
 	appName = strings.TrimSuffix(appName, "App")
 	return strings.TrimSuffix(appName, "_")

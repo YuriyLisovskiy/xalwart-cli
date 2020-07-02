@@ -1,0 +1,16 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#include "./<% .Name | to_snake_case %>.h"
+
+
+<% .Name | to_camel_case %>Command::<% .Name | to_camel_case %>Command(<% .FrameworkNamespace %>::apps::IAppConfig* config, <% .FrameworkNamespace %>::conf::Settings* settings)
+	: AppCommand(config, settings, "<% .Name | to_camel_case %>", "Performs <% .Name | to_camel_case %> operation")
+{
+}
+
+void <% .Name | to_camel_case %>Command::handle()
+{
+	// Implement logic here.
+}
