@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
-	"xalwart-cli/config"
-	"xalwart-cli/utils"
+	"xalwart-cli/src/config"
+	"xalwart-cli/src/utils"
 )
 
 type Generator struct {

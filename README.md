@@ -2,3 +2,44 @@
 
 CLI Application for web-site development using
 [Xalwart Framework](https://github.com/YuriyLisovskiy/xalwart)
+
+#### Table of contents
+* [Build](#build)
+* [Installation](#installation)
+
+#### Build
+To build xalwart-cli project you need to have at least Go v1.11.
+For further information, read how to
+[install](https://golang.org/doc/install) the Go programming
+language. 
+
+Use [Git Bash](https://git-scm.com/downloads) terminal on Windows.
+
+```bash
+$ git clone https://github.com/YuriyLisovskiy/xalwart-cli.git
+$ cd xalwart-cli
+$ make build
+```
+
+#### Installation
+
+Download binary from
+[releases](https://github.com/YuriyLisovskiy/xalwart-cli/releases)
+or build the project.
+
+* **Linux**
+
+    If you built the project by yourself, run:
+    ```bash
+    $ sudo make install
+    ```
+  
+    Otherwise, follow the next steps:
+    ```bash
+    $ sudo tar xvzf ~/Downalods/xalwart-cli-<os>-<arch>.tar.gz -C /usr/local/bin
+    $ sudo chmod a+x /usr/local/bin/xalwart
+    ```
+
+* **Windows**
+
+    TODO

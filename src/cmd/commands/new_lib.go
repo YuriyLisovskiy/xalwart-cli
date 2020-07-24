@@ -7,8 +7,8 @@ import (
 	"github.com/gobuffalo/packr/v2"
 	"github.com/iancoleman/strcase"
 	"path"
-	"xalwart-cli/generator"
-	"xalwart-cli/utils"
+	"xalwart-cli/src/generator"
+	"xalwart-cli/src/utils"
 )
 
 const (

@@ -2,6 +2,8 @@
 
 package config
 
+import "os"
+
 const (
 	GlobalInstallationRoot = "C:\\" + FrameworkName
 )

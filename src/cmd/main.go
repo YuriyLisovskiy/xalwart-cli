@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"xalwart-cli/cmd/commands"
-	"xalwart-cli/config"
+	"xalwart-cli/src/cmd/commands"
+	"xalwart-cli/src/config"
 )
 
 func usage(printWelcome bool) {
