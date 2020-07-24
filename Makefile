@@ -3,7 +3,7 @@ RM = rm -rf
 
 APP_NAME = xalwart
 
-.PHONY: clean build compile-single compile run install-unix install-win
+.PHONY: clean build compile-single compile run install
 
 all: clean build compile run
 
@@ -13,8 +13,13 @@ clean:
 build:
 	@echo "Compiling target..."
 	@${MKDIR_P} bin
-	@${RM} bin/${APP_NAME}
-	@go build -o bin/${APP_NAME} src/cmd/main.go
+
+	ifeq ($(OS),Windows_NT)
+		EXT = .exe
+	endif
+
+	@${RM} bin/${APP_NAME}${EXT}
+	@go build -o bin/${APP_NAME}${EXT} src/cmd/main.go
 	@echo "Done."
 
 run:
@@ -35,11 +40,11 @@ compile:
 	@make -s compile-single OS=windows ARCH=386 EXT=.exe
 	@make -s compile-single OS=windows ARCH=amd64 EXT=.exe
 
-install-unix:
+install:
 	cp bin/${APP_NAME} /usr/local/bin
 	chmod a+x /usr/local/bin/${APP_NAME}
 
-install-win:
-	mkdir -p C:\${APP_NAME}
-	cp bin\${APP_NAME}.exe C:\${APP_NAME}
-	pathman /au C:\${APP_NAME}
+#install-win:
+#	mkdir -p C:\${APP_NAME}
+#	cp bin\${APP_NAME}.exe C:\${APP_NAME}
+#	pathman /au C:\${APP_NAME}

@@ -42,4 +42,11 @@ or build the project.
 
 * **Windows**
 
-    TODO
+    * Create `C:\\xalwart` directory if not exists.
+    * Unpack downloaded archive `xalwart-cli-<os>-<arch>.tar.gz`
+      or copy `./bin/xalwart.exe` file (if you built the project
+      manually) to `C:\\xalwart`.
+    * Run the following command in `cmd` terminal.
+      ```bash
+      pathman /au C:\${APP_NAME}
+      ```
