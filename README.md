@@ -46,7 +46,9 @@ or build the project.
     * Unpack downloaded archive `xalwart-cli-<os>-<arch>.tar.gz`
       or copy `./bin/xalwart.exe` file (if you built the project
       manually) to `C:\\xalwart`.
-    * Run the following command in `cmd` terminal.
+    * Run the following command in `cmd` terminal to append
+      `xalwart` application to `PATH`:
       ```bash
-      pathman /au C:\${APP_NAME}
+      pathman /au C:\xalwart
       ```
+      Or add `C:\xalwart` to `PATH` manually.
