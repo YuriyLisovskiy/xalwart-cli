@@ -3,7 +3,7 @@ RM = rm -rf
 
 APP_NAME = xalwart
 
-.PHONY: clean build compile-single compile run install
+.PHONY: clean build build-win compile-single compile run install
 
 all: clean build compile run
 
@@ -13,14 +13,12 @@ clean:
 build:
 	@echo "Compiling target..."
 	@${MKDIR_P} bin
-
-	ifeq ($(OS),Windows_NT)
-		EXT = .exe
-	endif
-
 	@${RM} bin/${APP_NAME}${EXT}
 	@go build -o bin/${APP_NAME}${EXT} src/cmd/main.go
 	@echo "Done."
+
+build-win:
+	@make -s build EXT=.exe
 
 run:
 	@go run src/cmd/main.go
