@@ -1,0 +1,12 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#include <<% .FrameworkName %>/render/library/types.h>
+
+using ObjectPtr = std::shared_ptr<<% .FrameworkNamespace %>::core::object::Object>;
+
+
+extern ObjectPtr myFilter(
+	const ObjectPtr& obj, const <% .FrameworkNamespace %>::render::lib::KwArgs& kwargs
+);

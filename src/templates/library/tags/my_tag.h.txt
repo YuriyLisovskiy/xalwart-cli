@@ -1,0 +1,17 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#pragma once
+
+#include <<% .FrameworkName %>/render/internal/parser.h>
+
+
+struct my_tag_node : public <% .FrameworkNamespace %>::render::internal::node
+{
+	std::string render(<% .FrameworkNamespace %>::render::IContext* ctx) override;
+};
+
+extern std::function<std::shared_ptr<<% .FrameworkNamespace %>::render::internal::node>(
+	<% .FrameworkNamespace %>::render::internal::parser*, <% .FrameworkNamespace %>::render::internal::token_t& token
+)> make_my_tag();
