@@ -5,7 +5,7 @@
 #include "./my_filter.h"
 
 
-ObjectPtr myFilter(
+ObjectPtr my_filter_fn(
 	const ObjectPtr& obj, const <% .FrameworkNamespace %>::render::lib::KwArgs& kwargs
 )
 {

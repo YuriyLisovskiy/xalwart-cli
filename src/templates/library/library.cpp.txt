@@ -20,7 +20,7 @@ std::shared_ptr<lib::Filters> <% .Name | to_camel_case %>::get_filters()
 
 		// Register filters here.
 
-		{"my_filter", myFilter}
+		{"my_filter", my_filter_fn}
 	});
 }
 
