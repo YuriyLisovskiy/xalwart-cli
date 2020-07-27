@@ -1,0 +1,20 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#include "./<% .Name | to_snake_case %>_view.h"
+
+
+<% .Name | to_camel_case %>View::<% .Name | to_camel_case %>View(<% .FrameworkNamespace %>::conf::Settings* settings)
+	: View({"get"}, settings)
+{
+}
+
+std::unique_ptr<<% .FrameworkNamespace %>::http::IHttpResponse> <% .Name | to_camel_case %>View::get(
+	<% .FrameworkNamespace %>::http::HttpRequest *request, <% .FrameworkNamespace %>::views::Args *args
+)
+{
+	// Implement logic here.
+
+	return <% .FrameworkNamespace %>::http::HttpResponseOk();
+}

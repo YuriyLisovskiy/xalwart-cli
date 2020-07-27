@@ -47,14 +47,14 @@ func (c *Cmd) CreateCommand() error {
 
 	ncAppNameFlag = trimAppSuffix(ncAppNameFlag)
 	c.customizeUnit = func(cwd string, unit *generator.ProjectUnit) error {
+		unit.Name = ncNameFlag
+		unit.ProjectRoot = cwd
+		unit.Templates = packr.New("Command Templates Box", "../../templates/command")
 		appPath := path.Join(unit.ProjectRoot, ncAppNameFlag + "_app")
 		if !utils.DirExists(appPath) {
 			return errors.New("'" + ncAppNameFlag + "' application does not exist")
 		}
 
-		unit.Name = ncNameFlag
-		unit.ProjectRoot = cwd
-		unit.Templates = packr.New("Command Templates Box", "../../templates/command")
 		unit.Customize = func(pu *generator.ProjectUnit) {
 			pu.Root = path.Join(appPath, "commands")
 			pu.Name = trimCommandSuffix(pu.Name)

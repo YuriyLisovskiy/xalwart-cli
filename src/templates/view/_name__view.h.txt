@@ -1,0 +1,18 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#pragma once
+
+#include <<% .FrameworkName %>/views/view.h>
+
+
+class <% .Name | to_camel_case %>View : public <% .FrameworkNamespace %>::views::View
+{
+public:
+	explicit <% .Name | to_camel_case %>View(<% .FrameworkNamespace %>::conf::Settings* settings);
+
+	std::unique_ptr<xw::http::IHttpResponse> get(
+		<% .FrameworkNamespace %>::http::HttpRequest* request, <% .FrameworkNamespace %>::views::Args* args
+	) override;
+};
