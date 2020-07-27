@@ -8,7 +8,7 @@ import (
 	"github.com/iancoleman/strcase"
 	"path"
 	"strings"
-	"xalwart-cli/src/generator"
+	"xalwart-cli/generator"
 )
 
 const (

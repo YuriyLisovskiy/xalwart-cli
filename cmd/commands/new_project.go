@@ -11,10 +11,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"xalwart-cli/src/config"
-	"xalwart-cli/src/generator"
-	"xalwart-cli/src/managers"
-	"xalwart-cli/src/utils"
+	"xalwart-cli/config"
+	"xalwart-cli/generator"
+	"xalwart-cli/managers"
+	"xalwart-cli/utils"
 )
 
 const (

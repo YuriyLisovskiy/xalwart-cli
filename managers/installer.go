@@ -13,8 +13,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
-	"xalwart-cli/src/config"
-	"xalwart-cli/src/utils"
+	"xalwart-cli/config"
+	"xalwart-cli/utils"
 )
 
 type Asset struct {

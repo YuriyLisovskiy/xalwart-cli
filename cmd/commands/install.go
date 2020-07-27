@@ -12,9 +12,9 @@ import (
 	"regexp"
 	"strings"
 	"text/template"
-	"xalwart-cli/src/config"
-	"xalwart-cli/src/managers"
-	"xalwart-cli/src/utils"
+	"xalwart-cli/config"
+	"xalwart-cli/managers"
+	"xalwart-cli/utils"
 )
 
 const (

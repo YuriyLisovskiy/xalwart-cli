@@ -9,8 +9,8 @@ import (
 	"os"
 	"path"
 	"strings"
-	"xalwart-cli/src/config"
-	"xalwart-cli/src/generator"
+	"xalwart-cli/config"
+	"xalwart-cli/generator"
 )
 
 const (

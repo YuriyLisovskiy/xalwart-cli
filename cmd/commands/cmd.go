@@ -10,9 +10,9 @@ import (
 	"path"
 	"regexp"
 	"time"
-	"xalwart-cli/src/config"
-	"xalwart-cli/src/generator"
-	"xalwart-cli/src/managers"
+	"xalwart-cli/config"
+	"xalwart-cli/generator"
+	"xalwart-cli/managers"
 )
 
 const metaFilePath = ".project." + config.FrameworkNamespace
