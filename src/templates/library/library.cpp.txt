@@ -4,6 +4,9 @@
 
 #include "./library.h"
 
+#include "./filters/my_filter.h"
+#include "./tags/my_tag.h"
+
 
 using namespace <% .FrameworkNamespace %>::render;
 
@@ -14,14 +17,20 @@ using namespace <% .FrameworkNamespace %>::render;
 std::shared_ptr<lib::Filters> <% .Name | to_camel_case %>::get_filters()
 {
 	return std::make_shared<lib::Filters>(std::map<std::string, lib::Filter>{
+
 		// Register filters here.
+
+		{"my_filter", myFilter}
 	});
 }
 
 std::shared_ptr<lib::Tags> <% .Name | to_camel_case %>::get_tags()
 {
 	return std::make_shared<lib::Tags>(std::map<std::string, lib::Tag>{
+
 		// Register tags here.
+
+		{"my_tag", make_my_tag()}
 	});
 }
 

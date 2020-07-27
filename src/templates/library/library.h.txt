@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <memory>
-
 #include <<% .FrameworkName %>/render/library/library.h>
 
 

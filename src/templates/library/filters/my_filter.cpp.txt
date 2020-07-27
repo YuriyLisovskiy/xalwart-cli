@@ -1,0 +1,15 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#include "./my_filter.h"
+
+
+ObjectPtr myFilter(
+	const ObjectPtr& obj, const <% .FrameworkNamespace %>::render::lib::KwArgs& kwargs
+)
+{
+	// Implement logic here.
+
+	return nullptr;
+}

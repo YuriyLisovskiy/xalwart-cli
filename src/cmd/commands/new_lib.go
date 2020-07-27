@@ -59,7 +59,6 @@ func (c *Cmd) CreateLibrary() error {
 
 				return nil
 			},
-			EmptyDirsToCreateInUnit: []string{"tags", "filters"},
 		}
 	}
 

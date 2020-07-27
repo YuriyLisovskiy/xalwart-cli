@@ -1,0 +1,30 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#include "./my_tag.h"
+
+
+std::string my_tag_node::render(<% .FrameworkNamespace %>::render::IContext* ctx)
+{
+	// Implement logic here.
+
+	return "";
+}
+
+std::function<std::shared_ptr<<% .FrameworkNamespace %>::render::internal::node>(
+	<% .FrameworkNamespace %>::render::internal::parser*, <% .FrameworkNamespace %>::render::internal::token_t& token
+)> make_my_tag()
+{
+	// Implement logic here.
+
+	return [](
+		<% .FrameworkNamespace %>::render::internal::parser* parser,
+		<% .FrameworkNamespace %>::render::internal::token_t& token
+	) -> std::shared_ptr<<% .FrameworkNamespace %>::render::internal::node>
+	{
+		// Implement logic here.
+
+		return std::make_shared<my_tag_node>();
+	};
+}
