@@ -28,11 +28,15 @@ func InitNewLibraryCmd() {
 }
 
 func (c *Cmd) CreateLibrary() error {
-	c.customizeUnit = func(cwd string, unit *generator.ProjectUnit) error {
-		unit.Name = nlNameFlag
-		unit.ProjectRoot = cwd
-		unit.Templates = packr.New("Library Templates Box", "../../templates/library")
-		unit.Customize = func(pu *generator.ProjectUnit) {
+	if len(nlNameFlag) == 0 {
+		return errors.New("library name is not specified")
+	}
+
+	c.process = func(cwd string, cfg *generator.ProjectUnit) error {
+		cfg.Name = nlNameFlag
+		cfg.ProjectRoot = cwd
+		cfg.Templates = packr.New("Library Templates Box", "../../templates/library")
+		cfg.Customize = func(pu *generator.ProjectUnit) {
 			if len(nlLibPathFlag) != 0 {
 				if path.IsAbs(nlLibPathFlag) {
 					pu.Root = nlLibPathFlag
@@ -46,11 +50,7 @@ func (c *Cmd) CreateLibrary() error {
 			}
 		}
 
-		return nil
-	}
-
-	c.makeGenerator = func(pu *generator.ProjectUnit) generator.Generator {
-		return generator.Generator{
+		gen := generator.Generator{
 			CheckIfNameIsSet: true,
 			UnitExists: func(unit *generator.ProjectUnit) error {
 				if utils.DirExists(unit.Root)  {
@@ -60,9 +60,16 @@ func (c *Cmd) CreateLibrary() error {
 				return nil
 			},
 		}
+
+		err := gen.NewUnit(cfg, "library")
+		if err != nil {
+			return err
+		}
+
+		return nil
 	}
 
-	c.postCreateHelp = func(unit *generator.ProjectUnit) {
+	c.postProcess = func(unit *generator.ProjectUnit) error {
 		fmt.Printf("\nTo use '%s' library to render engine it must be registered.\n", unit.Name)
 
 		var libPath string
@@ -83,6 +90,8 @@ func (c *Cmd) CreateLibrary() error {
 		fmt.Printf("  this->library<%s>(\"%s\");\n", libNameCamel, libNameCamel)
 		fmt.Println("\nActivate library in 'config.yml' in 'templates_env' -> 'libraries':")
 		fmt.Printf("  - %s\n", libNameCamel)
+
+		return nil
 	}
 
 	err := c.execute("library", false)

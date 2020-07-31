@@ -156,20 +156,26 @@ func (c *Cmd) CreateProject() error {
 		projectPath = cwd
 	}
 
-	c.customizeUnit = func(cwd string, unit *generator.ProjectUnit) error {
-		unit.WorkingDirectory = projectPath
-		unit.ProjectName = projectName
-		unit.InstallFramework = installFramework
+	c.process = func(cwd string, cfg *generator.ProjectUnit) error {
+		cfg.WorkingDirectory = projectPath
+		cfg.ProjectName = projectName
+		cfg.InstallFramework = installFramework
 		if installFramework {
-			unit.FrameworkVersion = frameworkVer
+			var err error
+			cfg.FrameworkVersion, err = c.getVersionOfFramework(
+				frameworkVer, true,
+			)
+			if err != nil {
+				return err
+			}
 		}
 
-		unit.CMakeListsTxtToDoLine = config.CMakeListsTxtToDoLine
-		unit.CMakeCPPStandard = cppStandard
-		unit.CMakeMinimumVersion = cmakeMinVer
-		unit.SecretKey = generateSecretKey(config.SecretKeyLength)
-		unit.Templates = packr.New("Project Templates Box", "../../templates/project")
-		unit.Customize = func(pu *generator.ProjectUnit) {
+		cfg.CMakeListsTxtToDoLine = config.CMakeListsTxtToDoLine
+		cfg.CMakeCPPStandard = cppStandard
+		cfg.CMakeMinimumVersion = cmakeMinVer
+		cfg.SecretKey = generateSecretKey(config.SecretKeyLength)
+		cfg.Templates = packr.New("Project Templates Box", "../../templates/project")
+		cfg.Customize = func(pu *generator.ProjectUnit) {
 			if len(pu.ProjectName) == 0 {
 				pu.Root = pu.WorkingDirectory
 				pu.ProjectName = path.Base(pu.Root)
@@ -178,16 +184,12 @@ func (c *Cmd) CreateProject() error {
 			}
 		}
 
-		err := normalizeAndCheckProjectConfig(unit)
+		err := normalizeAndCheckProjectConfig(cfg)
 		if err != nil {
 			return err
 		}
 
-		return nil
-	}
-
-	c.makeGenerator = func(unit *generator.ProjectUnit) generator.Generator {
-		return generator.Generator{
+		gen := generator.Generator{
 			UnitExists: func(cfg *generator.ProjectUnit) error {
 				if !utils.DirIsEmpty(cfg.Root) {
 					return errors.New("root directory of a new project is not empty")
@@ -196,10 +198,17 @@ func (c *Cmd) CreateProject() error {
 				return nil
 			},
 			FilePathSetup: func(fp string, fn string) (string, string) {
-				return strings.Replace(fp, "_proj_name_", unit.ProjectName, -1), fn
+				return strings.Replace(fp, "_proj_name_", cfg.ProjectName, -1), fn
 			},
 			EmptyDirsToCreateInUnit: []string{"media"},
 		}
+
+		err = gen.NewUnit(cfg, "project")
+		if err != nil {
+			return err
+		}
+
+		return nil
 	}
 
 	c.postProcess = func(unit *generator.ProjectUnit) error {

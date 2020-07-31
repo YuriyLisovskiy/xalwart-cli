@@ -23,10 +23,13 @@ type projectMeta struct {
 }
 
 type Cmd struct {
-	customizeUnit func (cwd string, unit *generator.ProjectUnit) error
-	makeGenerator func (unit *generator.ProjectUnit) generator.Generator
+//	customizeUnit func (cwd string, unit *generator.ProjectUnit) error
+//	makeGenerator func (unit *generator.ProjectUnit) generator.Generator
+
+//	postCreateHelp func (unit *generator.ProjectUnit)
+
+	process func (cwd string, unit *generator.ProjectUnit) error
 	postProcess func (unit *generator.ProjectUnit) error
-	postCreateHelp func (unit *generator.ProjectUnit)
 }
 
 func (c *Cmd) execute(unitName string, isProject bool) error {
@@ -38,55 +41,33 @@ func (c *Cmd) execute(unitName string, isProject bool) error {
 	}
 
 	cfg := generator.ProjectUnit{
-		Year:                      time.Now().Year(),
-		Username:                  usr.Name,
-		FrameworkName:             config.FrameworkName,
-		FrameworkNamespace:        config.FrameworkNamespace,
-	}
-	if c.customizeUnit != nil {
-		cwd, err := os.Getwd()
-		if err != nil {
-			return err
-		}
-
-		err = c.customizeUnit(cwd, &cfg)
-		if err != nil {
-			return err
-		}
+		Year:               time.Now().Year(),
+		Username:           usr.Name,
+		FrameworkName:      config.FrameworkName,
+		FrameworkNamespace: config.FrameworkNamespace,
+		FrameworkVersion:   "null",
 	}
 
-	var initFWVer string
-	if isProject {
-		initFWVer = cfg.FrameworkVersion
-	} else {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	if !isProject {
 		meta, err := c.loadMeta(cfg.ProjectRoot)
 		if err != nil {
 			return err
 		}
 
 		cfg.ProjectName = meta.ProjectName
-		initFWVer = meta.FrameworkVersion
+		cfg.FrameworkVersion = meta.FrameworkVersion
 	}
 
-	if cfg.InstallFramework {
-		cfg.FrameworkVersion, err = c.getVersionOfFramework(
-			initFWVer, isProject,
-		)
-		if isProject && err != nil {
+	if c.process != nil {
+		err = c.process(cwd, &cfg)
+		if err != nil {
 			return err
 		}
-	} else {
-		cfg.FrameworkVersion = "null"
-	}
-
-	var g generator.Generator
-	if c.makeGenerator != nil {
-		g = c.makeGenerator(&cfg)
-	}
-
-	err = g.NewUnit(&cfg, unitName)
-	if err != nil {
-		return err
 	}
 
 	fmt.Println(" Done.")
@@ -98,11 +79,11 @@ func (c *Cmd) execute(unitName string, isProject bool) error {
 		}
 	}
 
-	if c.postCreateHelp != nil {
-		c.postCreateHelp(&cfg)
-	}
-
 	return nil
+}
+
+func (c *Cmd) buildPath(initialPath string) string {
+	return initialPath
 }
 
 func (c *Cmd) loadMeta(projectRoot string) (projectMeta, error) {

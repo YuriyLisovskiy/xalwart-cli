@@ -21,6 +21,7 @@ var (
 	NewViewCmd = flag.NewFlagSet(newViewCmdName, flag.ExitOnError)
 	nvAppNameFlag string
 	nvNameFlag string
+	nvViewPathFlag string
 )
 
 func InitNewViewCmd() {
@@ -32,6 +33,10 @@ func InitNewViewCmd() {
 		&nvNameFlag,
 		"n", "", "Name of a new view",
 	)
+	NewViewCmd.StringVar(
+		&nvViewPathFlag,
+		"l", "", "Location of a new view",
+	)
 }
 
 func trimViewSuffix(appName string) string {
@@ -41,52 +46,70 @@ func trimViewSuffix(appName string) string {
 }
 
 func (c *Cmd) CreateView() error {
-	if len(nvAppNameFlag) == 0 {
-		return errors.New("application is not specified")
+	if len(nvNameFlag) == 0 {
+		return errors.New("view name is not specified")
 	}
 
-	nvAppNameFlag = trimAppSuffix(nvAppNameFlag)
-	c.customizeUnit = func(cwd string, unit *generator.ProjectUnit) error {
-		unit.Name = nvNameFlag
-		unit.ProjectRoot = cwd
-		unit.Templates = packr.New("View Templates Box", "../../templates/view")
-		appPath := path.Join(unit.ProjectRoot, nvAppNameFlag + "_app")
-		if !utils.DirExists(appPath) {
-			return errors.New("'" + nvAppNameFlag + "' application does not exist")
+	if len(nvAppNameFlag) == 0 && len(nvViewPathFlag) == 0 {
+		return errors.New("application or path to a new view is required")
+	}
+
+	if len(nvAppNameFlag) != 0 {
+		nvAppNameFlag = trimAppSuffix(nvAppNameFlag)
+	}
+
+	c.process = func(cwd string, cfg *generator.ProjectUnit) error {
+		cfg.Name = nvNameFlag
+		cfg.ProjectRoot = cwd
+		cfg.Templates = packr.New("View Templates Box", "../../templates/view")
+		var appPath string
+		if len(nvAppNameFlag) != 0 {
+			appPath = path.Join(cfg.ProjectRoot, nvAppNameFlag + "_app")
+			if !utils.DirExists(appPath) {
+				return errors.New("'" + nvAppNameFlag + "' application does not exist")
+			}
 		}
 
-		unit.Customize = func(pu *generator.ProjectUnit) {
-			pu.Root = path.Join(appPath, "views")
+		cfg.Customize = func(pu *generator.ProjectUnit) {
+			if len(nvAppNameFlag) == 0 {
+				if path.IsAbs(nvViewPathFlag) {
+					pu.Root = nvViewPathFlag
+				} else {
+					pu.Root = path.Join(pu.ProjectRoot, nvViewPathFlag)
+				}
+			} else {
+				pu.Root = path.Join(appPath, "views")
+			}
+
 			pu.Name = trimViewSuffix(pu.Name)
+		}
+
+		gen := generator.Generator{
+			CheckIfNameIsSet: true,
+			ErrorIfFileExists: func() error {
+				return errors.New("'" + cfg.Name + "' view already exists")
+			},
+			FilePathSetup: func(fp string, fn string) (string, string) {
+				return fp, strings.Replace(fn, "_name_", strcase.ToSnake(cfg.Name), 1)
+			},
+		}
+
+		err := gen.NewUnit(cfg, "view")
+		if err != nil {
+			return err
 		}
 
 		return nil
 	}
 
-	c.makeGenerator = func(pu *generator.ProjectUnit) generator.Generator {
-		return generator.Generator{
-			CheckIfNameIsSet: true,
-			ErrorIfFileExists: func() error {
-				return errors.New("'" + pu.Name + "' view already exists")
-			},
-			FilePathSetup: func(fp string, fn string) (string, string) {
-				return fp, strings.Replace(fn, "_name_", strcase.ToSnake(pu.Name), 1)
-			},
-		}
-	}
-
-	c.postCreateHelp = func(unit *generator.ProjectUnit) {
+	c.postProcess = func(unit *generator.ProjectUnit) error {
 		fmt.Printf("\nTo use '%s' view it must be registered.\n", unit.Name)
 
 		unitNameSnake := strcase.ToSnake(unit.Name)
 
 		fmt.Printf(
-			"\nInclude in '" + nvAppNameFlag + "_app' configuration:\n  #include \"%s\"\n",
-			"./views/" + unitNameSnake + "_view.h",
-		)
-		fmt.Println(
-			"\nSetup URL in '" + strcase.ToCamel(nvAppNameFlag) +
-			"AppConfig::urlpatterns()' method:",
+			"\nInclude view in application config and " +
+			"setup URL in 'urlpatterns()' method:",
 		)
 
 		unitNameCamel := strcase.ToCamel(unit.Name) + "View"
@@ -95,6 +118,8 @@ func (c *Cmd) CreateView() error {
 			"  this->url<%s>(R\"(%s/?)\", \"%s\");\n",
 			unitNameCamel, unitNameSnake, unitNameSnake,
 		)
+
+		return nil
 	}
 
 	return c.execute("view", false)

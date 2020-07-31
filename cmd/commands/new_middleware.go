@@ -40,11 +40,15 @@ func trimMiddlewareSuffix(appName string) string {
 }
 
 func (c *Cmd) CreateMiddleware() error {
-	c.customizeUnit = func(cwd string, unit *generator.ProjectUnit) error {
-		unit.Name = nmNameFlag
-		unit.ProjectRoot = cwd
-		unit.Templates = packr.New("Middleware Templates Box", "../../templates/middleware")
-		unit.Customize = func(pu *generator.ProjectUnit) {
+	if len(nmNameFlag) == 0 {
+		return errors.New("middleware name is not specified")
+	}
+
+	c.process = func(cwd string, cfg *generator.ProjectUnit) error {
+		cfg.Name = nmNameFlag
+		cfg.ProjectRoot = cwd
+		cfg.Templates = packr.New("Middleware Templates Box", "../../templates/middleware")
+		cfg.Customize = func(pu *generator.ProjectUnit) {
 			if len(nmMiddlewarePathFlag) != 0 {
 				if path.IsAbs(nmMiddlewarePathFlag) {
 					pu.Root = nmMiddlewarePathFlag
@@ -58,22 +62,25 @@ func (c *Cmd) CreateMiddleware() error {
 			pu.Name = trimMiddlewareSuffix(pu.Name)
 		}
 
+		gen := generator.Generator{
+			CheckIfNameIsSet: true,
+			ErrorIfFileExists: func() error {
+				return errors.New("'" + cfg.Name + "' middleware already exists")
+			},
+			FilePathSetup: func(fp string, fn string) (string, string) {
+				return fp, strings.Replace(fn, "_name_", strcase.ToSnake(cfg.Name), 1)
+			},
+		}
+
+		err := gen.NewUnit(cfg, "middleware")
+		if err != nil {
+			return err
+		}
+
 		return nil
 	}
 
-	c.makeGenerator = func(pu *generator.ProjectUnit) generator.Generator {
-		return generator.Generator{
-			CheckIfNameIsSet: true,
-			ErrorIfFileExists: func() error {
-				return errors.New("'" + pu.Name + "' middleware already exists")
-			},
-			FilePathSetup: func(fp string, fn string) (string, string) {
-				return fp, strings.Replace(fn, "_name_", strcase.ToSnake(pu.Name), 1)
-			},
-		}
-	}
-
-	c.postCreateHelp = func(unit *generator.ProjectUnit) {
+	c.postProcess = func(unit *generator.ProjectUnit) error {
 		fmt.Printf("\nTo use '%s' middleware it must be registered.\n", unit.Name)
 
 		unitNameSnake := strcase.ToSnake(unit.Name)
@@ -95,6 +102,8 @@ func (c *Cmd) CreateMiddleware() error {
 		fmt.Printf("  this->middleware<%s>(\"%s\");\n", unitNameCamel, unitNameCamel)
 		fmt.Println("\nActivate middleware in 'config.yml' in 'middleware':")
 		fmt.Printf("  - %s\n", unitNameCamel)
+
+		return nil
 	}
 
 	err := c.execute("middleware", false)

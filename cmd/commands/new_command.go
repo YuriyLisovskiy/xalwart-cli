@@ -21,6 +21,7 @@ var (
 	NewCommandCmd = flag.NewFlagSet(newCommandCmdName, flag.ExitOnError)
 	ncAppNameFlag string
 	ncNameFlag string
+	ncCommandPathFlag string
 )
 
 func InitNewCommandCmd() {
@@ -32,6 +33,10 @@ func InitNewCommandCmd() {
 		&ncNameFlag,
 		"n", "", "Name of a new command",
 	)
+	NewCommandCmd.StringVar(
+		&ncCommandPathFlag,
+		"l", "", "Location of a new command",
+	)
 }
 
 func trimCommandSuffix(appName string) string {
@@ -41,57 +46,74 @@ func trimCommandSuffix(appName string) string {
 }
 
 func (c *Cmd) CreateCommand() error {
-	if len(ncAppNameFlag) == 0 {
-		return errors.New("application is not specified")
+	if len(ncNameFlag) == 0 {
+		return errors.New("command name is not specified")
 	}
 
-	ncAppNameFlag = trimAppSuffix(ncAppNameFlag)
-	c.customizeUnit = func(cwd string, unit *generator.ProjectUnit) error {
-		unit.Name = ncNameFlag
-		unit.ProjectRoot = cwd
-		unit.Templates = packr.New("Command Templates Box", "../../templates/command")
-		appPath := path.Join(unit.ProjectRoot, ncAppNameFlag + "_app")
-		if !utils.DirExists(appPath) {
-			return errors.New("'" + ncAppNameFlag + "' application does not exist")
+	if len(ncAppNameFlag) == 0 && len(ncCommandPathFlag) == 0 {
+		return errors.New("application or path to a new command is required")
+	}
+
+	if len(ncAppNameFlag) != 0 {
+		ncAppNameFlag = trimAppSuffix(ncAppNameFlag)
+	}
+
+	c.process = func(cwd string, cfg *generator.ProjectUnit) error {
+		cfg.Name = ncNameFlag
+		cfg.ProjectRoot = cwd
+		cfg.Templates = packr.New("Command Templates Box", "../../templates/command")
+		var appPath string
+		if len(ncAppNameFlag) != 0 {
+			appPath = path.Join(cfg.ProjectRoot, ncAppNameFlag + "_app")
+			if !utils.DirExists(appPath) {
+				return errors.New("'" + ncAppNameFlag + "' application does not exist")
+			}
 		}
 
-		unit.Customize = func(pu *generator.ProjectUnit) {
-			pu.Root = path.Join(appPath, "commands")
+		cfg.Customize = func(pu *generator.ProjectUnit) {
+			if len(ncAppNameFlag) == 0 {
+				if path.IsAbs(ncCommandPathFlag) {
+					pu.Root = ncCommandPathFlag
+				} else {
+					pu.Root = path.Join(pu.ProjectRoot, ncCommandPathFlag)
+				}
+			} else {
+				pu.Root = path.Join(appPath, "commands")
+			}
+
 			pu.Name = trimCommandSuffix(pu.Name)
+		}
+
+		gen := generator.Generator{
+			CheckIfNameIsSet: true,
+			ErrorIfFileExists: func() error {
+				return errors.New("'" + cfg.Name + "' command already exists")
+			},
+			FilePathSetup: func(fp string, fn string) (string, string) {
+				return fp, strings.Replace(fn, "_name_", strcase.ToSnake(cfg.Name), 1)
+			},
+		}
+
+		err := gen.NewUnit(cfg, "command")
+		if err != nil {
+			return err
 		}
 
 		return nil
 	}
 
-	c.makeGenerator = func(pu *generator.ProjectUnit) generator.Generator {
-		return generator.Generator{
-			CheckIfNameIsSet: true,
-			ErrorIfFileExists: func() error {
-				return errors.New("'" + pu.Name + "' command already exists")
-			},
-			FilePathSetup: func(fp string, fn string) (string, string) {
-				return fp, strings.Replace(fn, "_name_", strcase.ToSnake(pu.Name), 1)
-			},
-		}
-	}
-
-	c.postCreateHelp = func(unit *generator.ProjectUnit) {
+	c.postProcess = func(unit *generator.ProjectUnit) error {
 		fmt.Printf("\nTo use '%s' command it must be registered.\n", unit.Name)
-
-		unitNameSnake := strcase.ToSnake(unit.Name)
-
 		fmt.Printf(
-			"\nInclude in '" + ncAppNameFlag + "_app' configuration:\n  #include \"%s\"\n",
-			"./commands/" + unitNameSnake + ".h",
-		)
-		fmt.Println(
-			"\nRegister command in '" + strcase.ToCamel(ncAppNameFlag) +
-			"AppConfig::commands()' method:",
+			"\nInclude command id application config and register it in '" +
+			"commands()' method:\n",
 		)
 
 		unitNameCamel := strcase.ToCamel(unit.Name) + "Command"
 
 		fmt.Printf("  this->command<%s>();\n", unitNameCamel)
+
+		return nil
 	}
 
 	err := c.execute("command", false)
