@@ -29,7 +29,6 @@ func usage(printWelcome bool) {
 	)
 	println()
 	fmt.Println("The commands are:")
-	fmt.Println("  " + commands.InstallCmdDescription)
 	fmt.Println("  " + commands.NewAppCmdDescription)
 	fmt.Println("  " + commands.NewCommandCmdDescription)
 	fmt.Println("  " + commands.NewLibraryCmdDescription)
@@ -38,7 +37,6 @@ func usage(printWelcome bool) {
 	fmt.Println("  " + commands.NewViewCmdDescription)
 	println()
 
-	commands.InitInstallCmd()
 	commands.InitNewAppCmd()
 	commands.InitNewCommandCmd()
 	commands.InitNewLibraryCmd()
@@ -46,8 +44,6 @@ func usage(printWelcome bool) {
 	commands.InitNewProjectCmd()
 	commands.InitNewViewCmd()
 
-	commands.InstallCmd.Usage()
-	println()
 	commands.NewAppCmd.Usage()
 	println()
 	commands.NewCommandCmd.Usage()
@@ -69,13 +65,6 @@ func main() {
 		var err error
 		cmd := commands.Cmd{}
 		switch os.Args[1] {
-		case commands.InstallCmd.Name():
-			commands.InitInstallCmd()
-			if commands.InstallCmd.Parse(os.Args[2:]) != nil {
-				commands.InstallCmd.Usage()
-			} else {
-				err = cmd.InstallFramework()
-			}
 		case commands.NewAppCmd.Name():
 			commands.InitNewAppCmd()
 			if commands.NewAppCmd.Parse(os.Args[2:]) != nil {

@@ -1,0 +1,5 @@
+[requires]
+<% range $val := .ConanRequiredPackages %><% $val %>
+<% end %>
+[generators]
+cmake

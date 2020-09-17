@@ -13,7 +13,6 @@ import (
 	"time"
 	"xalwart-cli/config"
 	"xalwart-cli/generator"
-	"xalwart-cli/managers"
 	"xalwart-cli/utils"
 )
 
@@ -29,8 +28,7 @@ var (
 	npRootFlag string
 	npCMakeMinVersionFlag string
 	npCppStandardFlag int
-	npInstall bool
-	npFrameworkVersionFlag string
+	npConanFlag bool
 )
 
 func InitNewProjectCmd() {
@@ -44,22 +42,17 @@ func InitNewProjectCmd() {
 	NewProjectCmd.StringVar(&npCMakeMinVersionFlag,
 		"cmake", config.MinimumCmakeVersion, "Cmake minimum version",
 	)
-	NewProjectCmd.IntVar(&npCppStandardFlag, "cpp", config.MinimumCppVersion, "C++ standard")
-	NewProjectCmd.BoolVar(&npInstall,
-		"i", true, "Install '" + config.FrameworkName + "' framework locally",
-	)
-	NewProjectCmd.StringVar(&npFrameworkVersionFlag,
-		"v",
-		"latest",
-		"A version of '"+config.FrameworkName+"' framework to install",
+	NewProjectCmd.IntVar(&npCppStandardFlag, "cpp", config.MinimumCppStandard, "Standard of C++ language")
+	NewProjectCmd.BoolVar(&npConanFlag,
+		"conan", true, "Use Conan package manager",
 	)
 }
 
 func normalizeAndCheckProjectConfig(cfg *generator.ProjectUnit) error {
 	// Check C++ standard.
-	if cfg.CMakeCPPStandard < config.MinimumCppVersion {
-		fmt.Println("Warning: minimum required C++ standard is " + strconv.Itoa(config.MinimumCppVersion))
-		cfg.CMakeCPPStandard = config.MinimumCppVersion
+	if cfg.CMakeCPPStandard < config.MinimumCppStandard {
+		fmt.Println("Warning: minimum required C++ standard is " + strconv.Itoa(config.MinimumCppStandard))
+		cfg.CMakeCPPStandard = config.MinimumCppStandard
 	}
 
 	return nil
@@ -80,10 +73,9 @@ func (c *Cmd) CreateProject() error {
 	var (
 		projectPath        string
 		projectName        string
-		frameworkVer       string
 		cppStandard        int
 		cmakeMinVer        string
-		installFramework   bool
+		useConan           bool
 	)
 
 	if npQFlag {
@@ -101,36 +93,24 @@ func (c *Cmd) CreateProject() error {
 			return err
 		}
 
-		if installFramework, err = reader.ReadBool(
-			"Do you want to install '" + config.FrameworkName + "' framework? [Y/n] ",
-		); err != nil {
-			return err
-		}
-
-		if installFramework {
-			if frameworkVer, err = reader.ReadString(
-				"Type version which you want to use (default is latest): ",
-			); err != nil {
-				return err
-			}
-
-			if len(frameworkVer) == 0 {
-				frameworkVer = "latest"
-			}
-		}
-
 		if cppStandard, err = reader.ReadInt(
-			"Setup C++ standard (minimum required is " + strconv.Itoa(config.MinimumCppVersion) + "): ",
+			"Setup C++ standard (minimum required is " + strconv.Itoa(config.MinimumCppStandard) + "): ",
 		); err != nil {
 			return err
 		}
 
 		if cppStandard == 0 {
-			cppStandard = config.MinimumCppVersion
+			cppStandard = config.MinimumCppStandard
 		}
 
 		if cmakeMinVer, err = reader.ReadString(
 			"Input minimum version of cmake (default is " + config.MinimumCmakeVersion + "): ",
+		); err != nil {
+			return err
+		}
+
+		if useConan, err = reader.ReadBool(
+			"Do you want to use Conan package manager? [Y/n] ",
 		); err != nil {
 			return err
 		}
@@ -141,10 +121,9 @@ func (c *Cmd) CreateProject() error {
 	} else {
 		projectPath = npRootFlag
 		projectName = npNameFlag
-		frameworkVer = npFrameworkVersionFlag
 		cppStandard = npCppStandardFlag
 		cmakeMinVer = npCMakeMinVersionFlag
-		installFramework = npInstall
+		useConan = npConanFlag
 	}
 
 	if len(projectPath) == 0 {
@@ -159,19 +138,9 @@ func (c *Cmd) CreateProject() error {
 	c.process = func(cwd string, cfg *generator.ProjectUnit) error {
 		cfg.WorkingDirectory = projectPath
 		cfg.ProjectName = projectName
-		cfg.InstallFramework = installFramework
-		if installFramework {
-			var err error
-			cfg.FrameworkVersion, err = c.getVersionOfFramework(
-				frameworkVer, true,
-			)
-			if err != nil {
-				return err
-			}
-		}
-
 		cfg.CMakeListsTxtToDoLine = config.CMakeListsTxtToDoLine
 		cfg.CMakeCPPStandard = cppStandard
+		cfg.UseConan = useConan
 		cfg.CMakeMinimumVersion = cmakeMinVer
 		cfg.SecretKey = generateSecretKey(config.SecretKeyLength)
 		cfg.Templates = packr.New("Project Templates Box", "../../templates/project")
@@ -182,6 +151,12 @@ func (c *Cmd) CreateProject() error {
 			} else {
 				pu.Root = path.Join(pu.WorkingDirectory, pu.ProjectName)
 			}
+		}
+
+		if !cfg.UseConan {
+			cfg.TemplatesToExclude = []string{"conanfile.txt.txt"}
+		} else {
+			cfg.ConanRequiredPackages = config.ConanRequiredPackages
 		}
 
 		err := normalizeAndCheckProjectConfig(cfg)
@@ -206,17 +181,6 @@ func (c *Cmd) CreateProject() error {
 		err = gen.NewUnit(cfg, "project")
 		if err != nil {
 			return err
-		}
-
-		return nil
-	}
-
-	c.postProcess = func(unit *generator.ProjectUnit) error {
-		if unit.InstallFramework {
-			err := managers.InstallFramework(unit.Root, unit.FrameworkVersion, true)
-			if err != nil {
-				return err
-			}
 		}
 
 		return nil

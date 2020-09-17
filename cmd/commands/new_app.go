@@ -9,14 +9,12 @@ import (
 	"os"
 	"path"
 	"strings"
-	"xalwart-cli/config"
 	"xalwart-cli/generator"
 )
 
 const (
 	newAppCmdName = "new-app"
-	NewAppCmdDescription = newAppCmdName +
-		":\tadds a new application to existing '" + config.FrameworkName + "' application"
+	NewAppCmdDescription = newAppCmdName + ":\tadds a new app to existing project"
 )
 
 var (

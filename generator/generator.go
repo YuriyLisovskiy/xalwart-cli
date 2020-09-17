@@ -24,6 +24,12 @@ type Generator struct {
 
 func (g *Generator) executeTemplate(fp string, file packd.File, cfg *ProjectUnit) error {
 	filePath, fileName := path.Split(fp)
+	for _, excluded := range cfg.TemplatesToExclude {
+		if fileName == excluded {
+			return nil
+		}
+	}
+
 	if g.FilePathSetup != nil {
 		filePath, fileName = g.FilePathSetup(filePath, fileName)
 	}

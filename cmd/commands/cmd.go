@@ -12,22 +12,15 @@ import (
 	"time"
 	"xalwart-cli/config"
 	"xalwart-cli/generator"
-	"xalwart-cli/managers"
 )
 
 const metaFilePath = ".project." + config.FrameworkNamespace
 
 type projectMeta struct {
-	FrameworkVersion string  `json:"framework_version"`
-	ProjectName string       `json:"project_name"`
+	ProjectName string `json:"project_name"`
 }
 
 type Cmd struct {
-//	customizeUnit func (cwd string, unit *generator.ProjectUnit) error
-//	makeGenerator func (unit *generator.ProjectUnit) generator.Generator
-
-//	postCreateHelp func (unit *generator.ProjectUnit)
-
 	process func (cwd string, unit *generator.ProjectUnit) error
 	postProcess func (unit *generator.ProjectUnit) error
 }
@@ -45,7 +38,6 @@ func (c *Cmd) execute(unitName string, isProject bool) error {
 		Username:           usr.Name,
 		FrameworkName:      config.FrameworkName,
 		FrameworkNamespace: config.FrameworkNamespace,
-		FrameworkVersion:   "null",
 	}
 
 	cwd, err := os.Getwd()
@@ -60,7 +52,6 @@ func (c *Cmd) execute(unitName string, isProject bool) error {
 		}
 
 		cfg.ProjectName = meta.ProjectName
-		cfg.FrameworkVersion = meta.FrameworkVersion
 	}
 
 	if c.process != nil {
@@ -88,7 +79,7 @@ func (c *Cmd) buildPath(initialPath string) string {
 
 func (c *Cmd) loadMeta(projectRoot string) (projectMeta, error) {
 	projectErr := errors.New("unable to read project meta: '" + metaFilePath + "' is missing or damaged")
-	obj := projectMeta{FrameworkVersion: "latest"}
+	obj := projectMeta{}
 	jsonFile, err := os.Open(path.Join(projectRoot, metaFilePath))
 	if err != nil {
 		return obj, projectErr
@@ -108,21 +99,6 @@ func (c *Cmd) loadMeta(projectRoot string) (projectMeta, error) {
 	return obj, nil
 }
 
-func (c *Cmd) saveMeta(projectRoot string, meta projectMeta) error {
-	savingErr := errors.New("unable to update project meta, file: '" + metaFilePath + "'")
-	content, err := json.MarshalIndent(meta, "", " ")
-	if err != nil {
-		return savingErr
-	}
-
-	err = ioutil.WriteFile(path.Join(projectRoot, metaFilePath), content, 0644)
-	if err != nil {
-		return savingErr
-	}
-
-	return nil
-}
-
 func (c *Cmd) reSubMatchMap(r *regexp.Regexp, str string) (bool, map[string]string) {
 	if r.MatchString(str) {
 		match := r.FindStringSubmatch(str)
@@ -137,41 +113,4 @@ func (c *Cmd) reSubMatchMap(r *regexp.Regexp, str string) (bool, map[string]stri
 	}
 
 	return false, nil
-}
-
-func (c *Cmd) getVersionOfFramework(version string, verbose bool) (string, error) {
-	retrieveErr := errors.New(
-		"unable to retrieve latest release of '" + config.FrameworkName + "' framework",
-	)
-	if version == "latest" {
-		var err error
-		release, err := managers.GetLatestRelease()
-		if err != nil {
-			return "", retrieveErr
-		}
-
-		version = release.VersionTag
-	} else {
-		isAvailable, err := managers.CheckIfVersionIsAvailable(version)
-		if err != nil {
-			return "", retrieveErr
-		}
-
-		if !isAvailable {
-			if verbose {
-				fmt.Println(
-					"\nWarning: release v" + version + " is not available, latest is used instead",
-				)
-			}
-
-			release, err := managers.GetLatestRelease()
-			if err != nil {
-				return "", retrieveErr
-			}
-
-			version = release.VersionTag
-		}
-	}
-
-	return version, nil
 }

@@ -8,7 +8,7 @@ type ProjectUnit struct {
 
 	FrameworkName string
 	FrameworkNamespace string
-	InstallFramework bool
+	UseConan bool
 	CMakeListsTxtToDoLine string
 
 	ProjectName string
@@ -18,12 +18,13 @@ type ProjectUnit struct {
 	Root string
 
 	Templates* packr.Box
+	TemplatesToExclude []string
+
+	ConanRequiredPackages []string
 
 	Customize func (pu *ProjectUnit)
 
 	WorkingDirectory string
-
-	FrameworkVersion string
 
 	SecretKey string
 
