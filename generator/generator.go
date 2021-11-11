@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"fmt"
 	"github.com/YuriyLisovskiy/xalwart-cli/config"
 	"github.com/gobuffalo/packd"
 	"os"
@@ -29,10 +30,12 @@ func executeTemplate(templateFilePath string, file packd.File, unit Unit) error 
 	}
 
 	fullPath := path.Join(filePath, fileName)
-	//if fileExists(fullPath) {
-	//	fmt.Println(fmt.Sprintf("Warning: ignoring '%s', file already exists", fullPath))
-	//	return nil
-	//}
+
+	// TODO: consider to force overwriting of existing file
+	if fileExists(fullPath) {
+		fmt.Println(fmt.Sprintf("Warning: ignoring '%s', file already exists", fullPath))
+		return nil
+	}
 
 	err := os.MkdirAll(filePath, os.ModePerm)
 	if err != nil {

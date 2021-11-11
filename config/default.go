@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	AppName = "xalwart"
 	AppVersion = "0.0.1"
 
 	FrameworkName       = "xalwart"
