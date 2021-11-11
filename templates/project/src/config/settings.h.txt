@@ -1,0 +1,24 @@
+/*
+ * Copyright (c) <% .Common.Year %> <% .Common.Username %>
+ */
+
+#pragma once
+
+// <% .Common.FrameworkName %>
+#include <<% .Common.FrameworkName %>/conf/settings.h>
+
+
+class Settings : public <% .Common.FrameworkNamespace %>::conf::Settings
+{
+public:
+	void register_modules() override;
+
+	std::unique_ptr<<% .Common.FrameworkNamespace %>::server::IServer> build_server(
+	    const std::function<<% .Common.FrameworkNamespace %>::net::StatusCode(
+		    <% .Common.FrameworkNamespace %>::net::RequestContext*, const std::map<std::string, std::string>& /* environment */
+	    )>& handler,
+	    const <% .Common.FrameworkNamespace %>::Options& options
+	) override;
+
+	static std::unique_ptr<Settings> load();
+};

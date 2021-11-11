@@ -1,16 +1,26 @@
-cmake_minimum_required(VERSION <% .CMakeMinimumVersion %>)
+cmake_minimum_required(VERSION 3.12)
 
-set(CMAKE_CXX_STANDARD <% .CMakeCPPStandard %>)
+set(CMAKE_CXX_STANDARD 20)
 
 project(<% .ProjectName %>)
+
 set(BINARY application)
 
+set(CMAKE_CXX_FLAGS "-pthread")
+
+set(DEFAULT_INCLUDE_PATHS "/usr/local" "/usr")
+
+foreach(ENTRY ${DEFAULT_INCLUDE_PATHS})
+    include_directories(${ENTRY}/include)
+    link_directories(${ENTRY}/lib)
+endforeach()
+
+# Search for OpenSSL
+find_package(OpenSSL 1.1 REQUIRED)
+include_directories(${OPENSSL_INCLUDE_DIR})
+
 # Load and filter project sources.
-file(
-    GLOB_RECURSE SOURCES
-    LIST_DIRECTORIES true
-    */*.h */*.cpp
-)
+file(GLOB_RECURSE SOURCES LIST_DIRECTORIES true src/*.h src/*.cpp)
 list(
 	FILTER SOURCES
 	EXCLUDE REGEX "^.*/(include|lib$|media|static|templates|cmake-build-*)/?.*"
@@ -18,22 +28,46 @@ list(
 foreach(entry ${SOURCES})
     if (IS_DIRECTORY ${entry})
         list(REMOVE_ITEM SOURCES ${entry})
-    else()
-        message(${entry})
     endif()
 endforeach()
-<% if .UseConan %>
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
 
-add_executable(${BINARY} ${SOURCES} "./main.cpp")
-target_link_libraries(${BINARY} ${CONAN_LIBS})
-<% else %>
-add_executable(${BINARY} ${SOURCES} "./main.cpp")
-
-<% .CMakeListsTxtToDoLine %>
-<% end %>
-# Required for <experimental/filesystem> in Unix which is used by '<% .FrameworkName %>'
-if (UNIX)
-    target_link_libraries(${BINARY} stdc++fs)
+add_executable(${BINARY} ${SOURCES})
+if (NOT APPLE)
+    target_link_libraries(${BINARY} PUBLIC stdc++fs)
 endif()
+<% if .UseStandardORM %>
+option(XW_USE_SQLITE3 "Link sqlite3 library and add compile XW_USE_SQLITE3 compile definition." OFF)
+if (${XW_USE_SQLITE3})
+    # Search for sqlite3
+    find_library(
+        SQLITE3 sqlite3 REQUIRED
+        PATHS ${DEFAULT_INCLUDE_PATHS}
+    )
+    target_link_libraries(${BINARY} PUBLIC ${SQLITE3})
+    add_compile_definitions(USE_SQLITE3)
+endif()
+
+if (${XW_USE_POSTGRESQL})
+    # Search for PostgreSQL
+    find_package(PostgreSQL REQUIRED)
+    target_link_libraries(${BINARY} PUBLIC ${PostgreSQL_LIBRARIES})
+    include_directories(${PostgreSQL_INCLUDE_DIRS})
+    add_compile_definitions(USE_POSTGRESQL)
+endif()
+<% end %>
+set(XALWART_LIBRARIES)
+function(FIND_XALWART_LIBRARY PART)
+    find_library(
+        XALWART_${PART} xalwart${PART} REQUIRED
+        PATHS ${DEFAULT_INCLUDE_PATHS}
+    )
+    set(XALWART_LIBRARIES ${XALWART_LIBRARIES} ${XALWART_${PART}} PARENT_SCOPE)
+endfunction(FIND_XALWART_LIBRARY)
+
+find_xalwart_library(.base)
+find_xalwart_library(.crypto)<% if .UseStandardORM %>
+find_xalwart_library(.orm)<% end %><% if .UseStandardServer %>
+find_xalwart_library(.server)<% end %>
+find_xalwart_library("")
+
+target_link_libraries(${BINARY} PUBLIC ${OPENSSL_LIBRARIES} ${XALWART_LIBRARIES})

@@ -1,0 +1,27 @@
+/*
+ * Copyright (c) <% .Common.Year %> <% .Common.Username %>
+ */
+
+#include "./module.h"
+
+// <% .Common.FrameworkName %>
+#include <<% .Common.FrameworkName %>/controllers/redirect.h>
+
+// <% .ProjectName %>
+#include "./controllers/index.h"
+
+
+void MainModule::configure()
+{
+    // Set up module here instead of in constructor
+
+	this->set_ready();
+}
+
+void MainModule::urlpatterns()
+{
+    // Register URL patterns here.
+
+    this->url<IndexController>(R"(index/?)", "index");
+    this->url<<% .Common.FrameworkNamespace %>::ctrl::RedirectController>(R"(/?)", "root", "/index", false, false);
+}

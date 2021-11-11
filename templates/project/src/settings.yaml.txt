@@ -1,0 +1,30 @@
+# Copyright (c) <% .Common.Year %> <% .Common.Username %>
+
+debug: true
+
+secret_key: 'this is set in local settings'
+
+allowed_hosts:
+  - 127.0.0.1
+  - ::1
+
+timezone:
+  name: UTC
+
+modules:
+  - MainModule
+
+middleware:
+  - <% .Common.FrameworkNamespace %>::middleware::Security
+  - <% .Common.FrameworkNamespace %>::middleware::Common
+  - <% .Common.FrameworkNamespace %>::middleware::XFrameOptions
+<% if .UseStandardORM %>
+databases:
+  - instance: default
+    dbms: sqlite3
+    file: db.sqlite3
+    connections: 3
+<% end %>
+logger:
+  use_colors: true
+  levels: '*'

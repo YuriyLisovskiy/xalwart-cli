@@ -1,0 +1,32 @@
+/*
+ * Copyright (c) <% .Common.Year %> <% .Common.Username %>
+ */
+
+#include "./<% .GetFileName %>.h"
+
+
+void <% .FullUnitName | to_camel_case %>::add_flags()
+{
+	<% .Common.FrameworkNamespace %>::cmd::Command::add_flags();
+
+	// Register flags here.
+}
+
+void <% .FullUnitName | to_camel_case %>::validate() const
+{
+	<% .Common.FrameworkNamespace %>::cmd::Command::validate();
+
+	// Perform validation of registered flags here.
+}
+
+bool <% .FullUnitName | to_camel_case %>::handle()
+{
+	if (<% .Common.FrameworkNamespace %>::cmd::Command::handle())
+	{
+		return true;
+	}
+
+	// Implement command logic here.
+
+	return true;
+}

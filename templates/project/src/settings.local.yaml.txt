@@ -1,0 +1,3 @@
+# Copyright (c) <% .Common.Year %> <% .Common.Username %>
+
+secret_key: '<% .SecretKey %>'

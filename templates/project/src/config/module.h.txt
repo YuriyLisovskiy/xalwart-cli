@@ -1,0 +1,22 @@
+/*
+ * Copyright (c) <% .Common.Year %> <% .Common.Username %>
+ */
+
+#pragma once
+
+// <% .Common.FrameworkName %>
+#include <<% .Common.FrameworkName %>/conf/module.h>
+
+
+class MainModule : public <% .Common.FrameworkNamespace %>::conf::ModuleConfig
+{
+public:
+	explicit inline MainModule(const std::string& registration_name, <% .Common.FrameworkNamespace %>::conf::Settings* settings) :
+        <% .Common.FrameworkNamespace %>::conf::ModuleConfig(registration_name, settings)
+    {
+    }
+
+	void configure() override;
+
+	void urlpatterns() override;
+};

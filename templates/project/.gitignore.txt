@@ -39,9 +39,14 @@ CMakeSettings.json
 # CLion
 .idea/
 cmake-build-*
+build/
 
-# Xalwart project
-lib/
-include/
+# Xalwart Framework
 media/
-config.local.yml
+settings.local.yaml
+
+# Other
+db.sqlite3
+
+# macOS files
+*.DS_Store

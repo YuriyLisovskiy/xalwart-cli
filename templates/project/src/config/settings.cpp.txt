@@ -1,0 +1,67 @@
+/*
+ * Copyright (c) <% .Common.Year %> <% .Common.Username %>
+ */
+
+#include "./settings.h"
+
+// <% .Common.FrameworkName %>
+#include <<% .Common.FrameworkName %>.base/workers/threaded_worker.h><% if .UseStandardORM %>
+#include <<% .Common.FrameworkName %>.orm/config/yaml.h><% end %><% if .UseStandardServer %>
+#include <<% .Common.FrameworkName %>.server/http_server.h><% end %>
+#include <<% .Common.FrameworkName %>/conf/loaders/yaml_loader.h>
+
+// <% .ProjectName %>
+#include "./module.h"
+
+
+void Settings::register_modules()
+{
+	this->module<MainModule>();
+}
+
+std::unique_ptr<<% .Common.FrameworkNamespace %>::server::IServer> Settings::build_server(
+    const std::function<<% .Common.FrameworkNamespace %>::net::StatusCode(
+	    <% .Common.FrameworkNamespace %>::net::RequestContext*, const std::map<std::string, std::string>& /* environment */
+    )>& handler,
+    const <% .Common.FrameworkNamespace %>::Options& options
+)
+{<% if .UseStandardServer %>
+	return std::make_unique<<% .Common.FrameworkNamespace %>::server::DevelopmentHTTPServer>(<% .Common.FrameworkNamespace %>::server::Context{
+		.logger = this->LOGGER.get(),
+		.timezone = this->TIMEZONE,
+		.max_headers_count = this->LIMITS.MAX_HEADERS_COUNT,
+		.max_header_length = this->LIMITS.MAX_HEADER_LENGTH,
+		.timeout_seconds = options.get<time_t>("timeout_seconds"),
+		.timeout_microseconds = options.get<time_t>("timeout_microseconds"),
+		.socket_creation_retries_count = options.get<size_t>("retries"),
+		.worker = std::make_unique<<% .Common.FrameworkNamespace %>::ThreadedWorker>(options.get<size_t>("workers")),
+		.handler = handler
+	});<% else %>
+    // Create and return server here.
+    return nullptr;<% end %>
+}
+
+std::unique_ptr<Settings> Settings::load()
+{
+	return <% .Common.FrameworkNamespace %>::conf::YAMLSettingsLoader<Settings>({"settings", R"(settings\.local)"})
+		.with_components([](auto* loader, auto* settings)
+		{
+			// Registration of logger should be done first
+			// to log errors during the next components' setup.
+			loader->register_default_logger(settings);
+
+			// Setup standard components which are present in
+			// <% .Common.FrameworkNamespace %>::conf::Settings excluding template engine
+			// and databases.
+			loader->register_standard_components(settings);
+
+			// Setup components from external libraries.<% if .UseStandardORM %>
+			loader->register_component("databases", std::make_unique<<% .Common.FrameworkNamespace %>::orm::config::YAMLDatabasesComponent>(
+				settings->BASE_DIR, settings->DATABASES
+			));
+			<% else %>
+			<% end %>
+			// Other custom components' setup.
+		})
+		.load();
+}

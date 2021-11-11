@@ -1,0 +1,26 @@
+/*
+ * Copyright (c) <% .Common.Year %> <% .Common.Username %>
+ */
+
+#pragma once
+
+// <% .Common.FrameworkName %>
+#include <<% .Common.FrameworkName %>.base/interfaces/base.h>
+#include <<% .Common.FrameworkName %>/commands/command.h>
+
+
+class <% .FullUnitName | to_camel_case %> : public <% .Common.FrameworkNamespace %>::cmd::Command
+{
+public:
+	inline explicit <% .FullUnitName | to_camel_case %>(const std::shared_ptr<<% .Common.FrameworkNamespace %>::ILogger>& logger) :
+        <% .Common.FrameworkNamespace %>::cmd::Command("<% .Common.UnitName | to_snake_case %>", "Calls <% .Common.UnitName | to_snake_case %> command", logger)
+	{
+	}
+
+protected:
+	void add_flags() override;
+
+	void validate() const override;
+
+	bool handle() override;
+};

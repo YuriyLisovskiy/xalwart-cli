@@ -1,0 +1,16 @@
+/*
+ * Copyright (c) <% .Common.Year %> <% .Common.Username %>
+ */
+
+#include "./index.h"
+
+// <% .Common.FrameworkName %>
+#include <<% .Common.FrameworkName %>/http/response.h>
+
+
+std::unique_ptr<<% .Common.FrameworkNamespace %>::http::IResponse> IndexController::get(<% .Common.FrameworkNamespace %>::http::IRequest* request) const
+{
+    // Implement controller logic here.
+
+	return std::make_unique<<% .Common.FrameworkNamespace %>::http::Response>("Hello, World!");
+}

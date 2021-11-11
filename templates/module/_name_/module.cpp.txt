@@ -1,0 +1,18 @@
+/*
+ * Copyright (c) <% .Common.Year %> <% .Common.Username %>
+ */
+
+#include "./module.h"
+
+
+void <% .FullUnitName | to_camel_case %>::configure()
+{
+    // Set up module here instead of in constructor
+
+	this->set_ready();
+}
+
+void <% .FullUnitName | to_camel_case %>::urlpatterns()
+{
+    // Register URL patterns here.
+}

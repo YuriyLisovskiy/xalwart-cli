@@ -1,0 +1,20 @@
+/*
+ * Copyright (c) <% .Common.Year %> <% .Common.Username %>
+ */
+
+#pragma once
+
+// <% .Common.FrameworkName %>
+#include <<% .Common.FrameworkName %>/controllers/controller.h>
+
+
+class <% .FullUnitName | to_camel_case %> : public <% .Common.FrameworkNamespace %>::ctrl::Controller<>
+{
+public:
+	explicit inline <% .FullUnitName | to_camel_case %>(const <% .Common.FrameworkNamespace %>::ILogger* logger) :
+		<% .Common.FrameworkNamespace %>::ctrl::Controller<>({"get"}, logger)
+	{
+	}
+
+	std::unique_ptr<<% .Common.FrameworkNamespace %>::http::IResponse> get(<% .Common.FrameworkNamespace %>::http::IRequest* request) const override;
+};

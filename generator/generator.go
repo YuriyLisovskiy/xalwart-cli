@@ -19,17 +19,20 @@ func fileExists(fileName string) bool {
 	return !info.IsDir()
 }
 
-
-func executeTemplate(
-	templateFilePath string, file packd.File, rootPath string,
-	unit interface{}, fileExistsError func(string) error,
-) error {
+func executeTemplate(templateFilePath string, file packd.File, unit Unit) error {
 	filePath, fileName := path.Split(templateFilePath)
-	filePath = path.Join(rootPath, filePath)
-	fullPath := path.Join(filePath, strings.TrimSuffix(fileName, filepath.Ext(fileName)))
-	if fileExists(fullPath) && fileExistsError != nil {
-		return fileExistsError(fullPath)
+	filePath = path.Join(unit.GetRootPath(), filePath)
+	fileName = strings.TrimSuffix(fileName, filepath.Ext(fileName))
+	if singleUnit, ok := unit.(SingleUnit); ok {
+		fileName = strings.ReplaceAll(fileName, "_name_", singleUnit.GetFileName())
+		filePath = strings.ReplaceAll(filePath, "_name_", singleUnit.GetUnitName())
 	}
+
+	fullPath := path.Join(filePath, fileName)
+	//if fileExists(fullPath) {
+	//	fmt.Println(fmt.Sprintf("Warning: ignoring '%s', file already exists", fullPath))
+	//	return nil
+	//}
 
 	err := os.MkdirAll(filePath, os.ModePerm)
 	if err != nil {
@@ -69,7 +72,7 @@ func GenerateUnit(unit Unit) error {
 	}
 
 	err = unit.GetTemplates().Walk(func(filePath string, file packd.File) error {
-		return executeTemplate(filePath, file, unit.GetRootPath(), unit, unit.GetFileExistsError)
+		return executeTemplate(filePath, file, unit)
 	})
 	if err != nil {
 		return err
