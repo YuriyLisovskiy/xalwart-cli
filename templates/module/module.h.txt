@@ -1,0 +1,22 @@
+/*
+ * Copyright (c) <% .Year %> <% .Username %>
+ */
+
+#pragma once
+
+// <% .FrameworkName %>
+#include <<% .FrameworkName %>/conf/module.h>
+
+
+class <% .Name | to_camel_case %>ModuleConfig : public <% .FrameworkNamespace %>::conf::ModuleConfig
+{
+public:
+	explicit inline <% .Name | to_camel_case %>ModuleConfig(const std::string& registration_name, <% .FrameworkNamespace %>::conf::Settings* settings) :
+        <% .FrameworkNamespace %>::conf::ModuleConfig(registration_name, settings)
+    {
+    }
+
+	void configure() override;
+
+	void urlpatterns() override;
+};

@@ -1,43 +1,34 @@
 package generator
 
 import (
-	"errors"
+	"github.com/YuriyLisovskiy/xalwart-cli/config"
 	"github.com/gobuffalo/packd"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 	"text/template"
-	"xalwart-cli/config"
-	"xalwart-cli/utils"
 )
 
-type Generator struct {
-	UnitExists func (cfg *ProjectUnit) error
-	EmptyDirsToCreateInUnit []string
+func fileExists(fileName string) bool {
+	info, err := os.Stat(fileName)
+	if os.IsNotExist(err) {
+		return false
+	}
 
-	FilePathSetup func (fp string, fn string) (string, string)
-	ErrorIfFileExists func () error
-
-	CheckIfNameIsSet bool
+	return !info.IsDir()
 }
 
-func (g *Generator) executeTemplate(fp string, file packd.File, cfg *ProjectUnit) error {
-	filePath, fileName := path.Split(fp)
-	for _, excluded := range cfg.TemplatesToExclude {
-		if fileName == excluded {
-			return nil
-		}
-	}
 
-	if g.FilePathSetup != nil {
-		filePath, fileName = g.FilePathSetup(filePath, fileName)
-	}
-
-	filePath = path.Join(cfg.Root, filePath)
+func executeTemplate(
+	templateFilePath string, file packd.File, rootPath string,
+	unit interface{}, fileExistsError func(string) error,
+) error {
+	filePath, fileName := path.Split(templateFilePath)
+	filePath = path.Join(rootPath, filePath)
 	fullPath := path.Join(filePath, strings.TrimSuffix(fileName, filepath.Ext(fileName)))
-	if utils.FileExists(fullPath) && g.ErrorIfFileExists != nil {
-		return g.ErrorIfFileExists()
+	if fileExists(fullPath) && fileExistsError != nil {
+		return fileExistsError(fullPath)
 	}
 
 	err := os.MkdirAll(filePath, os.ModePerm)
@@ -50,12 +41,15 @@ func (g *Generator) executeTemplate(fp string, file packd.File, cfg *ProjectUnit
 		return err
 	}
 
-	tmpl, err := template.New(fp).Funcs(config.DefaultFunctions).Delims("<%", "%>").Parse(file.String())
+	tmpl, err := template.New(templateFilePath).
+		Funcs(config.DefaultFunctions).
+		Delims("<%", "%>").
+		Parse(file.String())
 	if err != nil {
 		return err
 	}
 
-	err = tmpl.Execute(stream, cfg)
+	err = tmpl.Execute(stream, unit)
 	if err != nil {
 		panic(err)
 	}
@@ -68,31 +62,15 @@ func (g *Generator) executeTemplate(fp string, file packd.File, cfg *ProjectUnit
 	return nil
 }
 
-func (g *Generator) NewUnit(cfg *ProjectUnit, unitName string) error {
-	cfg.Init()
-	if g.CheckIfNameIsSet && len(cfg.Name) == 0 {
-		return errors.New("name of a new " + unitName + " is now set")
-	}
-
-	if g.UnitExists != nil {
-		if err := g.UnitExists(cfg); err != nil {
-			return err
-		}
-	}
-
-	err := os.MkdirAll(cfg.Root, os.ModePerm)
+func GenerateUnit(unit Unit) error {
+	err := os.MkdirAll(unit.GetRootPath(), os.ModePerm)
 	if err != nil {
 		return err
 	}
 
-	err = cfg.Templates.Walk(func(fp string, file packd.File) error {
-		return g.executeTemplate(fp, file, cfg)
+	err = unit.GetTemplates().Walk(func(filePath string, file packd.File) error {
+		return executeTemplate(filePath, file, unit.GetRootPath(), unit, unit.GetFileExistsError)
 	})
-	if err != nil {
-		return err
-	}
-
-	err = utils.MakeDirs(cfg.Root, g.EmptyDirsToCreateInUnit)
 	if err != nil {
 		return err
 	}
