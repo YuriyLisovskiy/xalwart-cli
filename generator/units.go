@@ -133,7 +133,7 @@ type ProjectUnit struct {
 }
 
 func NewProjectUnit(
-	projectName, rootPath string, secretKeyLength int,
+	projectName, rootPath string, secretKeyLength uint,
 	useStandardORM bool,
 	useStandardServer bool,
 ) (*ProjectUnit, error) {
@@ -164,7 +164,8 @@ func (p *ProjectUnit) GetTemplates() *packr.Box {
 	return p.Common.Templates
 }
 
-func generateRandomString(n int) (string, error) {
+func generateRandomString(length uint) (string, error) {
+	n := int(length)
 	const letters = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
 	ret := make([]byte, n)
 	for i := 0; i < n; i++ {

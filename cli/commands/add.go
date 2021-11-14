@@ -11,7 +11,9 @@ var addCommand = &cobra.Command{
 }
 
 func init() {
+	addCommand.AddCommand(commandCommand)
 	addCommand.AddCommand(controllerCommand)
+	addCommand.AddCommand(moduleCommand)
 }
 
 func must(err error) {

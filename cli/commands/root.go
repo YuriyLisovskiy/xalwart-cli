@@ -16,6 +16,7 @@ Complete documentation is available at https://github.com/YuriyLisovskiy/xalwart
 
 func init() {
 	rootCmd.AddCommand(addCommand)
+	rootCmd.AddCommand(projectCommand)
 }
 
 func Execute() {
