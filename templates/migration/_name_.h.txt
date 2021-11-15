@@ -1,0 +1,15 @@
+/**
+ * Copyright (c) <% .Common.Year %> <% .Common.Username %>
+ */
+
+#pragma once
+
+// <% .Common.FrameworkName %>
+#include <<% .Common.FrameworkName %>.orm/db/migration.h>
+
+
+class <% .FullUnitName | to_camel_case %> : public <% .Common.FrameworkNamespace %>::orm::db::Migration
+{
+public:
+	explicit <% .FullUnitName | to_camel_case %>(auto* backend);
+};
