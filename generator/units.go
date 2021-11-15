@@ -131,6 +131,43 @@ func NewModuleUnit(unitName, rootPath, customFileName string) (*SingleFileUnit, 
 	)
 }
 
+type MigrationUnit struct {
+	Single    *SingleFileUnit
+	IsInitial bool
+}
+
+func NewMigrationUnit(
+	unitName, rootPath, customFileName string, isInitial bool,
+) (*MigrationUnit, error) {
+	singleUnit, err := NewSingleFileUnit(
+		"migration", unitName, "migration", rootPath, customFileName,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &MigrationUnit{
+		Single:    singleUnit,
+		IsInitial: isInitial,
+	}, nil
+}
+
+func (c *MigrationUnit) GetRootPath() string {
+	return c.Single.Common.RootPath
+}
+
+func (c *MigrationUnit) GetTemplates() *packr.Box {
+	return c.Single.Common.Templates
+}
+
+func (c *MigrationUnit) GetFileName() string {
+	return c.Single.Common.UnitName
+}
+
+func (c *MigrationUnit) GetUnitName() string {
+	return c.Single.Common.UnitName
+}
+
 type ProjectUnit struct {
 	Common      *CommonUnit
 	SecretKey   string

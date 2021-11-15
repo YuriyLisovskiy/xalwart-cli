@@ -13,6 +13,7 @@ var addCommand = &cobra.Command{
 func init() {
 	addCommand.AddCommand(commandCommand)
 	addCommand.AddCommand(controllerCommand)
+	addCommand.AddCommand(migrationCommand)
 	addCommand.AddCommand(moduleCommand)
 }
 
