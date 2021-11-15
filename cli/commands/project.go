@@ -48,7 +48,11 @@ func init() {
 	}
 
 	projectCommand.Flags().StringVarP(
-		&projectRootPath, "root", "r", currentDirectory, "root path for a new project",
+		&projectRootPath,
+		"root",
+		"r",
+		currentDirectory,
+		"root path for a new project",
 	)
 	projectCommand.Flags().UintVarP(
 		&projectSecretKeyLength,

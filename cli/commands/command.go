@@ -21,7 +21,11 @@ var commandCommand = &cobra.Command{
 			log.Fatal("Command name should be set")
 		}
 
-		unit, err := generator.NewCommandUnit(commandName, commandRootPath, commandCustomFileName)
+		unit, err := generator.NewCommandUnit(
+			commandName,
+			commandRootPath,
+			commandCustomFileName,
+		)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -32,7 +36,11 @@ var commandCommand = &cobra.Command{
 
 func init() {
 	commandCommand.Flags().StringVarP(
-		&commandName, "name", "n", "", "name of new command (example: Dump)",
+		&commandName,
+		"name",
+		"n",
+		"",
+		"name of new command (example: Dump)",
 	)
 	currentDirectory, err := os.Getwd()
 	if err != nil {
@@ -40,9 +48,17 @@ func init() {
 	}
 
 	commandCommand.Flags().StringVarP(
-		&commandRootPath, "root", "r", currentDirectory, "root path of new command",
+		&commandRootPath,
+		"root",
+		"r",
+		currentDirectory,
+		"root path of new command",
 	)
 	commandCommand.Flags().StringVarP(
-		&commandCustomFileName, "file", "f", "command", "custom file name for a new command",
+		&commandCustomFileName,
+		"file",
+		"f",
+		"command",
+		"custom file name for a new command",
 	)
 }

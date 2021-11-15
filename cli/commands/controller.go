@@ -21,7 +21,11 @@ var controllerCommand = &cobra.Command{
 			log.Fatal("Controller name should be set")
 		}
 
-		unit, err := generator.NewControllerUnit(controllerName, controllerRootPath, controllerCustomFileName)
+		unit, err := generator.NewControllerUnit(
+			controllerName,
+			controllerRootPath,
+			controllerCustomFileName,
+		)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -32,7 +36,11 @@ var controllerCommand = &cobra.Command{
 
 func init() {
 	controllerCommand.Flags().StringVarP(
-		&controllerName, "name", "n", "", "name of new controller (example: Index)",
+		&controllerName,
+		"name",
+		"n",
+		"",
+		"name of new controller (example: Index)",
 	)
 	currentDirectory, err := os.Getwd()
 	if err != nil {
@@ -40,9 +48,17 @@ func init() {
 	}
 
 	controllerCommand.Flags().StringVarP(
-		&controllerRootPath, "root", "r", currentDirectory, "root path of new controller",
+		&controllerRootPath,
+		"root",
+		"r",
+		currentDirectory,
+		"root path of new controller",
 	)
 	controllerCommand.Flags().StringVarP(
-		&controllerCustomFileName, "file", "f", "{name}_controller", "custom file name of new controller",
+		&controllerCustomFileName,
+		"file",
+		"f",
+		"{lower_case_name}_controller",
+		"custom file name of new controller",
 	)
 }

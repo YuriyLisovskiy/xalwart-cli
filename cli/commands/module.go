@@ -21,7 +21,11 @@ var moduleCommand = &cobra.Command{
 			log.Fatal("Module name should be set")
 		}
 
-		unit, err := generator.NewModuleUnit(moduleName, moduleRootPath, moduleCustomFileName)
+		unit, err := generator.NewModuleUnit(
+			moduleName,
+			moduleRootPath,
+			moduleCustomFileName,
+		)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -32,7 +36,11 @@ var moduleCommand = &cobra.Command{
 
 func init() {
 	moduleCommand.Flags().StringVarP(
-		&moduleName, "name", "n", "", "name of new module (example: Main)",
+		&moduleName,
+		"name",
+		"n",
+		"",
+		"name of new module (example: Main)",
 	)
 	currentDirectory, err := os.Getwd()
 	if err != nil {
@@ -40,9 +48,17 @@ func init() {
 	}
 
 	moduleCommand.Flags().StringVarP(
-		&moduleRootPath, "root", "r", currentDirectory, "root path of new module",
+		&moduleRootPath,
+		"root",
+		"r",
+		currentDirectory,
+		"root path of new module",
 	)
 	moduleCommand.Flags().StringVarP(
-		&moduleCustomFileName, "file", "f", "module", "custom file name of new module",
+		&moduleCustomFileName,
+		"file",
+		"f",
+		"module",
+		"custom file name of new module",
 	)
 }

@@ -75,7 +75,9 @@ type SingleFileUnit struct {
 	FullUnitName   string
 }
 
-func NewSingleFileUnit(boxName, unitName, unitType, rootPath, customFileName string) (*SingleFileUnit, error) {
+func NewSingleFileUnit(
+	boxName, unitName, unitType, rootPath, customFileName string,
+) (*SingleFileUnit, error) {
 	unit := &SingleFileUnit{
 		UnitType:       unitType,
 		CustomFileName: customFileName,
@@ -112,15 +114,21 @@ func (c *SingleFileUnit) GetUnitName() string {
 }
 
 func NewCommandUnit(unitName, rootPath, customFileName string) (*SingleFileUnit, error) {
-	return NewSingleFileUnit("command", unitName, "command", rootPath, customFileName)
+	return NewSingleFileUnit(
+		"command", unitName, "command", rootPath, customFileName,
+	)
 }
 
 func NewControllerUnit(unitName, rootPath, customFileName string) (*SingleFileUnit, error) {
-	return NewSingleFileUnit("controller", unitName, "controller", rootPath, customFileName)
+	return NewSingleFileUnit(
+		"controller", unitName, "controller", rootPath, customFileName,
+	)
 }
 
 func NewModuleUnit(unitName, rootPath, customFileName string) (*SingleFileUnit, error) {
-	return NewSingleFileUnit("module", unitName, "module", rootPath, customFileName)
+	return NewSingleFileUnit(
+		"module", unitName, "module", rootPath, customFileName,
+	)
 }
 
 type ProjectUnit struct {
