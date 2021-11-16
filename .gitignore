@@ -22,3 +22,6 @@ bin/
 
 # Custom files and directories
 generated/
+
+# macOS files
+*.DS_Store
