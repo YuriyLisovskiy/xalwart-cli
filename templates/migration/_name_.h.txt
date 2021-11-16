@@ -1,15 +1,13 @@
-/**
- * Copyright (c) <% .Single.Common.Year %> <% .Single.Common.Username %>
- */
+<% .Header.CopyrightNotice %>
 
 #pragma once
 
-// <% .Single.Common.FrameworkName %>
-#include <<% .Single.Common.FrameworkName %>.orm/db/migration.h>
+// <% .Header.FrameworkName %>
+#include <<% .Header.FrameworkName %>.orm/db/migration.h>
 
 
-class <% .Single.FullUnitName | to_camel_case %> : public <% .Single.Common.FrameworkNamespace %>::orm::db::Migration
+class <% .ClassName %> : public <% .Header.FrameworkNamespace %>::orm::db::Migration
 {
 public:
-	explicit <% .Single.FullUnitName | to_camel_case %>(auto* backend);
+	explicit <% .ClassName %>(auto* backend);
 };

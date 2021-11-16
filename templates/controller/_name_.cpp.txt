@@ -1,16 +1,14 @@
-/*
- * Copyright (c) <% .Common.Year %> <% .Common.Username %>
- */
+<% .Header.CopyrightNotice %>
 
-#include "./<% .GetFileName %>.h"
+#include "./<% .FileName %>.h"
 
-// <% .Common.FrameworkName %>
-#include <<% .Common.FrameworkName %>/http/response.h>
+// <% .Header.FrameworkName %>
+#include <<% .Header.FrameworkName %>/http/response.h>
 
 
-std::unique_ptr<<% .Common.FrameworkNamespace %>::http::IResponse> <% .FullUnitName | to_camel_case %>::get(<% .Common.FrameworkNamespace %>::http::IRequest* request) const
+std::unique_ptr<<% .Header.FrameworkNamespace %>::http::IResponse> <% .ClassName %>::get(<% .Header.FrameworkNamespace %>::http::IRequest* request) const
 {
     // Implement controller logic here.
 
-	return std::make_unique<<% .Common.FrameworkNamespace %>::http::Response>("Hello, World!");
+	return std::make_unique<<% .Header.FrameworkNamespace %>::http::Response>("Greetings from <% .ClassName %>!");
 }

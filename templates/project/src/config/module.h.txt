@@ -1,18 +1,16 @@
-/*
- * Copyright (c) <% .Common.Year %> <% .Common.Username %>
- */
+<% .Header.CopyrightNotice %>
 
 #pragma once
 
-// <% .Common.FrameworkName %>
-#include <<% .Common.FrameworkName %>/conf/module.h>
+// <% .Header.FrameworkName %>
+#include <<% .Header.FrameworkName %>/conf/module.h>
 
 
-class MainModule : public <% .Common.FrameworkNamespace %>::conf::ModuleConfig
+class MainModule : public <% .Header.FrameworkNamespace %>::conf::ModuleConfig
 {
 public:
-	explicit inline MainModule(const std::string& registration_name, <% .Common.FrameworkNamespace %>::conf::Settings* settings) :
-        <% .Common.FrameworkNamespace %>::conf::ModuleConfig(registration_name, settings)
+	explicit inline MainModule(const std::string& registration_name, <% .Header.FrameworkNamespace %>::conf::Settings* settings) :
+        <% .Header.FrameworkNamespace %>::conf::ModuleConfig(registration_name, settings)
     {
     }
 

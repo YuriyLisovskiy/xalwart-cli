@@ -1,19 +1,17 @@
-/*
- * Copyright (c) <% .Common.Year %> <% .Common.Username %>
- */
+<% .Header.CopyrightNotice %>
 
 #pragma once
 
-// <% .Common.FrameworkName %>
-#include <<% .Common.FrameworkName %>.base/interfaces/base.h>
-#include <<% .Common.FrameworkName %>/commands/command.h>
+// <% .Header.FrameworkName %>
+#include <<% .Header.FrameworkName %>.base/interfaces/base.h>
+#include <<% .Header.FrameworkName %>/commands/command.h>
 
 
-class <% .FullUnitName | to_camel_case %> : public <% .Common.FrameworkNamespace %>::cmd::Command
+class <% .ClassName %> : public <% .Header.FrameworkNamespace %>::cmd::Command
 {
 public:
-	inline explicit <% .FullUnitName | to_camel_case %>(const std::shared_ptr<<% .Common.FrameworkNamespace %>::ILogger>& logger) :
-        <% .Common.FrameworkNamespace %>::cmd::Command("<% .Common.UnitName | to_snake_case %>", "Calls <% .Common.UnitName | to_snake_case %> command", logger)
+	inline explicit <% .ClassName %>(const std::shared_ptr<<% .Header.FrameworkNamespace %>::ILogger>& logger) :
+        <% .Header.FrameworkNamespace %>::cmd::Command("<% .Name | to_snake_case %>", "Calls '<% .Name | to_snake_case %>' command", logger)
 	{
 	}
 

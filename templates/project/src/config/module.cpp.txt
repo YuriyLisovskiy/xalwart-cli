@@ -1,11 +1,9 @@
-/*
- * Copyright (c) <% .Common.Year %> <% .Common.Username %>
- */
+<% .Header.CopyrightNotice %>
 
 #include "./module.h"
 
-// <% .Common.FrameworkName %>
-#include <<% .Common.FrameworkName %>/controllers/redirect.h>
+// <% .Header.FrameworkName %>
+#include <<% .Header.FrameworkName %>/controllers/redirect.h>
 
 // <% .ProjectName %>
 #include "./controllers/index.h"
@@ -23,5 +21,5 @@ void MainModule::urlpatterns()
     // Register URL patterns here.
 
     this->url<IndexController>(R"(index/?)", "index");
-    this->url<<% .Common.FrameworkNamespace %>::ctrl::RedirectController>(R"(/?)", "root", "/index", false, false);
+    this->url<<% .Header.FrameworkNamespace %>::ctrl::RedirectController>(R"(/?)", "root", "/index", false, false);
 }

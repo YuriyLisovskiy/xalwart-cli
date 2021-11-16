@@ -2,12 +2,15 @@ package commands
 
 import (
 	"fmt"
+	"log"
+
+	"github.com/YuriyLisovskiy/xalwart-cli/cli/commands/add"
 	"github.com/YuriyLisovskiy/xalwart-cli/config"
 	"github.com/iancoleman/strcase"
 	"github.com/spf13/cobra"
 )
 
-var rootCmd = &cobra.Command{
+var rootCommand = &cobra.Command{
 	Use:   config.AppName,
 	Short: fmt.Sprintf(
 		"%s is project and component generator tool", strcase.ToCamel(config.AppName),
@@ -20,10 +23,13 @@ Complete documentation is available at https://github.com/YuriyLisovskiy/xalwart
 }
 
 func init() {
-	rootCmd.AddCommand(addCommand)
-	rootCmd.AddCommand(projectCommand)
+	rootCommand.AddCommand(add.RootCommand)
+	rootCommand.AddCommand(projectCommand)
 }
 
 func Execute() {
-	must(rootCmd.Execute())
+	err := rootCommand.Execute()
+	if err != nil {
+		log.Fatal(err)
+	}
 }

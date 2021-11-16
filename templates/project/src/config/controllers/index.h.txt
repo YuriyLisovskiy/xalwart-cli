@@ -1,20 +1,18 @@
-/*
- * Copyright (c) <% .Common.Year %> <% .Common.Username %>
- */
+<% .Header.CopyrightNotice %>
 
 #pragma once
 
-// <% .Common.FrameworkName %>
-#include <<% .Common.FrameworkName %>/controllers/controller.h>
+// <% .Header.FrameworkName %>
+#include <<% .Header.FrameworkName %>/controllers/controller.h>
 
 
-class IndexController : public <% .Common.FrameworkNamespace %>::ctrl::Controller<>
+class IndexController : public <% .Header.FrameworkNamespace %>::ctrl::Controller<>
 {
 public:
-	explicit inline IndexController(const <% .Common.FrameworkNamespace %>::ILogger* logger) :
-		<% .Common.FrameworkNamespace %>::ctrl::Controller<>({"get"}, logger)
+	explicit inline IndexController(const <% .Header.FrameworkNamespace %>::ILogger* logger) :
+		<% .Header.FrameworkNamespace %>::ctrl::Controller<>({"get"}, logger)
 	{
 	}
 
-	std::unique_ptr<<% .Common.FrameworkNamespace %>::http::IResponse> get(<% .Common.FrameworkNamespace %>::http::IRequest* request) const override;
+	std::unique_ptr<<% .Header.FrameworkNamespace %>::http::IResponse> get(<% .Header.FrameworkNamespace %>::http::IRequest* request) const override;
 };

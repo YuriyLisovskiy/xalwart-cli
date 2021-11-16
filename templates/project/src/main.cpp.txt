@@ -1,12 +1,10 @@
-/*
- * Copyright (c) <% .Common.Year %> <% .Common.Username %>
- */
+<% .Header.CopyrightNotice %>
 
 // STL
 #include <iostream>
 
-// <% .Common.FrameworkName %>
-#include <<% .Common.FrameworkName %>/conf/application.h>
+// <% .Header.FrameworkName %>
+#include <<% .Header.FrameworkName %>/conf/application.h>
 
 // <% .ProjectName %>
 #include "./config/settings.h"
@@ -14,16 +12,16 @@
 
 int main(int argc, char** argv)
 {
-	<% .Common.FrameworkNamespace %>::conf::initialize_signal_handlers();
+	<% .Header.FrameworkNamespace %>::conf::initialize_signal_handlers();
 	std::unique_ptr<Settings> settings;
 	try
 	{
 		settings = Settings::load();
-		<% .Common.FrameworkNamespace %>::conf::Application(settings.get())
+		<% .Header.FrameworkNamespace %>::conf::Application(settings.get())
 			.configure()
 			.execute(argc, argv);
 	}
-	catch (const <% .Common.FrameworkNamespace %>::ImproperlyConfigured& exc)
+	catch (const <% .Header.FrameworkNamespace %>::ImproperlyConfigured& exc)
 	{
 		if (settings && settings->LOGGER)
 		{

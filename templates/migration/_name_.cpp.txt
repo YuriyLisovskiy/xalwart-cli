@@ -1,12 +1,10 @@
-/*
- * Copyright (c) <% .Single.Common.Year %> <% .Single.Common.Username %>
- */
+<% .Header.CopyrightNotice %>
 
-#include "./<% .Single.GetFileName %>.h"
+#include "./<% .FileName %>.h"
 
 
-<% .Single.FullUnitName | to_camel_case %>::<% .Single.FullUnitName | to_camel_case %>(auto* backend)
-	: <% .Single.Common.FrameworkNamespace %>::orm::db::Migration(backend, "<% .Single.Common.UnitName | to_snake_case %>", <% .IsInitial %>)
+<% .ClassName %>::<% .ClassName %>(auto* backend)
+	: <% .Header.FrameworkNamespace %>::orm::db::Migration(backend, "<% .MigrationShortDescription %>", <% .IsInitial %>)
 {
     // Register changes here.
 }

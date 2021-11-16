@@ -1,4 +1,4 @@
-# Copyright (c) <% .Common.Year %> <% .Common.Username %>
+# Copyright (c) <% .Header.Year %> <% .Header.UserName %>
 
 debug: true
 
@@ -15,9 +15,9 @@ modules:
   - MainModule
 
 middleware:
-  - <% .Common.FrameworkNamespace %>::middleware::Security
-  - <% .Common.FrameworkNamespace %>::middleware::Common
-  - <% .Common.FrameworkNamespace %>::middleware::XFrameOptions
+  - <% .Header.FrameworkNamespace %>::middleware::Security
+  - <% .Header.FrameworkNamespace %>::middleware::Common
+  - <% .Header.FrameworkNamespace %>::middleware::XFrameOptions
 <% if .UseStandardORM %>
 databases:
   - instance: default

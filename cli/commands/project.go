@@ -1,45 +1,55 @@
 package commands
 
 import (
-	"github.com/YuriyLisovskiy/xalwart-cli/generator"
-	"github.com/spf13/cobra"
 	"log"
 	"os"
+
+	"github.com/YuriyLisovskiy/xalwart-cli/cli/commands/util"
+	"github.com/YuriyLisovskiy/xalwart-cli/core"
+	"github.com/YuriyLisovskiy/xalwart-cli/core/components"
+	"github.com/spf13/cobra"
 )
 
 var (
 	projectName               string
 	projectRootPath           string
+	projectOverwrite               = false
 	projectSecretKeyLength    uint = 50
 	projectUsedStandardORM         = true
 	projectUsedStandardServer      = true
 )
 
-var projectCommand = &cobra.Command{
-	Use:   "project",
-	Short: "Create new project",
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(projectName) == 0 {
-			log.Fatal("Project name should be set")
-		}
+var projectCommand *cobra.Command
 
-		unit, err := generator.NewProjectUnit(
-			projectName,
-			projectRootPath,
-			projectSecretKeyLength,
-			projectUsedStandardORM,
-			projectUsedStandardServer,
-		)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		must(generator.GenerateUnit(unit))
-	},
+func makeProjectCommand() *cobra.Command {
+	builder := util.CommandBuilder{}
+	builder.SetName("project")
+	builder.SetShortDescription("Create new project")
+	builder.SetNameValidator(
+		func() {
+			if len(projectName) == 0 {
+				log.Fatalf("project name should be set")
+			}
+		},
+	)
+	builder.SetComponentBuilder(
+		func() (core.Component, error) {
+			return components.NewProjectComponent(
+				projectName,
+				projectRootPath,
+				projectSecretKeyLength,
+				projectUsedStandardORM,
+				projectUsedStandardServer,
+			)
+		},
+	)
+	return builder.Command(&projectOverwrite)
 }
 
 func init() {
-	projectCommand.Flags().StringVarP(
+	projectCommand = makeProjectCommand()
+	flags := projectCommand.Flags()
+	flags.StringVarP(
 		&projectName, "name", "n", "", "name of a new project",
 	)
 	currentDirectory, err := os.Getwd()
@@ -47,28 +57,35 @@ func init() {
 		log.Fatal(err)
 	}
 
-	projectCommand.Flags().StringVarP(
+	flags.StringVarP(
 		&projectRootPath,
 		"root",
 		"r",
 		currentDirectory,
 		"root path for a new project",
 	)
-	projectCommand.Flags().UintVarP(
+	flags.BoolVarP(
+		&projectOverwrite,
+		"overwrite",
+		"o",
+		projectOverwrite,
+		"overwrite files if exist",
+	)
+	flags.UintVarP(
 		&projectSecretKeyLength,
 		"key-length",
 		"k",
 		projectSecretKeyLength,
 		"length of secret key to be generated in settings",
 	)
-	projectCommand.Flags().BoolVarP(
+	flags.BoolVarP(
 		&projectUsedStandardORM,
 		"use-orm",
-		"o",
+		"d",
 		projectUsedStandardORM,
 		"use standard ORM, provided by framework",
 	)
-	projectCommand.Flags().BoolVarP(
+	flags.BoolVarP(
 		&projectUsedStandardServer,
 		"use-server",
 		"s",

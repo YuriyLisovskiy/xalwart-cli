@@ -1,23 +1,21 @@
-/*
- * Copyright (c) <% .Common.Year %> <% .Common.Username %>
- */
+<% .Header.CopyrightNotice %>
 
 #pragma once
 
-// <% .Common.FrameworkName %>
-#include <<% .Common.FrameworkName %>/conf/settings.h>
+// <% .Header.FrameworkName %>
+#include <<% .Header.FrameworkName %>/conf/settings.h>
 
 
-class Settings : public <% .Common.FrameworkNamespace %>::conf::Settings
+class Settings : public <% .Header.FrameworkNamespace %>::conf::Settings
 {
 public:
 	void register_modules() override;
 
-	std::unique_ptr<<% .Common.FrameworkNamespace %>::server::IServer> build_server(
-	    const std::function<<% .Common.FrameworkNamespace %>::net::StatusCode(
-		    <% .Common.FrameworkNamespace %>::net::RequestContext*, const std::map<std::string, std::string>& /* environment */
+	std::unique_ptr<<% .Header.FrameworkNamespace %>::server::IServer> build_server(
+	    const std::function<<% .Header.FrameworkNamespace %>::net::StatusCode(
+		    <% .Header.FrameworkNamespace %>::net::RequestContext*, const std::map<std::string, std::string>& /* environment */
 	    )>& handler,
-	    const <% .Common.FrameworkNamespace %>::Options& options
+	    const <% .Header.FrameworkNamespace %>::Options& options
 	) override;
 
 	static std::unique_ptr<Settings> load();

@@ -1,27 +1,25 @@
-/*
- * Copyright (c) <% .Common.Year %> <% .Common.Username %>
- */
+<% .Header.CopyrightNotice %>
 
-#include "./<% .GetFileName %>.h"
+#include "./<% .FileName %>.h"
 
 
-void <% .FullUnitName | to_camel_case %>::add_flags()
+void <% .ClassName %>::add_flags()
 {
-	<% .Common.FrameworkNamespace %>::cmd::Command::add_flags();
+	<% .Header.FrameworkNamespace %>::cmd::Command::add_flags();
 
 	// Register flags here.
 }
 
-void <% .FullUnitName | to_camel_case %>::validate() const
+void <% .ClassName %>::validate() const
 {
-	<% .Common.FrameworkNamespace %>::cmd::Command::validate();
+	<% .Header.FrameworkNamespace %>::cmd::Command::validate();
 
 	// Perform validation of registered flags here.
 }
 
-bool <% .FullUnitName | to_camel_case %>::handle()
+bool <% .ClassName %>::handle()
 {
-	if (<% .Common.FrameworkNamespace %>::cmd::Command::handle())
+	if (<% .Header.FrameworkNamespace %>::cmd::Command::handle())
 	{
 		return true;
 	}
