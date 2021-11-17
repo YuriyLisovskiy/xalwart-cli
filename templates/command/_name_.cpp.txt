@@ -25,6 +25,7 @@ bool <% .ClassName %>::handle()
 	}
 
 	// Implement command logic here.
+	this->logger->info("Greetings from <% .ClassName %>!");
 
 	return true;
 }

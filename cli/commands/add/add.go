@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/cli/commands/util"
+	"github.com/YuriyLisovskiy/xalwart-cli/cli/util"
 	"github.com/YuriyLisovskiy/xalwart-cli/core"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -20,10 +20,15 @@ func init() {
 	RootCommand.AddCommand(commandCommand)
 	RootCommand.AddCommand(controllerCommand)
 	RootCommand.AddCommand(migrationCommand)
+	RootCommand.AddCommand(modelCommand)
 	RootCommand.AddCommand(moduleCommand)
 }
 
-func makeCommand(command, longDescription string, componentBuilder func() (core.Component, error)) *cobra.Command {
+func makeCommand(
+	command, longDescription string,
+	componentBuilder func() (core.Component, error),
+	postCreateMessageBuilder func(core.Component) string,
+) *cobra.Command {
 	builder := util.CommandBuilder{}
 	builder.SetName(command)
 	builder.SetShortDescription("Create new " + command)
@@ -36,6 +41,7 @@ func makeCommand(command, longDescription string, componentBuilder func() (core.
 		},
 	)
 	builder.SetComponentBuilder(componentBuilder)
+	builder.SetPostCreateMessageBuilder(postCreateMessageBuilder)
 	return builder.Command(&overwrite)
 }
 
