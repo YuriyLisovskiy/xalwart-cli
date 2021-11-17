@@ -1,3 +1,3 @@
-# Copyright (c) <% .Header.Year %> <% .Header.UserName %>
+<% .Header.NumberSignCopyrightNotice %>
 
 secret_key: '<% .SecretKey %>'

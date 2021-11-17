@@ -3,7 +3,6 @@ package add
 import (
 	"fmt"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/config"
 	"github.com/YuriyLisovskiy/xalwart-cli/core"
 	"github.com/YuriyLisovskiy/xalwart-cli/core/components"
 )
@@ -14,7 +13,7 @@ var (
 )
 
 const modelCommandLongDescription = `Create new model component.
-Model files will have '{lower_case_name}' names by default.`
+Model files will have lowercase '{name}' names by default.`
 
 var modelCommand = makeCommand(
 	"model",
@@ -52,7 +51,7 @@ func init() {
 		modelIsJsonSerializable,
 		fmt.Sprintf(
 			"inherit from '%s::IJsonSerializable' interface and implement 'to_json()' method",
-			config.FrameworkNamespace,
+			core.FrameworkNamespace,
 		),
 	)
 }

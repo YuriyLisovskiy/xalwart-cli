@@ -9,7 +9,7 @@ import (
 )
 
 const moduleCommandLongDescription = `Create new module component.
-Module files will have 'module' names by default and will be placed in {name} directory.`
+Module files will have 'module' names by default and will be placed in lowercase '{name}' directory.`
 
 var moduleCommand = makeCommand(
 	"module",

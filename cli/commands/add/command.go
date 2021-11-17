@@ -8,7 +8,7 @@ import (
 )
 
 const commandCommandLongDescription = `Create new command component.
-Command files will have {lower_case_name} names by default.`
+Command files will have lowercase '{name}' names by default.`
 
 var commandCommand = makeCommand(
 	"command",

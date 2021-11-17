@@ -1,23 +1,15 @@
 package core
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path"
 	"text/template"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/config"
 	"github.com/gobuffalo/packd"
 	"github.com/gobuffalo/packr/v2"
 )
-
-type Template interface {
-	Execute(Component) error
-}
-
-type TemplateBox interface {
-	Walk(func(Template) error, Component, bool) error
-}
 
 type FileTemplate struct {
 	file         packd.File
@@ -46,7 +38,7 @@ func (t *FileTemplate) Execute(component Component) error {
 	}
 
 	tmpl, err := template.New(t.templatePath).
-		Funcs(config.DefaultFunctions).
+		Funcs(DefaultFunctions).
 		Delims("<%", "%>").
 		Parse(t.file.String())
 	if err != nil {
@@ -71,6 +63,10 @@ type FileTemplateBox struct {
 }
 
 func (b *FileTemplateBox) Walk(function func(Template) error, component Component, overwrite bool) error {
+	if b.box == nil {
+		return errors.New("template box is nil")
+	}
+
 	return b.box.Walk(
 		func(templatePath string, file packd.File) error {
 			targetPath := component.GetTargetPath(templatePath)
@@ -87,6 +83,14 @@ func (b *FileTemplateBox) Walk(function func(Template) error, component Componen
 			return function(fileTemplate)
 		},
 	)
+}
+
+func (b *FileTemplateBox) FindString(name string) (string, error) {
+	if b.box == nil {
+		return "", errors.New("template box is nil")
+	}
+
+	return b.box.FindString(name)
 }
 
 func (b FileTemplateBox) fileExists(fileName string) bool {

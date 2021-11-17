@@ -1,4 +1,4 @@
-<% .Header.CopyrightNotice %>
+<% .Header.CLikeCopyrightNotice %>
 
 #pragma once
 
@@ -25,15 +25,7 @@ public:
 	}
 
 	[[nodiscard]]
-	inline std::string to_string() const override
-	{
-	    if (this->is_null())
-        {
-        	return "null";
-        }
-
-        return "<% .Name | to_camel_case %> [" + std::to_string(this->id) + "]";
-	}<% if .IsJsonSerializable %>
+	std::string to_string() const override;<% if .IsJsonSerializable %>
 
 	[[nodiscard]]
 	nlohmann::json to_json() const override;<% end %>

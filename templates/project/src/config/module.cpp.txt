@@ -1,4 +1,4 @@
-<% .Header.CopyrightNotice %>
+<% .Header.CLikeCopyrightNotice %>
 
 #include "./module.h"
 

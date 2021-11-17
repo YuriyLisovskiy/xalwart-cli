@@ -21,31 +21,6 @@ var (
 
 var projectCommand *cobra.Command
 
-func makeProjectCommand() *cobra.Command {
-	builder := util.CommandBuilder{}
-	builder.SetName("project")
-	builder.SetShortDescription("Create new project")
-	builder.SetNameValidator(
-		func() {
-			if len(projectName) == 0 {
-				log.Fatalf("project name should be set")
-			}
-		},
-	)
-	builder.SetComponentBuilder(
-		func() (core.Component, error) {
-			return components.NewProjectComponent(
-				projectName,
-				projectRootPath,
-				projectSecretKeyLength,
-				projectUsedStandardORM,
-				projectUsedStandardServer,
-			)
-		},
-	)
-	return builder.Command(&projectOverwrite)
-}
-
 func init() {
 	projectCommand = makeProjectCommand()
 	flags := projectCommand.Flags()
@@ -92,4 +67,37 @@ func init() {
 		projectUsedStandardServer,
 		"use standard web server, provided by framework",
 	)
+}
+
+func makeProjectCommand() *cobra.Command {
+	builder := util.CommandBuilder{}
+	builder.SetName("project")
+	builder.SetShortDescription("Create new project")
+	builder.SetNameValidator(
+		func() {
+			if len(projectName) == 0 {
+				log.Fatalf("project name should be set")
+			}
+		},
+	)
+	builder.SetComponentBuilder(
+		func() (core.Component, error) {
+			return components.NewProjectComponent(
+				projectName,
+				projectRootPath,
+				projectSecretKeyLength,
+				projectUsedStandardORM,
+				projectUsedStandardServer,
+			)
+		},
+	)
+	builder.SetPostCreateMessageBuilder(postProjectCreationMessage)
+	return builder.Command(&projectOverwrite)
+}
+
+func postProjectCreationMessage(component core.Component) string {
+	return `Success.
+
+Examine 'README.md' in the project root directory.
+`
 }
