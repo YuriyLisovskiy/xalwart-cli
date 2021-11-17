@@ -32,7 +32,7 @@ func makeCommand(
 ) *cobra.Command {
 	builder := util.CommandBuilder{}
 	builder.SetName(command)
-	builder.SetShortDescription("Create new " + command)
+	builder.SetShortDescription(fmt.Sprintf("Create new %s component.", command))
 	builder.SetLongDescription(longDescription)
 	builder.SetNameValidator(
 		func() {
