@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/YuriyLisovskiy/xalwart-cli/core"
-	"github.com/gobuffalo/packr/v2"
 	"github.com/iancoleman/strcase"
 )
 
@@ -18,14 +17,7 @@ type CommonComponent struct {
 }
 
 func newCommonComponent(templateBoxName, componentName, rootPath string) (*CommonComponent, error) {
-	noticeName := "copyright_notice.txt"
-	headerBox := packr.New(noticeName, "../../templates")
-	noticeContent, err := headerBox.FindString("copyright_notice.txt")
-	if err != nil {
-		return nil, err
-	}
-
-	header, err := newHeader(noticeContent)
+	header, err := newHeader(core.NewFileTemplateBox("copyright_notices"))
 	if err != nil {
 		return nil, err
 	}

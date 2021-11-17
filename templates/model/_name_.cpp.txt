@@ -1,6 +1,17 @@
-<% .Header.CopyrightNotice %>
+<% .Header.CLikeCopyrightNotice %>
 
 #include "./<% .FileName %>.h"
+
+
+std::string <% .ClassName %>::to_string() const
+{
+    if (this->is_null())
+    {
+     	return "null";
+    }
+
+    return "<% .Name | to_camel_case %> [" + std::to_string(this->id) + "]";
+}
 <% if .IsJsonSerializable %>
 
 nlohmann::json <% .ClassName %>::to_json() const

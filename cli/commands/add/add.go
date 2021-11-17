@@ -19,6 +19,7 @@ var RootCommand = &cobra.Command{
 func init() {
 	RootCommand.AddCommand(commandCommand)
 	RootCommand.AddCommand(controllerCommand)
+	RootCommand.AddCommand(middlewareCommand)
 	RootCommand.AddCommand(migrationCommand)
 	RootCommand.AddCommand(modelCommand)
 	RootCommand.AddCommand(moduleCommand)

@@ -1,4 +1,4 @@
-# Copyright (c) <% .Header.Year %> <% .Header.UserName %>
+<% .Header.NumberSignCopyrightNotice %>
 
 debug: true
 

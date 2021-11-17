@@ -43,8 +43,9 @@ If there is not 'register_migrations()' method in application settings, overwrit
 )
 
 func init() {
-	addCommonFlags("migration", migrationCommand.Flags())
-	migrationCommand.Flags().BoolVarP(
+	flags := migrationCommand.Flags()
+	addCommonFlags("migration", flags)
+	flags.BoolVarP(
 		&migrationIsInitial,
 		"initial",
 		"i",

@@ -5,6 +5,10 @@
   ```bash
   ./application start-server
   ```
+* `migrate` - migrate changes to the database:
+  ```bash
+  ./application migrate
+  ```
 
 For more information about application commands, run:
 ```bash

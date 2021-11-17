@@ -9,7 +9,7 @@ import (
 )
 
 const controllerCommandLongDescription = `Create new controller component.
-Controller files will have {lower_case_name_controller} names by default.`
+Controller files will have lowercase '{name}_controller' names by default.`
 
 var controllerCommand = makeCommand(
 	"controller",
