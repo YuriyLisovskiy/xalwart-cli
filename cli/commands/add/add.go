@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/cli/commands/util"
+	"github.com/YuriyLisovskiy/xalwart-cli/cli/util"
 	"github.com/YuriyLisovskiy/xalwart-cli/core"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"

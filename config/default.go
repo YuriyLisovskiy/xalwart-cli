@@ -1,9 +1,10 @@
 package config
 
 import (
-	"github.com/iancoleman/strcase"
 	"strings"
 	"text/template"
+
+	"github.com/iancoleman/strcase"
 )
 
 const (
@@ -12,8 +13,6 @@ const (
 
 	FrameworkName       = "xalwart"
 	FrameworkNamespace  = "xw"
-
-	SecretKeyLength = 50
 )
 
 var DefaultFunctions = template.FuncMap {
