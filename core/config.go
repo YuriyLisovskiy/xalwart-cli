@@ -8,15 +8,17 @@ import (
 )
 
 const (
-	AppName = "xalwart"
+	FrameworkName      = "xalwart"
+	FrameworkNamespace = "xw"
+
+	AppName    = FrameworkName
 	AppVersion = "0.0.1"
 
-	FrameworkName       = "xalwart"
-	FrameworkNamespace  = "xw"
+	CLIAppDocumentationLink = "https://github.com/YuriyLisovskiy/xalwart-cli/blob/release/v" + AppVersion + "/README.md"
 )
 
-var DefaultFunctions = template.FuncMap {
-	"upper": strings.ToUpper,
+var DefaultFunctions = template.FuncMap{
+	"upper":         strings.ToUpper,
 	"to_camel_case": strcase.ToCamel,
 	"to_snake_case": strcase.ToSnake,
 }

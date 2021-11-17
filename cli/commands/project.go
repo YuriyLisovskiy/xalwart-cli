@@ -95,7 +95,7 @@ func makeProjectCommand() *cobra.Command {
 	return builder.Command(&projectOverwrite)
 }
 
-func postProjectCreationMessage(component core.Component) string {
+func postProjectCreationMessage(core.Component) string {
 	return `Success.
 
 Examine 'README.md' in the project root directory.
