@@ -20,6 +20,7 @@ func init() {
 	RootCommand.AddCommand(commandCommand)
 	RootCommand.AddCommand(controllerCommand)
 	RootCommand.AddCommand(migrationCommand)
+	RootCommand.AddCommand(modelCommand)
 	RootCommand.AddCommand(moduleCommand)
 }
 

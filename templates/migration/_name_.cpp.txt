@@ -4,7 +4,7 @@
 
 
 <% .ClassName %>::<% .ClassName %>(auto* backend)
-	: <% .Header.FrameworkNamespace %>::orm::db::Migration(backend, "<% .MigrationShortDescription %>", <% .IsInitial %>)
+	: <% .Header.FrameworkNamespace %>::orm::db::Migration(backend, "<% .MigrationName %>", <% .IsInitial %>)
 {
     // Register changes here.
 }

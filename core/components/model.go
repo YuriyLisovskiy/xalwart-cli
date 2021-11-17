@@ -3,10 +3,13 @@ package components
 import (
 	"github.com/YuriyLisovskiy/xalwart-cli/core"
 	"github.com/iancoleman/strcase"
+	"github.com/gertd/go-pluralize"
 )
 
 type ModelComponent struct {
-	class ClassComponent
+	class              ClassComponent
+	isJsonSerializable bool
+	customTableName    string
 }
 
 func (m ModelComponent) Name() string {
@@ -41,31 +44,30 @@ func (m ModelComponent) ClassName() string {
 	return m.class.ClassName()
 }
 
-func (m ModelComponent) WithId() bool {
-	// TODO:
-	return false
-}
-
 func (m ModelComponent) IsJsonSerializable() bool {
-	// TODO:
-	return false
+	return m.isJsonSerializable
 }
 
 func (m ModelComponent) TableName() string {
-	// TODO:
-	return ""
+	if len(m.customTableName) != 0 {
+		return m.customTableName
+	}
+
+	return pluralize.NewClient().Plural(m.Name())
 }
 
-func NewModelComponent(modelName, rootPath, customFileName string) (
+func NewModelComponent(modelName, rootPath, customFileName, customTableName string, isJsonSerializable bool) (
 	*ModelComponent,
 	error,
 ) {
-	classComponent, err := newClassComponent("model", modelName, rootPath, "model", customFileName)
+	classComponent, err := newClassComponent(modelName, rootPath, "model", customFileName)
 	if err != nil {
 		return nil, err
 	}
 
 	return &ModelComponent{
-		class: *classComponent,
+		class:              *classComponent,
+		isJsonSerializable: isJsonSerializable,
+		customTableName:    customTableName,
 	}, nil
 }

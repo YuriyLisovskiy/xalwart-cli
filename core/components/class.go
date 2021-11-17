@@ -43,11 +43,11 @@ func (s ClassComponent) TemplateBox() core.TemplateBox {
 	return s.common.templateBox
 }
 
-func newClassComponent(templateBoxName, componentName, rootPath, componentType, customFileName string) (
+func newClassComponent(componentName, rootPath, componentType, customFileName string) (
 	*ClassComponent,
 	error,
 ) {
-	commonComponent, err := newCommonComponent(templateBoxName, componentName, rootPath)
+	commonComponent, err := newCommonComponent(componentType, componentName, rootPath)
 	if err != nil {
 		return nil, err
 	}
@@ -60,13 +60,13 @@ func newClassComponent(templateBoxName, componentName, rootPath, componentType, 
 }
 
 func NewCommandComponent(command, rootPath, customFileName string) (*ClassComponent, error) {
-	return newClassComponent("command", command, rootPath, "command", customFileName)
+	return newClassComponent(command, rootPath, "command", customFileName)
 }
 
 func NewControllerComponent(controllerName, rootPath, customFileName string) (*ClassComponent, error) {
-	return newClassComponent("controller", controllerName, rootPath, "controller", customFileName)
+	return newClassComponent(controllerName, rootPath, "controller", customFileName)
 }
 
 func NewModuleComponent(moduleName, rootPath, customFileName string) (*ClassComponent, error) {
-	return newClassComponent("module", moduleName, rootPath, "module", customFileName)
+	return newClassComponent(moduleName, rootPath, "module", customFileName)
 }

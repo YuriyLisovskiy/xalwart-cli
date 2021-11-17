@@ -9,10 +9,10 @@ import (
 )
 
 type MigrationComponent struct {
-	class                     ClassComponent
-	isInitial                 bool
-	migrationShortDescription string
-	className                 string
+	class         ClassComponent
+	isInitial     bool
+	migrationName string
+	className     string
 }
 
 func (m MigrationComponent) Name() string {
@@ -24,7 +24,7 @@ func (m MigrationComponent) FileName() string {
 		return m.class.customFileName
 	}
 
-	return strcase.ToSnake(m.MigrationShortDescription())
+	return strcase.ToSnake(m.MigrationName())
 }
 
 func (m MigrationComponent) RootPath() string {
@@ -51,8 +51,8 @@ func (m MigrationComponent) IsInitial() bool {
 	return m.isInitial
 }
 
-func (m MigrationComponent) MigrationShortDescription() string {
-	return m.migrationShortDescription
+func (m MigrationComponent) MigrationName() string {
+	return m.migrationName
 }
 
 func NewMigrationComponent(migrationName, rootPath, customFileName string, isInitial bool) (
@@ -69,15 +69,15 @@ func NewMigrationComponent(migrationName, rootPath, customFileName string, isIni
 		className = fmt.Sprintf("Migration%s", className)
 	}
 
-	classComponent, err := newClassComponent("migration", className, rootPath, "migration", customFileName)
+	classComponent, err := newClassComponent(className, rootPath, "migration", customFileName)
 	if err != nil {
 		return nil, err
 	}
 
 	return &MigrationComponent{
-		class:                     *classComponent,
-		isInitial:                 isInitial,
-		migrationShortDescription: migrationName,
-		className:                 className,
+		class:         *classComponent,
+		isInitial:     isInitial,
+		migrationName: migrationName,
+		className:     className,
 	}, nil
 }

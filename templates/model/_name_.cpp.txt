@@ -1,20 +1,15 @@
 <% .Header.CopyrightNotice %>
 
 #include "./<% .FileName %>.h"
-
-
 <% if .IsJsonSerializable %>
+
 nlohmann::json <% .ClassName %>::to_json() const override
 {
-    <% if .WithId %>
 	if (this->is_null())
 	{
 		return nullptr;
 	}
 
 	return {{"id", this->id}};
-	<% else %>
-	return nullptr;
-	<% end %>
 }
 <% end %>

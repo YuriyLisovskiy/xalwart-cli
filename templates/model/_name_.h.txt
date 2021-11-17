@@ -13,9 +13,9 @@ public:
 
 	static constexpr const char* meta_table_name = "<% .TableName %>";
 
-	inline static const std::tuple meta_columns = {<% if .WithId %>
+	inline static const std::tuple meta_columns = {
 		<% .Header.FrameworkNamespace %>::orm::db::make_pk_column_meta("id", &<% .ClassName %>::id)
-	<% end %>};
+	};
 
 	<% .ClassName %>() = default;
 
@@ -27,20 +27,14 @@ public:
 	[[nodiscard]]
 	inline std::string to_string() const override
 	{
-	    <% if .WithId %>
 	    if (this->is_null())
         {
         	return "null";
         }
 
-        return "<% .Name %>:\n  id: " + std::to_string(this->id);
-	    <% else %>
-	    return <% .Header.FrameworkNamespace %>::orm::db::Model::to_string();
-	    <% end %>
-	}
+        return "<% .Name | to_camel_case %> [" + std::to_string(this->id) + "]";
+	}<% if .IsJsonSerializable %>
 
-    <% if .IsJsonSerializable %>
 	[[nodiscard]]
-	nlohmann::json to_json() const override;
-	<% end %>
+	nlohmann::json to_json() const override;<% end %>
 };
