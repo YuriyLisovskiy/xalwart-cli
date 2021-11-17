@@ -24,7 +24,11 @@ func init() {
 	RootCommand.AddCommand(moduleCommand)
 }
 
-func makeCommand(command, longDescription string, componentBuilder func() (core.Component, error)) *cobra.Command {
+func makeCommand(
+	command, longDescription string,
+	componentBuilder func() (core.Component, error),
+	postCreateMessageBuilder func(core.Component) string,
+) *cobra.Command {
 	builder := util.CommandBuilder{}
 	builder.SetName(command)
 	builder.SetShortDescription("Create new " + command)
@@ -37,6 +41,7 @@ func makeCommand(command, longDescription string, componentBuilder func() (core.
 		},
 	)
 	builder.SetComponentBuilder(componentBuilder)
+	builder.SetPostCreateMessageBuilder(postCreateMessageBuilder)
 	return builder.Command(&overwrite)
 }
 

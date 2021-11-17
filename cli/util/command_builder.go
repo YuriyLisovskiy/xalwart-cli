@@ -2,6 +2,7 @@ package util
 
 import (
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/YuriyLisovskiy/xalwart-cli/core"
@@ -9,11 +10,12 @@ import (
 )
 
 type CommandBuilder struct {
-	name             string
-	shortDescription string
-	longDescription  string
-	validateName     func()
-	componentBuilder func() (core.Component, error)
+	name                     string
+	shortDescription         string
+	longDescription          string
+	validateName             func()
+	componentBuilder         func() (core.Component, error)
+	postCreateMessageBuilder func(core.Component) string
 }
 
 func (cb *CommandBuilder) SetName(name string) *CommandBuilder {
@@ -41,6 +43,11 @@ func (cb *CommandBuilder) SetComponentBuilder(builder func() (core.Component, er
 	return cb
 }
 
+func (cb *CommandBuilder) SetPostCreateMessageBuilder(builder func(core.Component) string) *CommandBuilder {
+	cb.postCreateMessageBuilder = builder
+	return cb
+}
+
 func (cb *CommandBuilder) Command(overwrite *bool) *cobra.Command {
 	return &cobra.Command{
 		Use:   cb.name,
@@ -61,6 +68,9 @@ func (cb *CommandBuilder) Command(overwrite *bool) *cobra.Command {
 			}
 
 			must(core.Generate(component, *overwrite))
+			if cb.postCreateMessageBuilder != nil {
+				fmt.Println(cb.postCreateMessageBuilder(component))
+			}
 		},
 	}
 }

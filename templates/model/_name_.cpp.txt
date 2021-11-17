@@ -3,7 +3,7 @@
 #include "./<% .FileName %>.h"
 <% if .IsJsonSerializable %>
 
-nlohmann::json <% .ClassName %>::to_json() const override
+nlohmann::json <% .ClassName %>::to_json() const
 {
 	if (this->is_null())
 	{

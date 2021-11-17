@@ -13,10 +13,13 @@ var (
 	modelIsJsonSerializable = false
 )
 
-const modelCommandLongDescription = ``
+const modelCommandLongDescription = `Create new model component.
+Model files will have '{lower_case_name}' names by default.`
 
 var modelCommand = makeCommand(
-	"model", modelCommandLongDescription, func() (core.Component, error) {
+	"model",
+	modelCommandLongDescription,
+	func() (core.Component, error) {
 		return components.NewModelComponent(
 			componentName,
 			rootPath,
@@ -24,6 +27,11 @@ var modelCommand = makeCommand(
 			modelCustomTableName,
 			modelIsJsonSerializable,
 		)
+	}, func(component core.Component) string {
+		return fmt.Sprintf(`Success.
+
+Do not forget to create a new migration for '%s' and apply changes to the database.
+`, component.(*components.ModelComponent).ClassName())
 	},
 )
 
@@ -35,7 +43,7 @@ func init() {
 		"table",
 		"t",
 		"",
-		"custom name which will be used for table in SQL database (flag 'name' will be used by default)",
+		"custom name which will be used for table in SQL database (value of 'name' flag will be used by default)",
 	)
 	flags.BoolVarP(
 		&modelIsJsonSerializable,
@@ -43,7 +51,7 @@ func init() {
 		"j",
 		modelIsJsonSerializable,
 		fmt.Sprintf(
-			"inherit from '%s::IJsonSerializable' interface and add implement 'to_json()' method",
+			"inherit from '%s::IJsonSerializable' interface and implement 'to_json()' method",
 			config.FrameworkNamespace,
 		),
 	)

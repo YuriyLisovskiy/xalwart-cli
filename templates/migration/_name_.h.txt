@@ -9,5 +9,5 @@
 class <% .ClassName %> : public <% .Header.FrameworkNamespace %>::orm::db::Migration
 {
 public:
-	explicit <% .ClassName %>(auto* backend);
+	explicit <% .ClassName %>(<% .Header.FrameworkNamespace %>::orm::IBackend* backend);
 };
