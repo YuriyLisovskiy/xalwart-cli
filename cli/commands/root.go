@@ -13,7 +13,7 @@ import (
 )
 
 var rootCommand = &cobra.Command{
-	Use: core.AppName,
+	Use:     core.AppName,
 	Version: core.AppVersion,
 	Short: fmt.Sprintf(
 		"%s is project and component generator tool", strcase.ToCamel(core.AppName),

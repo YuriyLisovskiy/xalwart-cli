@@ -1,13 +1,13 @@
 package commands
 
 import (
+	"errors"
 	"log"
 	"os"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/cli/util"
+	"github.com/YuriyLisovskiy/xalwart-cli/cli/utils"
 	"github.com/YuriyLisovskiy/xalwart-cli/core"
 	"github.com/YuriyLisovskiy/xalwart-cli/core/components"
-	"github.com/spf13/cobra"
 )
 
 var (
@@ -19,10 +19,15 @@ var (
 	projectUsedStandardServer      = true
 )
 
-var projectCommand *cobra.Command
+var projectCommand = utils.NewComponentCommandBuilder().
+	SetName("project").
+	SetShortDescription("Create new project").
+	SetNameValidator(validateProjectName).
+	SetComponentBuilder(buildProjectComponent).
+	SetPostRunMessageBuilder(projectSuccess).
+	Command(&projectOverwrite)
 
 func init() {
-	projectCommand = makeProjectCommand()
 	flags := projectCommand.Flags()
 	flags.StringVarP(
 		&projectName, "name", "n", "", "name of a new project",
@@ -69,33 +74,37 @@ func init() {
 	)
 }
 
-func makeProjectCommand() *cobra.Command {
-	builder := util.CommandBuilder{}
-	builder.SetName("project")
-	builder.SetShortDescription("Create new project")
-	builder.SetNameValidator(
-		func() {
-			if len(projectName) == 0 {
-				log.Fatalf("project name should be set")
-			}
-		},
-	)
-	builder.SetComponentBuilder(
-		func() (core.Component, error) {
-			return components.NewProjectComponent(
-				projectName,
-				projectRootPath,
-				projectSecretKeyLength,
-				projectUsedStandardORM,
-				projectUsedStandardServer,
-			)
-		},
-	)
-	builder.SetPostCreateMessageBuilder(postProjectCreationMessage)
-	return builder.Command(&projectOverwrite)
+func validateProjectName() error {
+	if len(projectName) == 0 {
+		return errors.New("project name should be set")
+	}
+
+	return nil
 }
 
-func postProjectCreationMessage(core.Component) string {
+func buildProjectComponent() (core.Component, error) {
+	header, err := components.NewHeaderComponent(utils.GetCopyrightNoticesTemplateBox())
+	if err != nil {
+		return nil, err
+	}
+
+	secretKey, err := core.RandomString(projectSecretKeyLength)
+	if err != nil {
+		return nil, err
+	}
+
+	return components.NewProjectComponent(
+		*header,
+		utils.GetProjectTemplateBox(),
+		secretKey,
+		projectName,
+		projectRootPath,
+		projectUsedStandardORM,
+		projectUsedStandardServer,
+	), nil
+}
+
+func projectSuccess(core.Component) string {
 	return `Success.
 
 Examine 'README.md' in the project root directory.

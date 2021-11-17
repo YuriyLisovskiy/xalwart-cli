@@ -1,7 +1,7 @@
 package core
 
 type Template interface {
-	Execute(Component) error
+	Render(Component) error
 }
 
 type TemplateBox interface {
@@ -15,4 +15,13 @@ type Component interface {
 	RootPath() string
 	GetTargetPath(string) string
 	TemplateBox() TemplateBox
+}
+
+type Header interface {
+	Year() int
+	UserName() string
+	FrameworkName() string
+	FrameworkNamespace() string
+	CLikeCopyrightNotice() string
+	NumberSignCopyrightNotice() string
 }

@@ -3,27 +3,50 @@ package add
 import (
 	"fmt"
 
+	"github.com/YuriyLisovskiy/xalwart-cli/cli/utils"
 	"github.com/YuriyLisovskiy/xalwart-cli/core"
 	"github.com/YuriyLisovskiy/xalwart-cli/core/components"
 )
 
 var migrationIsInitial = false
 
-const migrationCommandLongDescription = `Create new migration component.
+const migrationCommandDescription = `Create new migration component.
 Migration files will have lower-case migration name by default.
 
 Recommended migration name structure is '{number}_{ShortDescription}', for example: '001_Initial'.
 In this case, migration class will have 'Migration{number}_{ShortDescription}' name.`
 
-var migrationCommand = makeCommand(
-	"migration",
-	migrationCommandLongDescription,
-	func() (core.Component, error) {
-		return components.NewMigrationComponent(componentName, rootPath, componentCustomFileName, migrationIsInitial)
-	},
-	func(component core.Component) string {
-		className := component.(*components.MigrationComponent).ClassName()
-		return fmt.Sprintf(`Success.
+var migrationCommand = getComponentCommandBuilder("migration", migrationCommandDescription).
+	SetComponentBuilder(buildMigrationComponent).
+	SetPostRunMessageBuilder(migrationSuccess).
+	Command(&overwriteVar)
+
+func init() {
+	flags := migrationCommand.Flags()
+	initDefaultFlags("migration", flags)
+	flags.BoolVarP(&migrationIsInitial, "initial", "i", migrationIsInitial, "mark migration as initial one")
+}
+
+func buildMigrationComponent() (core.Component, error) {
+	header, err := getDefaultHeader()
+	if err != nil {
+		return nil, err
+	}
+
+	return components.NewMigrationComponent(
+		header,
+		utils.GetMigrationTemplateBox(),
+		nameVar,
+		rootPathVar,
+		customFileNameVar,
+		migrationIsInitial,
+	)
+}
+
+func migrationSuccess(component core.Component) string {
+	className := component.(*components.MigrationComponent).ClassName()
+	return fmt.Sprintf(
+		`Success.
 
 Register '%s' at the end of 'register_migrations()' method in application settings:
   
@@ -38,18 +61,6 @@ If there is not 'register_migrations()' method in application settings, overwrit
   void Settings::register_migrations()
   {
   }
-`, className, className)
-	},
-)
-
-func init() {
-	flags := migrationCommand.Flags()
-	addCommonFlags("migration", flags)
-	flags.BoolVarP(
-		&migrationIsInitial,
-		"initial",
-		"i",
-		migrationIsInitial,
-		"mark migration as initial one",
+`, className, className,
 	)
 }

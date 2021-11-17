@@ -1,12 +1,14 @@
 package add
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/cli/util"
+	"github.com/YuriyLisovskiy/xalwart-cli/cli/utils"
 	"github.com/YuriyLisovskiy/xalwart-cli/core"
+	"github.com/YuriyLisovskiy/xalwart-cli/core/components"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -25,59 +27,35 @@ func init() {
 	RootCommand.AddCommand(moduleCommand)
 }
 
-func makeCommand(
-	command, longDescription string,
-	componentBuilder func() (core.Component, error),
-	postCreateMessageBuilder func(core.Component) string,
-) *cobra.Command {
-	builder := util.CommandBuilder{}
-	builder.SetName(command)
-	builder.SetShortDescription(fmt.Sprintf("Create new %s component.", command))
-	builder.SetLongDescription(longDescription)
-	builder.SetNameValidator(
-		func() {
-			if len(componentName) == 0 {
-				log.Fatalf("%s name should be set", command)
-			}
-		},
-	)
-	builder.SetComponentBuilder(componentBuilder)
-	builder.SetPostCreateMessageBuilder(postCreateMessageBuilder)
-	return builder.Command(&overwrite)
-}
-
-func addCommonFlags(component string, flags *pflag.FlagSet) {
-	flags.StringVarP(
-		&componentName,
-		"name",
-		"n",
-		"",
-		fmt.Sprintf("name of new %s", component),
-	)
+func initDefaultFlags(component string, flags *pflag.FlagSet) {
+	flags.StringVarP(&nameVar, "name", "n", "", fmt.Sprintf("name of new %s", component))
 	currentDirectory, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	flags.StringVarP(
-		&rootPath,
-		"root",
-		"r",
-		currentDirectory,
-		fmt.Sprintf("root path of new %s", component),
+	flags.StringVarP(&rootPathVar, "root", "r", currentDirectory, fmt.Sprintf("root path of new %s", component))
+	flags.StringVarP(&customFileNameVar, "file", "f", "", fmt.Sprintf("custom file name of new %s", component))
+	flags.BoolVarP(&overwriteVar, "overwrite", "o", overwriteVar, "overwrite files if exist")
+}
+
+func getComponentCommandBuilder(name, longDescription string) *utils.ComponentCommandBuilder {
+	builder := &utils.ComponentCommandBuilder{}
+	builder.SetName(name)
+	builder.SetShortDescription(fmt.Sprintf("Create new %s component.", name))
+	builder.SetLongDescription(longDescription)
+	builder.SetNameValidator(
+		func() error {
+			if len(nameVar) == 0 {
+				return errors.New(fmt.Sprintf("%s name should be set", name))
+			}
+
+			return nil
+		},
 	)
-	flags.StringVarP(
-		&componentCustomFileName,
-		"file",
-		"f",
-		"",
-		fmt.Sprintf("custom file name of new %s", component),
-	)
-	flags.BoolVarP(
-		&overwrite,
-		"overwrite",
-		"o",
-		overwrite,
-		"overwrite files if exist",
-	)
+	return builder
+}
+
+func getDefaultHeader() (core.Header, error) {
+	return components.NewHeaderComponent(utils.GetCopyrightNoticesTemplateBox())
 }

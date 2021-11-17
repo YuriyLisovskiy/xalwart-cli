@@ -3,22 +3,42 @@ package add
 import (
 	"fmt"
 
+	"github.com/YuriyLisovskiy/xalwart-cli/cli/utils"
 	"github.com/YuriyLisovskiy/xalwart-cli/core"
 	"github.com/YuriyLisovskiy/xalwart-cli/core/components"
 )
 
-const commandCommandLongDescription = `Create new command component.
+const commandCommandDescription = `Create new command component.
 Command files will have lowercase '{name}' names by default.`
 
-var commandCommand = makeCommand(
-	"command",
-	commandCommandLongDescription,
-	func() (core.Component, error) {
-		return components.NewCommandComponent(componentName, rootPath, componentCustomFileName)
-	},
-	func(component core.Component) string {
-		className := component.(*components.ClassComponent).ClassName()
-		return fmt.Sprintf(`Success.
+var commandCommand = getComponentCommandBuilder("command", commandCommandDescription).
+	SetComponentBuilder(buildCommandComponent).
+	SetPostRunMessageBuilder(commandSuccess).
+	Command(&overwriteVar)
+
+func init() {
+	initDefaultFlags("command", commandCommand.Flags())
+}
+
+func buildCommandComponent() (core.Component, error) {
+	header, err := getDefaultHeader()
+	if err != nil {
+		return nil, err
+	}
+
+	return components.NewCommandComponent(
+		header,
+		utils.GetCommandTemplateBox(),
+		nameVar,
+		rootPathVar,
+		customFileNameVar,
+	)
+}
+
+func commandSuccess(component core.Component) string {
+	className := component.(*components.ClassComponent).ClassName()
+	return fmt.Sprintf(
+		`Success.
 
 Register '%s' at the end of 'commands()' method of the preferred module:
   
@@ -33,10 +53,6 @@ If there is not 'commands()' method in application settings, overwrite it:
   void _MODULE_NAME_::commands()
   {
   }
-`, className, className)
-	},
-)
-
-func init() {
-	addCommonFlags("command", commandCommand.Flags())
+`, className, className,
+	)
 }

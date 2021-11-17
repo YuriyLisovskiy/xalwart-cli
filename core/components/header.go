@@ -10,38 +10,38 @@ import (
 	"github.com/YuriyLisovskiy/xalwart-cli/core"
 )
 
-type Header struct {
+type HeaderComponent struct {
 	year            int
 	userName        string
 	cLikeCopyrightNotice string
 	numberSignCopyrightNotice string
 }
 
-func (h Header) Year() int {
+func (h HeaderComponent) Year() int {
 	return h.year
 }
 
-func (h Header) UserName() string {
+func (h HeaderComponent) UserName() string {
 	return h.userName
 }
 
-func (h Header) FrameworkName() string {
+func (h HeaderComponent) FrameworkName() string {
 	return core.FrameworkName
 }
 
-func (h Header) FrameworkNamespace() string {
+func (h HeaderComponent) FrameworkNamespace() string {
 	return core.FrameworkNamespace
 }
 
-func (h Header) CLikeCopyrightNotice() string {
+func (h HeaderComponent) CLikeCopyrightNotice() string {
 	return h.cLikeCopyrightNotice
 }
 
-func (h Header) NumberSignCopyrightNotice() string {
+func (h HeaderComponent) NumberSignCopyrightNotice() string {
 	return h.numberSignCopyrightNotice
 }
 
-func (h Header) renderTemplate(text string) (string, error) {
+func (h HeaderComponent) renderTemplate(text string) (string, error) {
 	tmpl, err := template.New("text template").
 		Funcs(core.DefaultFunctions).
 		Delims("<%", "%>").
@@ -59,9 +59,9 @@ func (h Header) renderTemplate(text string) (string, error) {
 	return noticeStream.String(), nil
 }
 
-func newHeader(templateBox core.TemplateBox) (*Header, error) {
-	if templateBox == nil {
-		return nil, errors.New("template box is nil")
+func NewHeaderComponent(copyrightTemplatesBox core.TemplateBox) (*HeaderComponent, error) {
+	if copyrightTemplatesBox == nil {
+		return nil, errors.New("copyright templates box is nil")
 	}
 
 	currentUser, err := user.Current()
@@ -69,12 +69,12 @@ func newHeader(templateBox core.TemplateBox) (*Header, error) {
 		return nil, err
 	}
 
-	header := &Header{
+	header := &HeaderComponent{
 		year:     time.Now().Year(),
 		userName: currentUser.Username,
 	}
 
-	cLikeNotice, err := templateBox.FindString("c-like.txt")
+	cLikeNotice, err := copyrightTemplatesBox.FindString("c-like.txt")
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func newHeader(templateBox core.TemplateBox) (*Header, error) {
 		return nil, err
 	}
 
-	numberSignNotice, err := templateBox.FindString("number-sign.txt")
+	numberSignNotice, err := copyrightTemplatesBox.FindString("number-sign.txt")
 	if err != nil {
 		return nil, err
 	}

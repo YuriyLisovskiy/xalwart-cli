@@ -40,7 +40,7 @@ func (s ProjectComponent) TemplateBox() core.TemplateBox {
 	return s.common.templateBox
 }
 
-func (s ProjectComponent) Header() Header {
+func (s ProjectComponent) Header() core.Header {
 	return s.common.header
 }
 
@@ -61,26 +61,23 @@ func (s ProjectComponent) UseStandardORM() bool {
 }
 
 func NewProjectComponent(
+	header core.Header,
+	templateBox core.TemplateBox,
+	secretKey string,
 	projectName string,
 	rootPath string,
-	secretKeyLength uint,
 	useStandardORM bool,
 	useStandardServer bool,
-) (*ProjectComponent, error) {
-	secretKey, err := core.RandomString(secretKeyLength)
-	if err != nil {
-		return nil, err
-	}
-
-	commonComponent, err := newCommonComponent("project", projectName, rootPath)
-	if err != nil {
-		return nil, err
-	}
-
+) *ProjectComponent {
 	return &ProjectComponent{
-		common:            *commonComponent,
+		common: CommonComponent{
+			header:      header,
+			name:        projectName,
+			rootPath:    rootPath,
+			templateBox: templateBox,
+		},
 		secretKey:         secretKey,
 		useStandardServer: useStandardServer,
 		useStandardORM:    useStandardORM,
-	}, nil
+	}
 }

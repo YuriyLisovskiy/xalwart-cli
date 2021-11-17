@@ -2,8 +2,8 @@ package components
 
 import (
 	"github.com/YuriyLisovskiy/xalwart-cli/core"
-	"github.com/iancoleman/strcase"
 	"github.com/gertd/go-pluralize"
+	"github.com/iancoleman/strcase"
 )
 
 type ModelComponent struct {
@@ -36,7 +36,7 @@ func (m ModelComponent) TemplateBox() core.TemplateBox {
 	return m.class.TemplateBox()
 }
 
-func (m ModelComponent) Header() Header {
+func (m ModelComponent) Header() core.Header {
 	return m.class.Header()
 }
 
@@ -56,11 +56,19 @@ func (m ModelComponent) TableName() string {
 	return pluralize.NewClient().Plural(m.Name())
 }
 
-func NewModelComponent(modelName, rootPath, customFileName, customTableName string, isJsonSerializable bool) (
+func NewModelComponent(
+	header core.Header,
+	templateBox core.TemplateBox,
+	modelName string,
+	rootPath string,
+	customFileName string,
+	customTableName string,
+	isJsonSerializable bool,
+) (
 	*ModelComponent,
 	error,
 ) {
-	classComponent, err := newClassComponent(modelName, rootPath, "model", customFileName)
+	classComponent, err := newClassComponent(header, templateBox, modelName, rootPath, "model", customFileName)
 	if err != nil {
 		return nil, err
 	}

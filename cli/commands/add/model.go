@@ -3,6 +3,7 @@ package add
 import (
 	"fmt"
 
+	"github.com/YuriyLisovskiy/xalwart-cli/cli/utils"
 	"github.com/YuriyLisovskiy/xalwart-cli/core"
 	"github.com/YuriyLisovskiy/xalwart-cli/core/components"
 )
@@ -12,31 +13,17 @@ var (
 	modelIsJsonSerializable = false
 )
 
-const modelCommandLongDescription = `Create new model component.
+const modelCommandDescription = `Create new model component.
 Model files will have lowercase '{name}' names by default.`
 
-var modelCommand = makeCommand(
-	"model",
-	modelCommandLongDescription,
-	func() (core.Component, error) {
-		return components.NewModelComponent(
-			componentName,
-			rootPath,
-			componentCustomFileName,
-			modelCustomTableName,
-			modelIsJsonSerializable,
-		)
-	}, func(component core.Component) string {
-		return fmt.Sprintf(`Success.
-
-Do not forget to create a new migration for '%s' and apply changes to the database.
-`, component.(*components.ModelComponent).ClassName())
-	},
-)
+var modelCommand = getComponentCommandBuilder("model", modelCommandDescription).
+	SetComponentBuilder(buildModelComponent).
+	SetPostRunMessageBuilder(modelSuccess).
+	Command(&overwriteVar)
 
 func init() {
 	flags := modelCommand.Flags()
-	addCommonFlags("model", flags)
+	initDefaultFlags("model", flags)
 	flags.StringVarP(
 		&modelCustomTableName,
 		"table",
@@ -54,4 +41,28 @@ func init() {
 			core.FrameworkNamespace,
 		),
 	)
+}
+
+func buildModelComponent() (core.Component, error) {
+	header, err := getDefaultHeader()
+	if err != nil {
+		return nil, err
+	}
+
+	return components.NewModelComponent(
+		header,
+		utils.GetModelTemplateBox(),
+		nameVar,
+		rootPathVar,
+		customFileNameVar,
+		modelCustomTableName,
+		modelIsJsonSerializable,
+	)
+}
+
+func modelSuccess(component core.Component) string {
+	return fmt.Sprintf(`Success.
+
+Do not forget to create a new migration for '%s' and apply changes to the database.
+`, component.(*components.ModelComponent).ClassName())
 }

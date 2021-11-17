@@ -39,7 +39,7 @@ func (m MigrationComponent) TemplateBox() core.TemplateBox {
 	return m.class.TemplateBox()
 }
 
-func (m MigrationComponent) Header() Header {
+func (m MigrationComponent) Header() core.Header {
 	return m.class.Header()
 }
 
@@ -55,7 +55,14 @@ func (m MigrationComponent) MigrationName() string {
 	return m.migrationName
 }
 
-func NewMigrationComponent(migrationName, rootPath, customFileName string, isInitial bool) (
+func NewMigrationComponent(
+	header core.Header,
+	templateBox core.TemplateBox,
+	migrationName string,
+	rootPath string,
+	customFileName string,
+	isInitial bool,
+) (
 	*MigrationComponent,
 	error,
 ) {
@@ -69,7 +76,7 @@ func NewMigrationComponent(migrationName, rootPath, customFileName string, isIni
 		className = fmt.Sprintf("Migration%s", className)
 	}
 
-	classComponent, err := newClassComponent(className, rootPath, "migration", customFileName)
+	classComponent, err := newClassComponent(header, templateBox, className, rootPath, "migration", customFileName)
 	if err != nil {
 		return nil, err
 	}

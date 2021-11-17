@@ -10,24 +10,10 @@ import (
 )
 
 type CommonComponent struct {
-	header      Header
+	header      core.Header
 	name        string
 	rootPath    string
 	templateBox core.TemplateBox
-}
-
-func newCommonComponent(templateBoxName, componentName, rootPath string) (*CommonComponent, error) {
-	header, err := newHeader(core.NewFileTemplateBox("copyright_notices"))
-	if err != nil {
-		return nil, err
-	}
-
-	return &CommonComponent{
-		header:      *header,
-		name:        componentName,
-		rootPath:    rootPath,
-		templateBox: core.NewFileTemplateBox(templateBoxName),
-	}, nil
 }
 
 func getTargetPath(templatePath string, component core.Component) string {

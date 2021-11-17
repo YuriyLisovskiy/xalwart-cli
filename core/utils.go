@@ -7,7 +7,7 @@ import (
 
 func Generate(component Component, overwrite bool) error {
 	return component.TemplateBox().Walk(func(template Template) error {
-		return template.Execute(component)
+		return template.Render(component)
 	}, component, overwrite)
 }
 

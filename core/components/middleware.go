@@ -34,7 +34,7 @@ func (m MiddlewareComponent) TemplateBox() core.TemplateBox {
 	return m.class.TemplateBox()
 }
 
-func (m MiddlewareComponent) Header() Header {
+func (m MiddlewareComponent) Header() core.Header {
 	return m.class.Header()
 }
 
@@ -51,11 +51,18 @@ func (m MiddlewareComponent) IsClassBased() bool {
 	return m.isClassBased
 }
 
-func NewMiddlewareComponent(modelName, rootPath, customFileName string, isClassBased bool) (
+func NewMiddlewareComponent(
+	header core.Header,
+	templateBox core.TemplateBox,
+	modelName string,
+	rootPath string,
+	customFileName string,
+	isClassBased bool,
+) (
 	*MiddlewareComponent,
 	error,
 ) {
-	classComponent, err := newClassComponent(modelName, rootPath, "middleware", customFileName)
+	classComponent, err := newClassComponent(header, templateBox, modelName, rootPath, "middleware", customFileName)
 	if err != nil {
 		return nil, err
 	}

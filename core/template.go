@@ -17,7 +17,7 @@ type FileTemplate struct {
 	targetPath   string
 }
 
-func NewFileTemplate(file packd.File, templatePath, targetPath string) (*FileTemplate, error) {
+func NewFileTemplate(file packd.File, templatePath string, targetPath string) (*FileTemplate, error) {
 	return &FileTemplate{
 		file:         file,
 		templatePath: templatePath,
@@ -25,7 +25,7 @@ func NewFileTemplate(file packd.File, templatePath, targetPath string) (*FileTem
 	}, nil
 }
 
-func (t *FileTemplate) Execute(component Component) error {
+func (t *FileTemplate) Render(component Component) error {
 	fileDir, _ := path.Split(t.targetPath)
 	err := os.MkdirAll(fileDir, os.ModePerm)
 	if err != nil {

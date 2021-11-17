@@ -3,30 +3,59 @@ package add
 import (
 	"fmt"
 
+	"github.com/YuriyLisovskiy/xalwart-cli/cli/utils"
 	"github.com/YuriyLisovskiy/xalwart-cli/core"
 	"github.com/YuriyLisovskiy/xalwart-cli/core/components"
 )
 
 var middlewareIsClassBased = false
 
-const middlewareCommandLongDescription = `Create new middleware component.
+const middlewareCommandDescription = `Create new middleware component.
 Middleware files will have lowercase '{name}' names by default.`
 
-var middlewareCommand = makeCommand(
-	"middleware",
-	middlewareCommandLongDescription,
-	func() (core.Component, error) {
-		return components.NewMiddlewareComponent(componentName, rootPath, componentCustomFileName, middlewareIsClassBased)
-	},
-	func(component core.Component) string {
-		middleware := component.(*components.MiddlewareComponent)
-		fullName := middleware.FullName()
-		initializationName := fullName
-		if middleware.IsClassBased() {
-			initializationName += "()"
-		}
+var middlewareCommand = getComponentCommandBuilder("middleware", middlewareCommandDescription).
+	SetComponentBuilder(buildMiddlewareComponent).
+	SetPostRunMessageBuilder(middlewareSuccess).
+	Command(&overwriteVar)
 
-		return fmt.Sprintf(`Success.
+func init() {
+	flags := middlewareCommand.Flags()
+	initDefaultFlags("middleware", flags)
+	flags.BoolVarP(
+		&middlewareIsClassBased,
+		"class-based",
+		"c",
+		middlewareIsClassBased,
+		"add class-based middleware instead of function-based",
+	)
+}
+
+func buildMiddlewareComponent() (core.Component, error) {
+	header, err := getDefaultHeader()
+	if err != nil {
+		return nil, err
+	}
+
+	return components.NewMiddlewareComponent(
+		header,
+		utils.GetMiddlewareTemplateBox(),
+		nameVar,
+		rootPathVar,
+		customFileNameVar,
+		middlewareIsClassBased,
+	)
+}
+
+func middlewareSuccess(component core.Component) string {
+	middleware := component.(*components.MiddlewareComponent)
+	fullName := middleware.FullName()
+	initializationName := fullName
+	if middleware.IsClassBased() {
+		initializationName += "()"
+	}
+
+	return fmt.Sprintf(
+		`Success.
 
 Register '%s' in 'register_middleware()' method in application settings:
   
@@ -48,18 +77,6 @@ Do not forget to enable '%s' in configuration (yaml):
     ...
     - %s
     ...
-`, fullName, fullName, initializationName, fullName, fullName)
-	},
-)
-
-func init() {
-	flags := middlewareCommand.Flags()
-	addCommonFlags("middleware", flags)
-	flags.BoolVarP(
-		&middlewareIsClassBased,
-		"class-based",
-		"c",
-		middlewareIsClassBased,
-		"add class-based middleware instead of function-based",
+`, fullName, fullName, initializationName, fullName, fullName,
 	)
 }

@@ -11,7 +11,7 @@ type ClassComponent struct {
 	customFileName string
 }
 
-func (s ClassComponent) Header() Header {
+func (s ClassComponent) Header() core.Header {
 	return s.common.header
 }
 
@@ -43,30 +43,55 @@ func (s ClassComponent) TemplateBox() core.TemplateBox {
 	return s.common.templateBox
 }
 
-func newClassComponent(componentName, rootPath, componentType, customFileName string) (
+func newClassComponent(
+	header core.Header,
+	templateBox core.TemplateBox,
+	componentName string,
+	rootPath string,
+	componentType string,
+	customFileName string,
+) (
 	*ClassComponent,
 	error,
 ) {
-	commonComponent, err := newCommonComponent(componentType, componentName, rootPath)
-	if err != nil {
-		return nil, err
-	}
-
 	return &ClassComponent{
-		common:         *commonComponent,
+		common: CommonComponent{
+			header:      header,
+			name:        componentName,
+			rootPath:    rootPath,
+			templateBox: templateBox,
+		},
 		componentType:  componentType,
 		customFileName: customFileName,
 	}, nil
 }
 
-func NewCommandComponent(command, rootPath, customFileName string) (*ClassComponent, error) {
-	return newClassComponent(command, rootPath, "command", customFileName)
+func NewCommandComponent(
+	header core.Header,
+	templateBox core.TemplateBox,
+	command string,
+	rootPath string,
+	customFileName string,
+) (*ClassComponent, error) {
+	return newClassComponent(header, templateBox, command, rootPath, "command", customFileName)
 }
 
-func NewControllerComponent(controllerName, rootPath, customFileName string) (*ClassComponent, error) {
-	return newClassComponent(controllerName, rootPath, "controller", customFileName)
+func NewControllerComponent(
+	header core.Header,
+	templateBox core.TemplateBox,
+	controllerName string,
+	rootPath string,
+	customFileName string,
+) (*ClassComponent, error) {
+	return newClassComponent(header, templateBox, controllerName, rootPath, "controller", customFileName)
 }
 
-func NewModuleComponent(moduleName, rootPath, customFileName string) (*ClassComponent, error) {
-	return newClassComponent(moduleName, rootPath, "module", customFileName)
+func NewModuleComponent(
+	header core.Header,
+	templateBox core.TemplateBox,
+	moduleName string,
+	rootPath string,
+	customFileName string,
+) (*ClassComponent, error) {
+	return newClassComponent(header, templateBox, moduleName, rootPath, "module", customFileName)
 }
