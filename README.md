@@ -1,7 +1,7 @@
 ### Xalwart CLI
 
 - [Download](#download)
-  - [Using Go tools](#using-go-tools)
+  - [Using Go](#using-go)
   - [Manual Download](#manual-download)
 - [Usage](#usage)
 - [Commands](#commands)
@@ -9,8 +9,12 @@
 
 ## Download
 
-### Using Go tools
-TODO:
+### Using Go
+Install the xalwart tool with the command `go install github.com/YuriyLisovskiy/xalwart-cli/xalwart`.
+Go will automatically install it in your `$GOPATH/bin` directory which should be in your $PATH.
+
+Once installed you should have the `cobra` command available. Confirm by typing `cobra` at a
+command line.
 
 ### Manual Download
 To download, go to the [releases](https://github.com/YuriyLisovskiy/xalwart-cli/releases).

@@ -1,13 +1,13 @@
 package components
 
 import (
-	"github.com/YuriyLisovskiy/xalwart-cli/core"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 	"github.com/iancoleman/strcase"
 )
 
 type ClassComponent struct {
-	common         CommonComponent
-	componentType  string
+	common        CommonComponent
+	componentType string
 	customFileName string
 }
 

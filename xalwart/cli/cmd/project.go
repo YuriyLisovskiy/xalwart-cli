@@ -1,13 +1,13 @@
-package commands
+package cmd
 
 import (
 	"errors"
 	"log"
 	"os"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/cli/utils"
-	"github.com/YuriyLisovskiy/xalwart-cli/core"
-	"github.com/YuriyLisovskiy/xalwart-cli/core/components"
+	utils2 "github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
+	core2 "github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
+	components2 "github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
 )
 
 var (
@@ -19,7 +19,7 @@ var (
 	projectUsedStandardServer      = true
 )
 
-var projectCommand = utils.NewComponentCommandBuilder().
+var projectCommand = utils2.NewComponentCommandBuilder().
 	SetName("project").
 	SetShortDescription("Create new project").
 	SetNameValidator(validateProjectName).
@@ -82,20 +82,20 @@ func validateProjectName() error {
 	return nil
 }
 
-func buildProjectComponent() (core.Component, error) {
-	header, err := components.NewHeaderComponent(utils.GetCopyrightNoticesTemplateBox())
+func buildProjectComponent() (core2.Component, error) {
+	header, err := components2.NewHeaderComponent(utils2.GetCopyrightNoticesTemplateBox())
 	if err != nil {
 		return nil, err
 	}
 
-	secretKey, err := core.RandomString(projectSecretKeyLength)
+	secretKey, err := core2.RandomString(projectSecretKeyLength)
 	if err != nil {
 		return nil, err
 	}
 
-	return components.NewProjectComponent(
+	return components2.NewProjectComponent(
 		*header,
-		utils.GetProjectTemplateBox(),
+		utils2.GetProjectTemplateBox(),
 		secretKey,
 		projectName,
 		projectRootPath,
@@ -104,7 +104,7 @@ func buildProjectComponent() (core.Component, error) {
 	), nil
 }
 
-func projectSuccess(core.Component) string {
+func projectSuccess(core2.Component) string {
 	return `Success.
 
 Examine 'README.md' in the project root directory.
