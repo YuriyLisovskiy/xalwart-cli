@@ -3,7 +3,7 @@ on:
   - push
   - pull_request
 jobs:
-  xgo:
+  build:
     strategy:
       fail-fast: false
       matrix:
@@ -21,6 +21,7 @@ jobs:
           v: true
           ldflags: -s -w
           buildmode: default
+          working_dir: ./xalwart
       - name: Check
         run: |
           sudo apt-get -qq install tree
