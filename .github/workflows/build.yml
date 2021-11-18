@@ -9,20 +9,27 @@ jobs:
       matrix:
         go_version:
           - 1.17.x
+        target_os:
+          - linux
+          - darwin
+        target_arch:
+          - arm64
+          - amd64
+    env:
+      BUILD_DIR: ./build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Build with xgo
-        uses: crazy-max/ghaction-xgo@v1
+      - name: Install Go
+        uses: actions/setup-go@v2
         with:
-          dest: build
-          targets: linux/amd64,linux/arm64,darwin/amd64,darwin/arm64
-          v: true
-          ldflags: -s -w
-          buildmode: default
-          working_dir: ./xalwart
+          go-version: ${{ matrix.go_version }}
+      - name: Build
+        run: |
+          mkdir $BUILD_DIR
+          GOOS=${{ matrix.target_os }} GOARCH=${{ matrix.target_arch }} \
+            go build -o $BUILD_DIR/xalwart
       - name: Check
         run: |
-          sudo apt-get -qq install tree
-          tree -f -h build
+          ./$BUILD_DIR/xalwart version
