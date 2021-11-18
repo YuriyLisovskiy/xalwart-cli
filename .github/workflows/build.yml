@@ -29,7 +29,7 @@ jobs:
         run: |
           mkdir $BUILD_DIR
           GOOS=${{ matrix.target_os }} GOARCH=${{ matrix.target_arch }} \
-            go build -o $BUILD_DIR/xalwart
+            go build -o $BUILD_DIR/xalwart ./xalwart/main.go
       - name: Check
         run: |
           ./$BUILD_DIR/xalwart version
