@@ -3,13 +3,13 @@ package add
 import (
 	"fmt"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/cli/utils"
-	"github.com/YuriyLisovskiy/xalwart-cli/core"
-	"github.com/YuriyLisovskiy/xalwart-cli/core/components"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
 )
 
 const commandCommandDescription = `Create new command component.
-Command files will have lowercase '{name}' names by default.`
+Command files will have snake case value of 'name' flag as names by default.`
 
 var commandCommand = getComponentCommandBuilder("command", commandCommandDescription).
 	SetComponentBuilder(buildCommandComponent).

@@ -6,16 +6,16 @@ import (
 	"log"
 	"os"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/cli/utils"
-	"github.com/YuriyLisovskiy/xalwart-cli/core"
-	"github.com/YuriyLisovskiy/xalwart-cli/core/components"
+	utils2 "github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
 var RootCommand = &cobra.Command{
 	Use:   "add",
-	Short: "Create new component of project",
+	Short: "Create new component for existing project",
 }
 
 func init() {
@@ -39,8 +39,8 @@ func initDefaultFlags(component string, flags *pflag.FlagSet) {
 	flags.BoolVarP(&overwriteVar, "overwrite", "o", overwriteVar, "overwrite files if exist")
 }
 
-func getComponentCommandBuilder(name, longDescription string) *utils.ComponentCommandBuilder {
-	builder := &utils.ComponentCommandBuilder{}
+func getComponentCommandBuilder(name, longDescription string) *utils2.ComponentCommandBuilder {
+	builder := &utils2.ComponentCommandBuilder{}
 	builder.SetName(name)
 	builder.SetShortDescription(fmt.Sprintf("Create new %s component.", name))
 	builder.SetLongDescription(longDescription)
@@ -57,5 +57,5 @@ func getComponentCommandBuilder(name, longDescription string) *utils.ComponentCo
 }
 
 func getDefaultHeader() (core.Header, error) {
-	return components.NewHeaderComponent(utils.GetCopyrightNoticesTemplateBox())
+	return components.NewHeaderComponent(utils2.GetCopyrightNoticesTemplateBox())
 }

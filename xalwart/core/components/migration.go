@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/core"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 	"github.com/iancoleman/strcase"
 )
 
 type MigrationComponent struct {
-	class         ClassComponent
-	isInitial     bool
+	class     ClassComponent
+	isInitial bool
 	migrationName string
 	className     string
 }

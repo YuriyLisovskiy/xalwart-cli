@@ -1,4 +1,4 @@
-package commands
+package cmd
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/cli/commands/add"
-	"github.com/YuriyLisovskiy/xalwart-cli/core"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/cmd/add"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 	"github.com/iancoleman/strcase"
 	"github.com/spf13/cobra"
 )

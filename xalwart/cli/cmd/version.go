@@ -1,17 +1,17 @@
-package commands
+package cmd
 
 import (
 	"fmt"
 	"text/template"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/core"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 	"github.com/spf13/cobra"
 )
 
 var versionCommand = &cobra.Command{
 	Use:   "version",
 	Short: fmt.Sprintf("Print version for %s", core.AppName),
-	RunE: runVersion,
+	RunE:  runVersion,
 }
 
 func runVersion(cmd *cobra.Command, args []string) error {

@@ -7,7 +7,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/core"
+	core2 "github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 )
 
 type HeaderComponent struct {
@@ -26,11 +26,11 @@ func (h HeaderComponent) UserName() string {
 }
 
 func (h HeaderComponent) FrameworkName() string {
-	return core.FrameworkName
+	return core2.FrameworkName
 }
 
 func (h HeaderComponent) FrameworkNamespace() string {
-	return core.FrameworkNamespace
+	return core2.FrameworkNamespace
 }
 
 func (h HeaderComponent) CLikeCopyrightNotice() string {
@@ -43,7 +43,7 @@ func (h HeaderComponent) NumberSignCopyrightNotice() string {
 
 func (h HeaderComponent) renderTemplate(text string) (string, error) {
 	tmpl, err := template.New("text template").
-		Funcs(core.DefaultFunctions).
+		Funcs(core2.DefaultFunctions).
 		Delims("<%", "%>").
 		Parse(text)
 	if err != nil {
@@ -59,7 +59,7 @@ func (h HeaderComponent) renderTemplate(text string) (string, error) {
 	return noticeStream.String(), nil
 }
 
-func NewHeaderComponent(copyrightTemplatesBox core.TemplateBox) (*HeaderComponent, error) {
+func NewHeaderComponent(copyrightTemplatesBox core2.TemplateBox) (*HeaderComponent, error) {
 	if copyrightTemplatesBox == nil {
 		return nil, errors.New("copyright templates box is nil")
 	}

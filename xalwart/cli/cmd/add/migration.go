@@ -3,15 +3,15 @@ package add
 import (
 	"fmt"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/cli/utils"
-	"github.com/YuriyLisovskiy/xalwart-cli/core"
-	"github.com/YuriyLisovskiy/xalwart-cli/core/components"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
 )
 
 var migrationIsInitial = false
 
 const migrationCommandDescription = `Create new migration component.
-Migration files will have lower-case migration name by default.
+Migration files will have snake case value of 'name' flag as names by default.
 
 Recommended migration name structure is '{number}_{ShortDescription}', for example: '001_Initial'.
 In this case, migration class will have 'Migration{number}_{ShortDescription}' name.`

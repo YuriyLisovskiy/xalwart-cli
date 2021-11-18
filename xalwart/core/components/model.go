@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/YuriyLisovskiy/xalwart-cli/core"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 	"github.com/gertd/go-pluralize"
 	"github.com/iancoleman/strcase"
 )

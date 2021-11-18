@@ -1,54 +1,48 @@
 ### Xalwart CLI
 
-CLI Application for web-site development using
-[Xalwart Framework](https://github.com/YuriyLisovskiy/xalwart)
+- [Download](#download)
+  - [Using Go](#using-go)
+  - [Manual Download](#manual-download)
+- [Usage](#usage)
+- [Commands](#commands)
+- [License](#license)
 
-#### Table of contents
-* [Build](#build)
-* [Installation](#installation)
+## Download
 
-#### Build
-To build xalwart-cli project you need to have at least Go v1.11.
-For further information, read how to
-[install](https://golang.org/doc/install) the Go programming
-language. 
+### Using Go
+Install the xalwart tool with the command `go install github.com/YuriyLisovskiy/xalwart-cli/xalwart@latest`.
+Go will automatically install it in your `$GOPATH/bin` directory which should be in your $PATH.
 
-Use [Git Bash](https://git-scm.com/downloads) terminal on Windows.
+Once installed you should have the `xalwart` command available. Confirm by typing `xalwart` at a
+command line.
 
-```bash
-$ git clone https://github.com/YuriyLisovskiy/xalwart-cli.git
-$ cd xalwart-cli
-$ make build
+### Manual Download
+To download, go to the [releases](https://github.com/YuriyLisovskiy/xalwart-cli/releases).
+The examples in the documentation assume you have put this into your PATH and
+renamed to `xalwart` (or symlinked as such).
+
+**Note**: If using macOS and downloading manually, you may need to adjust the permissions
+of the file to allow for execution.
+
+To do so, please run: `chmod 755 <filename>` where the filename is the name of the downloaded binary.
+
+## Usage
+The CLI follows a standard format:
+```sh
+xalwart [command] [flags]
 ```
+The commands are described below.
 
-#### Installation
+## Commands
+- [add](docs/add.md)
+  - [command](docs/add.md#command)
+  - [controller](docs/add.md#controller)
+  - [middleware](docs/add.md#middleware)
+  - [migration](docs/add.md#migration)
+  - [model](docs/add.md#model)
+  - [module](docs/add.md#module)
+- [project](docs/project.md)
+- [version](docs/version.md)
 
-Download binary from
-[releases](https://github.com/YuriyLisovskiy/xalwart-cli/releases)
-or build the project.
-
-* **Linux**
-
-    If you built the project by yourself, run:
-    ```bash
-    $ sudo make install
-    ```
-  
-    Otherwise, follow the next steps:
-    ```bash
-    $ sudo tar xvzf ~/Downalods/xalwart-cli-<os>-<arch>.tar.gz -C /usr/local/bin
-    $ sudo chmod a+x /usr/local/bin/xalwart
-    ```
-
-* **Windows**
-
-    * Create `C:\\xalwart` directory if not exists.
-    * Unpack downloaded archive `xalwart-cli-<os>-<arch>.tar.gz`
-      or copy `./bin/xalwart.exe` file (if you built the project
-      manually) to `C:\\xalwart`.
-    * Run the following command in `cmd` terminal to append
-      `xalwart` application to `PATH`:
-      ```bash
-      pathman /au C:\xalwart
-      ```
-      Or add `C:\xalwart` to `PATH` manually.
+## License
+This library is licensed under the Apache 2.0 License.

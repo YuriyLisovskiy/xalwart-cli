@@ -3,14 +3,15 @@ package add
 import (
 	"fmt"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/cli/utils"
-	"github.com/YuriyLisovskiy/xalwart-cli/core"
-	"github.com/YuriyLisovskiy/xalwart-cli/core/components"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
 	"github.com/iancoleman/strcase"
 )
 
 const moduleCommandDescription = `Create new module component.
-Module files will have 'module' names by default and will be placed in lowercase '{name}' directory.`
+Module files will have 'module' names by default and will be placed in the directory with snake case
+name from value of 'name' flag.`
 
 var moduleCommand = getComponentCommandBuilder("module", moduleCommandDescription).
 	SetComponentBuilder(buildModuleComponent).

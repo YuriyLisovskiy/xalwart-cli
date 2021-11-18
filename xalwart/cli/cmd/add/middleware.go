@@ -3,15 +3,15 @@ package add
 import (
 	"fmt"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/cli/utils"
-	"github.com/YuriyLisovskiy/xalwart-cli/core"
-	"github.com/YuriyLisovskiy/xalwart-cli/core/components"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
 )
 
 var middlewareIsClassBased = false
 
 const middlewareCommandDescription = `Create new middleware component.
-Middleware files will have lowercase '{name}' names by default.`
+Middleware files will have snake case value of 'name' flag as names by default.`
 
 var middlewareCommand = getComponentCommandBuilder("middleware", middlewareCommandDescription).
 	SetComponentBuilder(buildMiddlewareComponent).

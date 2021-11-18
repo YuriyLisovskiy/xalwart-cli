@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/core"
+	core2 "github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 	"github.com/spf13/cobra"
 )
 
@@ -14,8 +14,8 @@ type ComponentCommandBuilder struct {
 	shortDescription      string
 	longDescription       string
 	validator             func() error
-	componentBuilder      func() (core.Component, error)
-	postRunMessageBuilder func(core.Component) string
+	componentBuilder      func() (core2.Component, error)
+	postRunMessageBuilder func(core2.Component) string
 }
 
 func (cb *ComponentCommandBuilder) SetName(name string) *ComponentCommandBuilder {
@@ -40,7 +40,7 @@ func (cb *ComponentCommandBuilder) SetNameValidator(validator func() error) *Com
 
 func (cb *ComponentCommandBuilder) SetComponentBuilder(
 	builder func() (
-		core.Component,
+	core2.Component,
 		error,
 	),
 ) *ComponentCommandBuilder {
@@ -48,7 +48,7 @@ func (cb *ComponentCommandBuilder) SetComponentBuilder(
 	return cb
 }
 
-func (cb *ComponentCommandBuilder) SetPostRunMessageBuilder(builder func(core.Component) string) *ComponentCommandBuilder {
+func (cb *ComponentCommandBuilder) SetPostRunMessageBuilder(builder func(core2.Component) string) *ComponentCommandBuilder {
 	cb.postRunMessageBuilder = builder
 	return cb
 }
@@ -77,7 +77,7 @@ func (cb *ComponentCommandBuilder) Command(overwrite *bool) *cobra.Command {
 				log.Fatal(err)
 			}
 
-			must(core.Generate(component, *overwrite))
+			must(core2.Generate(component, *overwrite))
 			if cb.postRunMessageBuilder != nil {
 				fmt.Println(cb.postRunMessageBuilder(component))
 			}
