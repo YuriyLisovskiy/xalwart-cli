@@ -10,7 +10,7 @@
 ## Download
 
 ### Using Go
-Install the xalwart tool with the command `go install github.com/YuriyLisovskiy/xalwart-cli/xalwart`.
+Install the xalwart tool with the command `go install github.com/YuriyLisovskiy/xalwart-cli/xalwart@latest`.
 Go will automatically install it in your `$GOPATH/bin` directory which should be in your $PATH.
 
 Once installed you should have the `xalwart` command available. Confirm by typing `xalwart` at a
