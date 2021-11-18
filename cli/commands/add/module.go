@@ -10,7 +10,8 @@ import (
 )
 
 const moduleCommandDescription = `Create new module component.
-Module files will have 'module' names by default and will be placed in lowercase '{name}' directory.`
+Module files will have 'module' names by default and will be placed in the directory with snake case
+name from value of 'name' flag.`
 
 var moduleCommand = getComponentCommandBuilder("module", moduleCommandDescription).
 	SetComponentBuilder(buildModuleComponent).

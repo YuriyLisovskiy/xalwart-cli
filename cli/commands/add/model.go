@@ -14,7 +14,7 @@ var (
 )
 
 const modelCommandDescription = `Create new model component.
-Model files will have lowercase '{name}' names by default.`
+Model files will have snake case value of 'name' flag as names by default.`
 
 var modelCommand = getComponentCommandBuilder("model", modelCommandDescription).
 	SetComponentBuilder(buildModelComponent).

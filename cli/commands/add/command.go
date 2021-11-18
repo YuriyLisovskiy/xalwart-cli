@@ -9,7 +9,7 @@ import (
 )
 
 const commandCommandDescription = `Create new command component.
-Command files will have lowercase '{name}' names by default.`
+Command files will have snake case value of 'name' flag as names by default.`
 
 var commandCommand = getComponentCommandBuilder("command", commandCommandDescription).
 	SetComponentBuilder(buildCommandComponent).

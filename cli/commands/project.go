@@ -61,7 +61,7 @@ func init() {
 	flags.BoolVarP(
 		&projectUsedStandardORM,
 		"use-orm",
-		"d",
+		"O",
 		projectUsedStandardORM,
 		"use standard ORM, provided by framework",
 	)

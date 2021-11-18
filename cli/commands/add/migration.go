@@ -11,7 +11,7 @@ import (
 var migrationIsInitial = false
 
 const migrationCommandDescription = `Create new migration component.
-Migration files will have lower-case migration name by default.
+Migration files will have snake case value of 'name' flag as names by default.
 
 Recommended migration name structure is '{number}_{ShortDescription}', for example: '001_Initial'.
 In this case, migration class will have 'Migration{number}_{ShortDescription}' name.`

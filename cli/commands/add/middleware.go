@@ -11,7 +11,7 @@ import (
 var middlewareIsClassBased = false
 
 const middlewareCommandDescription = `Create new middleware component.
-Middleware files will have lowercase '{name}' names by default.`
+Middleware files will have snake case value of 'name' flag as names by default.`
 
 var middlewareCommand = getComponentCommandBuilder("middleware", middlewareCommandDescription).
 	SetComponentBuilder(buildMiddlewareComponent).

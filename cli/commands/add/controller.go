@@ -10,7 +10,7 @@ import (
 )
 
 const controllerCommandDescription = `Create new controller component.
-Controller files will have lowercase '{name}_controller' names by default.`
+Controller files will have snake case '{name_flag}_controller' names by default.`
 
 var controllerCommand = getComponentCommandBuilder("controller", controllerCommandDescription).
 	SetComponentBuilder(buildControllerComponent).

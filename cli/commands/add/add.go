@@ -15,7 +15,7 @@ import (
 
 var RootCommand = &cobra.Command{
 	Use:   "add",
-	Short: "Create new component of project",
+	Short: "Create new component for existing project",
 }
 
 func init() {
