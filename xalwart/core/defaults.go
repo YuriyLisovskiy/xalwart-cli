@@ -12,9 +12,9 @@ const (
 	FrameworkNamespace = "xw"
 
 	AppName    = FrameworkName
-	AppVersion = "0.1.0.a"
+	AppVersion = "0.1.0.alpha.1"
 
-	CLIAppDocumentationLink = "https://github.com/YuriyLisovskiy/xalwart-cli/blob/release/v" + AppVersion + "/README.md"
+	CLIAppDocumentationLink = "https://github.com/YuriyLisovskiy/xalwart-cli"
 )
 
 var DefaultFunctions = template.FuncMap{
