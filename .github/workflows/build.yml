@@ -32,7 +32,7 @@ jobs:
             go build -o $BUILD_DIR/xalwart ./xalwart/main.go
       - name: Create an archive
         run: |
-          tar -cvzf xalwart-cli.tar.gz $BUILD_DIR/xalwart LICENSE
+          tar -cvzf xalwart-cli.tar.gz LICENSE -C $BUILD_DIR xalwart
       - name: Upload the Artifact
         uses: actions/upload-artifact@v2
         with:
