@@ -4,8 +4,6 @@ on:
     branches:
       - '!v*.*.*'
   pull_request:
-    branches:
-      - '!v*.*.*'
 jobs:
   build:
     runs-on: ubuntu-latest
