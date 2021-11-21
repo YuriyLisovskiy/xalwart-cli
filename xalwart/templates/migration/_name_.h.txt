@@ -1,0 +1,13 @@
+<% .Header.CLikeCopyrightNotice %>
+
+#pragma once
+
+// <% .Header.FrameworkName %>
+#include <<% .Header.FrameworkName %>.orm/db/migration.h>
+
+
+class <% .ClassName %> : public <% .Header.FrameworkNamespace %>::orm::db::Migration
+{
+public:
+	explicit <% .ClassName %>(<% .Header.FrameworkNamespace %>::orm::IBackend* backend);
+};

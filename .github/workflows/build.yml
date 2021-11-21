@@ -1,0 +1,42 @@
+name: build
+on:
+  push:
+    branches:
+      - '!v*.*.*'
+  pull_request:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go_version:
+          - 1.17.x
+        target_os:
+          - linux
+          - darwin
+        target_arch:
+          - arm64
+          - amd64
+    env:
+      BUILD_DIR: ./build
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go_version }}
+      - name: Build
+        run: |
+          mkdir $BUILD_DIR
+          GOOS=${{ matrix.target_os }} GOARCH=${{ matrix.target_arch }} \
+            go build -o $BUILD_DIR/xalwart ./xalwart/main.go
+      - name: Create an archive
+        run: |
+          tar -cvzf xalwart-cli.tar.gz LICENSE -C $BUILD_DIR xalwart
+      - name: Upload the artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: xalwart-cli-${{ matrix.target_os }}-${{ matrix.target_arch }}
+          path: xalwart-cli.tar.gz
+          retention-days: 7

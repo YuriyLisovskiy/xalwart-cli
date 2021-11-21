@@ -1,0 +1,3 @@
+<% .Header.NumberSignCopyrightNotice %>
+
+secret_key: '<% .SecretKey %>'

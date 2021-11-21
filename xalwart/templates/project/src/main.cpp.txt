@@ -1,0 +1,37 @@
+<% .Header.CLikeCopyrightNotice %>
+
+// STL
+#include <iostream>
+
+// <% .Header.FrameworkName %>
+#include <<% .Header.FrameworkName %>/conf/application.h>
+
+// <% .ProjectName %>
+#include "./config/settings.h"
+
+
+int main(int argc, char** argv)
+{
+	<% .Header.FrameworkNamespace %>::conf::initialize_signal_handlers();
+	std::unique_ptr<Settings> settings;
+	try
+	{
+		settings = Settings::load();
+		<% .Header.FrameworkNamespace %>::conf::Application(settings.get())
+			.configure()
+			.execute(argc, argv);
+	}
+	catch (const <% .Header.FrameworkNamespace %>::ImproperlyConfigured& exc)
+	{
+		if (settings && settings->LOGGER)
+		{
+			settings->LOGGER->error(exc);
+		}
+		else
+		{
+			std::cerr << exc.get_message() << std::endl;
+		}
+	}
+
+	return 0;
+}

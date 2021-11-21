@@ -19,3 +19,9 @@ bin/
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Custom files and directories
+generated/
+
+# macOS files
+*.DS_Store

@@ -1,0 +1,14 @@
+<% .Header.CLikeCopyrightNotice %>
+
+#include "./<% .FileName %>.h"
+
+// <% .Header.FrameworkName %>
+#include <<% .Header.FrameworkName %>/http/response.h>
+
+
+std::unique_ptr<<% .Header.FrameworkNamespace %>::http::IResponse> <% .ClassName %>::get(<% .Header.FrameworkNamespace %>::http::IRequest* request) const
+{
+    // Implement controller logic here.
+
+	return std::make_unique<<% .Header.FrameworkNamespace %>::http::Response>("Greetings from <% .ClassName %>!");
+}

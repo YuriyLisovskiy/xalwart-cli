@@ -1,0 +1,20 @@
+<% .Header.CLikeCopyrightNotice %>
+
+#pragma once
+
+// <% .Header.FrameworkName %>
+#include <<% .Header.FrameworkName %>/conf/module.h>
+
+
+class <% .ClassName %> : public <% .Header.FrameworkNamespace %>::conf::ModuleConfig
+{
+public:
+	explicit inline <% .ClassName %>(const std::string& registration_name, <% .Header.FrameworkNamespace %>::conf::Settings* settings) :
+        <% .Header.FrameworkNamespace %>::conf::ModuleConfig(registration_name, settings)
+    {
+    }
+
+	void configure() override;
+
+	void urlpatterns() override;
+};

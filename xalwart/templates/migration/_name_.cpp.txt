@@ -1,0 +1,10 @@
+<% .Header.CLikeCopyrightNotice %>
+
+#include "./<% .FileName %>.h"
+
+
+<% .ClassName %>::<% .ClassName %>(<% .Header.FrameworkNamespace %>::orm::IBackend* backend)
+	: <% .Header.FrameworkNamespace %>::orm::db::Migration(backend, "<% .MigrationName %>", <% .IsInitial %>)
+{
+    // Register changes here.
+}
