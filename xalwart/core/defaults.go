@@ -12,7 +12,7 @@ const (
 	FrameworkNamespace = "xw"
 
 	AppName    = FrameworkName
-	AppVersion = "0.1.0.alpha.1"
+	AppVersion = "0.1.0"
 
 	CLIAppDocumentationLink = "https://github.com/YuriyLisovskiy/xalwart-cli"
 )

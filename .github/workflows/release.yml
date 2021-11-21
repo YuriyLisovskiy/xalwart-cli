@@ -78,6 +78,6 @@ jobs:
           tag_name: ${{ steps.tag_name.outputs.SOURCE_TAG }}
           body_path: ./release-changelog.txt
           draft: false
-          prerelease: true
+          prerelease: false
           files: |
             ./archives/*/*.tar.gz
