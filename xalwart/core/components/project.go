@@ -30,10 +30,8 @@ func (s ProjectComponent) RootPath() string {
 }
 
 func (s ProjectComponent) GetTargetPath(templatePath string) string {
-	filePath, fileName := path.Split(templatePath)
-	filePath = path.Join(s.RootPath(), filePath)
-	fileName = strings.TrimSuffix(fileName, filepath.Ext(fileName))
-	return path.Join(filePath, fileName)
+	templatePath = strings.TrimSuffix(templatePath, filepath.Ext(templatePath))
+	return path.Join(s.RootPath(), templatePath)
 }
 
 func (s ProjectComponent) TemplateBox() core.TemplateBox {

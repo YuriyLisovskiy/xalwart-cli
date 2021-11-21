@@ -1,37 +1,35 @@
 package utils
 
-import (
-	core2 "github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
-)
+import "github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 
-func GetCommandTemplateBox() core2.TemplateBox {
-	return core2.NewFileTemplateBox("command")
+func GetCommandTemplateBox() core.TemplateBox {
+	return core.NewFileTemplateBox("command")
 }
 
-func GetControllerTemplateBox() core2.TemplateBox {
-	return core2.NewFileTemplateBox("controller")
+func GetControllerTemplateBox() core.TemplateBox {
+	return core.NewFileTemplateBox("controller")
 }
 
-func GetCopyrightNoticesTemplateBox() core2.TemplateBox {
-	return core2.NewFileTemplateBox("copyright_notices")
+func GetCopyrightNoticesTemplateBox() core.TemplateBox {
+	return core.NewFileTemplateBox("copyright_notices")
 }
 
-func GetMiddlewareTemplateBox() core2.TemplateBox {
-	return core2.NewFileTemplateBox("middleware")
+func GetMiddlewareTemplateBox() core.TemplateBox {
+	return core.NewFileTemplateBox("middleware")
 }
 
-func GetMigrationTemplateBox() core2.TemplateBox {
-	return core2.NewFileTemplateBox("migration")
+func GetMigrationTemplateBox() core.TemplateBox {
+	return core.NewFileTemplateBox("migration")
 }
 
-func GetModelTemplateBox() core2.TemplateBox {
-	return core2.NewFileTemplateBox("model")
+func GetModelTemplateBox() core.TemplateBox {
+	return core.NewFileTemplateBox("model")
 }
 
-func GetModuleTemplateBox() core2.TemplateBox {
-	return core2.NewFileTemplateBox("module")
+func GetModuleTemplateBox() core.TemplateBox {
+	return core.NewFileTemplateBox("module")
 }
 
-func GetProjectTemplateBox() core2.TemplateBox {
-	return core2.NewFileTemplateBox("project")
+func GetProjectTemplateBox() core.TemplateBox {
+	return core.NewFileTemplateBox("project")
 }
