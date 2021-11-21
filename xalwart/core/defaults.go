@@ -14,7 +14,7 @@ const (
 	AppName    = FrameworkName
 	AppVersion = "0.1.0"
 
-	CLIAppDocumentationLink = "https://github.com/YuriyLisovskiy/xalwart-cli"
+	CLIAppDocumentationLink = "https://github.com/YuriyLisovskiy/xalwart-cli/wiki/Version-" + AppVersion
 )
 
 var DefaultFunctions = template.FuncMap{

@@ -3,8 +3,7 @@
 - [Download](#download)
   - [Using go install](#using-go-install)
   - [Manual Download](#manual-download)
-- [Usage](#usage)
-- [Commands](#commands)
+- [Documentation](#documentation)
 - [License](#license)
 
 ## Download
@@ -29,23 +28,8 @@ of the file to allow for execution.
 
 To do so, please run: `chmod 755 <filename>` where the filename is the name of the downloaded binary.
 
-## Usage
-The CLI follows a standard format:
-```sh
-xalwart [command] [flags]
-```
-The commands are described below.
-
-## Commands
-- [add](docs/add.md)
-  - [command](docs/add.md#command)
-  - [controller](docs/add.md#controller)
-  - [middleware](docs/add.md#middleware)
-  - [migration](docs/add.md#migration)
-  - [model](docs/add.md#model)
-  - [module](docs/add.md#module)
-- [project](docs/project.md)
-- [version](docs/version.md)
+## Documentation
+Check out [this](https://github.com/YuriyLisovskiy/xalwart-cli/wiki) wiki page.
 
 ## License
 This library is licensed under the Apache 2.0 License.
