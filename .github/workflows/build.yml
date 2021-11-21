@@ -1,7 +1,11 @@
 name: build
 on:
-  - push
-  - pull_request
+  push:
+    branches:
+      - '!v*.*.*'
+  pull_request:
+    branches:
+      - '!v*.*.*'
 jobs:
   build:
     runs-on: ubuntu-latest
