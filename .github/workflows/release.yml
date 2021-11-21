@@ -38,7 +38,7 @@ jobs:
       - name: Create an archive
         run: |
           tar -cvzf xalwart-cli-${{ steps.tag_name.outputs.SOURCE_TAG }}-${{ matrix.target_os }}-${{ matrix.target_arch }}.tar.gz \
-              LICENSE -C $BUILD_DIR test
+              LICENSE -C $BUILD_DIR xalwart
       - name: Upload an archive to artifacts
         uses: actions/upload-artifact@v2
         with:
