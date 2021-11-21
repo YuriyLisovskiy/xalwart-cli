@@ -6,7 +6,7 @@ import (
 	"os"
 
 	utils2 "github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
-	core2 "github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 	components2 "github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
 )
 
@@ -82,13 +82,13 @@ func validateProjectName() error {
 	return nil
 }
 
-func buildProjectComponent() (core2.Component, error) {
+func buildProjectComponent() (core.Component, error) {
 	header, err := components2.NewHeaderComponent(utils2.GetCopyrightNoticesTemplateBox())
 	if err != nil {
 		return nil, err
 	}
 
-	secretKey, err := core2.RandomString(projectSecretKeyLength)
+	secretKey, err := core.RandomString(projectSecretKeyLength)
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +104,7 @@ func buildProjectComponent() (core2.Component, error) {
 	), nil
 }
 
-func projectSuccess(core2.Component) string {
+func projectSuccess(core.Component) string {
 	return `Success.
 
 Examine 'README.md' in the project root directory.

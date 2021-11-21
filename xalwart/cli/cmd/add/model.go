@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
-	core2 "github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
 )
 
@@ -38,12 +38,12 @@ func init() {
 		modelIsJsonSerializable,
 		fmt.Sprintf(
 			"inherit from '%s::IJsonSerializable' interface and implement 'to_json()' method",
-			core2.FrameworkNamespace,
+			core.FrameworkNamespace,
 		),
 	)
 }
 
-func buildModelComponent() (core2.Component, error) {
+func buildModelComponent() (core.Component, error) {
 	header, err := getDefaultHeader()
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func buildModelComponent() (core2.Component, error) {
 	)
 }
 
-func modelSuccess(component core2.Component) string {
+func modelSuccess(component core.Component) string {
 	return fmt.Sprintf(`Success.
 
 Do not forget to create a new migration for '%s' and apply changes to the database.

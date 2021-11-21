@@ -17,13 +17,13 @@ type CommonComponent struct {
 }
 
 func getTargetPath(templatePath string, component core.Component) string {
-	filePath, fileName := path.Split(templatePath)
-	if !path.IsAbs(filePath) {
-		filePath = path.Join(component.RootPath(), filePath)
+	if !path.IsAbs(templatePath) {
+		templatePath = path.Join(component.RootPath(), templatePath)
 	}
 
+	templatePath = strings.TrimSuffix(templatePath, filepath.Ext(templatePath))
+	filePath, fileName := path.Split(templatePath)
 	filePath = strings.ReplaceAll(filePath, "_name_", strcase.ToSnake(component.Name()))
-	fileName = strings.TrimSuffix(fileName, filepath.Ext(fileName))
 	fileName = strings.ReplaceAll(fileName, "_name_", strcase.ToSnake(component.FileName()))
 	return path.Join(filePath, fileName)
 }
