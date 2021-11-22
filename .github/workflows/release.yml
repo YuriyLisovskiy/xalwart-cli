@@ -38,7 +38,7 @@ jobs:
       - name: Create an archive
         run: |
           tar -cvzf xalwart-cli-${{ steps.tag_name.outputs.SOURCE_TAG }}-${{ matrix.target_os }}-${{ matrix.target_arch }}.tar.gz \
-              LICENSE -C $BUILD_DIR test
+              LICENSE -C $BUILD_DIR xalwart
       - name: Upload an archive to artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -57,12 +57,12 @@ jobs:
         id: tag_name
         run: |
           echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
-      - name: Create changelog
+      - name: Create release notes
         run: |
-          echo '## Changelog' > ./release-changelog.txt
-          echo "" >> ./release-changelog.txt
-          git log $(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))..${{ steps.tag_name.outputs.SOURCE_TAG }} --oneline >> ./release-changelog.txt
-          cat ./release-changelog.txt
+          git log $(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))..${{ steps.tag_name.outputs.SOURCE_TAG }} --oneline > ./release-notes.txt
+          test -s ./release-notes.txt && printf '%s\n%s\n' "## Changelog" "$(cat ./release-notes.txt)" > ./release-notes.txt
+          echo 'To explore all features of this application release, check out the [documentation](https://github.com/YuriyLisovskiy/xalwart-cli/wiki/${{ steps.tag_name.outputs.SOURCE_TAG }}).' >> ./release-notes.txt
+          cat ./release-notes.txt
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
@@ -76,7 +76,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.tag_name.outputs.SOURCE_TAG }}
-          body_path: ./release-changelog.txt
+          body_path: ./release-notes.txt
           draft: false
           prerelease: false
           files: |
