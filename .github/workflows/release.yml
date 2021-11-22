@@ -57,12 +57,15 @@ jobs:
         id: tag_name
         run: |
           echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
-      - name: Create changelog
+      - name: Create release notes
         run: |
-          echo '## Changelog' > ./release-changelog.txt
-          echo "" >> ./release-changelog.txt
-          git log $(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))..${{ steps.tag_name.outputs.SOURCE_TAG }} --oneline >> ./release-changelog.txt
-          cat ./release-changelog.txt
+          echo '## Changelog' > ./release-notes.txt
+          echo "" >> ./release-notes.txt
+          git log $(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))..${{ steps.tag_name.outputs.SOURCE_TAG }} --oneline >> ./release-notes.txt \
+            && echo "" >> ./release-notes.txt \
+            || > ./release-notes.txt
+          echo 'To explore all features of this application release, check out the [documentation](https://github.com/YuriyLisovskiy/xalwart-cli/wiki/Version-0.1.0).' >> ./release-notes.txt
+          cat ./release-notes.txt
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
@@ -76,8 +79,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.tag_name.outputs.SOURCE_TAG }}
-          body_path: ./release-changelog.txt
+          body_path: ./release-notes.txt
           draft: false
-          prerelease: false
+          prerelease: true
           files: |
             ./archives/*/*.tar.gz
