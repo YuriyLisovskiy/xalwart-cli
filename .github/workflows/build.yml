@@ -1,0 +1,61 @@
+name: Build
+on:
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
+      app_name:
+        required: true
+        type: string
+      archive_prefix:
+        required: false
+        type: string
+        default: xalwart-cli
+      retention_days:
+        required: false
+        type: number
+        default: 7
+jobs:
+  build:
+    name: Build the App
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go_version:
+          - 1.17.x
+        target_os:
+          - linux
+          - darwin
+        target_arch:
+          - arm64
+          - amd64
+    env:
+      BUILD_DIR: ./build
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go_version }}
+      - name: Install Packr2
+        run: |
+          go install github.com/gobuffalo/packr/v2/packr2@latest
+          packr2 version
+      - name: Build
+        run: |
+          cd ./xalwart && packr2 && cd ..
+          mkdir -p $BUILD_DIR
+          GOOS=${{ matrix.target_os }} GOARCH=${{ matrix.target_arch }} \
+            go build -o $BUILD_DIR/${{ inputs.app_name }} ./xalwart/main.go
+      - name: Create an archive
+        run: |
+          tar -cvzf ${{ inputs.archive_prefix }}-${{ inputs.tag }}-${{ matrix.target_os }}-${{ matrix.target_arch }}.tar.gz \
+              LICENSE -C $BUILD_DIR ${{ inputs.app_name }}
+      - name: Upload an archive to artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ inputs.archive_prefix }}-${{ inputs.tag }}-${{ matrix.target_os }}-${{ matrix.target_arch }}
+          path: ${{ inputs.archive_prefix }}-${{ inputs.tag }}-${{ matrix.target_os }}-${{ matrix.target_arch }}.tar.gz
+          retention-days: ${{ inputs.retention_days }}

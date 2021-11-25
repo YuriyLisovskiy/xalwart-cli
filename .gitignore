@@ -22,6 +22,7 @@ bin/
 
 # Custom files and directories
 generated/
+*-packr.go
 
 # macOS files
 *.DS_Store
