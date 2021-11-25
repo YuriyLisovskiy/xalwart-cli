@@ -23,7 +23,7 @@ jobs:
       - name: Run tests
         run: go test ./...
   build:
-    uses: YuriyLisovskiy/xalwart-cli/.github/workflows/build.yml@${GITHUB_REF#refs/heads/}
+    uses: YuriyLisovskiy/xalwart-cli/.github/workflows/build.yml@master
     with:
       tag: ${GITHUB_REF#refs/heads/}
       app_name: xalwart
