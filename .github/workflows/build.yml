@@ -2,16 +2,17 @@ name: Build
 on:
   workflow_call:
     inputs:
-      tag:
-        required: true
-        type: string
       app_name:
         required: true
         type: string
+      tag:
+        required: false
+        type: string
+        default: ''
       archive_prefix:
         required: false
         type: string
-        default: xalwart-cli-
+        default: xalwart-cli
       retention_days:
         required: false
         type: number
