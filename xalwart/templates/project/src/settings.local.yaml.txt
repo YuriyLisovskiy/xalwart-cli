@@ -1,3 +1,6 @@
 <% .Header.NumberSignCopyrightNotice %>
 
 secret_key: '<% .SecretKey %>'
+
+allowed_hosts:
+  - '*'

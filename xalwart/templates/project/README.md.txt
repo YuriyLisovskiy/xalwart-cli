@@ -18,3 +18,9 @@ For more information about application commands, run:
 # get command usage info
 ./application [command] --help
 ```
+
+## Build and run the docker container.
+```bash
+docker build -t <% .ProjectName | lower %>:latest .
+docker run -p 8000:8000 <% .ProjectName | lower %>:latest ./application start-server --bind 0.0.0.0:8000 --workers=5
+```
