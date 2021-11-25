@@ -103,5 +103,5 @@ func (b FileTemplateBox) fileExists(fileName string) bool {
 }
 
 func NewFileTemplateBox(boxName string) *FileTemplateBox {
-	return &FileTemplateBox{box: packr.Folder(fmt.Sprintf("../templates/%s", boxName))}
+	return &FileTemplateBox{box: packr.New(boxName, fmt.Sprintf("../templates/%s", boxName))}
 }
