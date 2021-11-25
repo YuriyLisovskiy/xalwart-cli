@@ -1,0 +1,30 @@
+FROM xalwart/framework:0.0.0-alpine
+
+# Set the working directory.
+WORKDIR /app
+
+# Copy project files.
+COPY CMakeLists.txt ./
+COPY ./src ./src
+
+# Build the application.
+RUN mkdir -p ./build && cd ./build && \
+    cmake -D CMAKE_C_COMPILER=clang \
+          -D CMAKE_CXX_COMPILER=clang++ \
+          -D CMAKE_BUILD_TYPE=Release \
+          -D XW_USE_SQLITE3=yes \
+          .. && \
+    make application
+
+WORKDIR /app
+
+# Copy compiled app and YAML configurations to the working directory.
+RUN cp ./build/application ./ && cp ./src/*.yaml ./
+
+# Clean up the working directory.
+RUN rm -rf ./CMakeLists.txt ./src ./build
+
+# Apply migrations to the local SQLite database.
+RUN ./application migrate
+
+CMD ["bash"]
