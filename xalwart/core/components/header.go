@@ -33,6 +33,10 @@ func (h HeaderComponent) FrameworkNamespace() string {
 	return core.FrameworkNamespace
 }
 
+func (h HeaderComponent) FrameworkLatestVersion() string {
+	return core.FrameworkLatestVersion
+}
+
 func (h HeaderComponent) CLikeCopyrightNotice() string {
 	return h.cLikeCopyrightNotice
 }

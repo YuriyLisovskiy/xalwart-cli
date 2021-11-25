@@ -2,6 +2,8 @@ package components
 
 import (
 	"testing"
+
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 )
 
 var projectTestProjectComponent = ProjectComponent{
@@ -66,5 +68,13 @@ func TestProjectComponent_UseStandardORM(t *testing.T) {
 	actual := projectTestProjectComponent.UseStandardORM()
 	if !actual {
 		t.Errorf("Expected true, received %v", actual)
+	}
+}
+
+func TestProjectComponent_FrameworkBaseDockerImage(t *testing.T) {
+	actual := projectTestProjectComponent.FrameworkBaseDockerImage()
+	expected := core.FrameworkBaseDockerImage
+	if actual != expected {
+		t.Errorf("Expected %s, received %s", expected, actual)
 	}
 }
