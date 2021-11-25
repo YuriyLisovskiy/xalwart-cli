@@ -40,9 +40,12 @@ jobs:
         run: |
           go install github.com/gobuffalo/packr/v2/packr2@latest
           packr2 version
+      - name: Install tree
+        run: |
+          sudo apt-get install -y tree
       - name: Build
         run: |
-          cd ./xalwart && packr2 && cd ..
+          cd ./xalwart && packr2 && tree && cd ..
           mkdir -p $BUILD_DIR
           GOOS=${{ matrix.target_os }} GOARCH=${{ matrix.target_arch }} \
             go build -o $BUILD_DIR/${{ inputs.app_name }} ./xalwart/main.go
