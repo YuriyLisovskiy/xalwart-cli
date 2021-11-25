@@ -25,5 +25,5 @@ jobs:
   build:
     uses: YuriyLisovskiy/xalwart-cli/.github/workflows/build.yml@master
     with:
-      tag: ${GITHUB_REF#refs/heads/}
+      tag: ''
       app_name: xalwart

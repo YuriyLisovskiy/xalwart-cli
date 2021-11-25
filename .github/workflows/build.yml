@@ -11,7 +11,7 @@ on:
       archive_prefix:
         required: false
         type: string
-        default: xalwart-cli
+        default: xalwart-cli-
       retention_days:
         required: false
         type: number
@@ -51,11 +51,11 @@ jobs:
             go build -o $BUILD_DIR/${{ inputs.app_name }} ./xalwart/main.go
       - name: Create an archive
         run: |
-          tar -cvzf ${{ inputs.archive_prefix }}-${{ inputs.tag }}-${{ matrix.target_os }}-${{ matrix.target_arch }}.tar.gz \
+          tar -cvzf ${{ inputs.archive_prefix }}${{ inputs.tag }}-${{ matrix.target_os }}-${{ matrix.target_arch }}.tar.gz \
               LICENSE -C $BUILD_DIR ${{ inputs.app_name }}
       - name: Upload an archive to artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ inputs.archive_prefix }}-${{ inputs.tag }}-${{ matrix.target_os }}-${{ matrix.target_arch }}
-          path: ${{ inputs.archive_prefix }}-${{ inputs.tag }}-${{ matrix.target_os }}-${{ matrix.target_arch }}.tar.gz
+          name: ${{ inputs.archive_prefix }}${{ inputs.tag }}-${{ matrix.target_os }}-${{ matrix.target_arch }}
+          path: ${{ inputs.archive_prefix }}${{ inputs.tag }}-${{ matrix.target_os }}-${{ matrix.target_arch }}.tar.gz
           retention-days: ${{ inputs.retention_days }}
