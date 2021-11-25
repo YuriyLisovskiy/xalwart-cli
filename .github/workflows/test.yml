@@ -22,3 +22,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Run tests
         run: go test ./...
+  build:
+    uses: YuriyLisovskiy/xalwart-cli/.github/workflows/build.yml@${GITHUB_REF#refs/heads/}
+    with:
+      tag: ${GITHUB_REF#refs/heads/}
+      app_name: xalwart
