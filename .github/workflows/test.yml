@@ -1,9 +1,7 @@
-name: test
+name: Tests
 on:
-  push:
-    branches:
-      - '!v*.*.*'
-  pull_request:
+  - push
+  - pull_request
 jobs:
   test:
     runs-on: ${{ matrix.os }}
