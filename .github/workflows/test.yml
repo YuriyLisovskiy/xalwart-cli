@@ -24,6 +24,7 @@ jobs:
         run: go test ./...
   build:
     uses: YuriyLisovskiy/xalwart-cli/.github/workflows/build.yml@master
+    needs: test
     with:
       tag: ''
       app_name: xalwart
