@@ -11,7 +11,7 @@ build:
 	@echo "Compiling target..."
 	@mkdir -p bin
 	@rm -rf bin/$(APP_NAME)
-	@go build -o bin/$(APP_NAME) cli/main.go
+	@go build -o bin/$(APP_NAME) xalwart/main.go
 	@echo "Done."
 
 run:
