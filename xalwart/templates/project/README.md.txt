@@ -1,7 +1,7 @@
 ## <% .ProjectName %>
 
 ### Application commands
-* `start-server` - start a web application:
+* `start-server` - start a web application on the local machine:
   ```bash
   ./application start-server
   ```
@@ -19,8 +19,9 @@ For more information about application commands, run:
 ./application [command] --help
 ```
 
-## Build and run the docker container.
+### Build and run
+Build the Docker container and run the application:
 ```bash
-docker build -t <% .ProjectName | lower %>:latest .
-docker run -p 8000:8000 <% .ProjectName | lower %>:latest ./application start-server --bind 0.0.0.0:8000 --workers=5
+sudo docker build -t <% .ProjectName | to_snake_case %>:latest .
+docker run -p 8000:8000 <% .ProjectName | to_snake_case %>:latest ./application start-server --bind 0.0.0.0:8000 --workers=5
 ```

@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"os"
 
-	utils2 "github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
-	components2 "github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
+	"github.com/iancoleman/strcase"
 )
 
 var (
@@ -19,7 +21,7 @@ var (
 	projectUsedStandardServer      = true
 )
 
-var projectCommand = utils2.NewComponentCommandBuilder().
+var projectCommand = utils.NewComponentCommandBuilder().
 	SetName("project").
 	SetShortDescription("Create new project").
 	SetNameValidator(validateProjectName).
@@ -83,7 +85,7 @@ func validateProjectName() error {
 }
 
 func buildProjectComponent() (core.Component, error) {
-	header, err := components2.NewHeaderComponent(utils2.GetCopyrightNoticesTemplateBox())
+	header, err := components.NewHeaderComponent(utils.GetCopyrightNoticesTemplateBox())
 	if err != nil {
 		return nil, err
 	}
@@ -93,9 +95,9 @@ func buildProjectComponent() (core.Component, error) {
 		return nil, err
 	}
 
-	return components2.NewProjectComponent(
+	return components.NewProjectComponent(
 		*header,
-		utils2.GetProjectTemplateBox(),
+		utils.GetProjectTemplateBox(),
 		secretKey,
 		projectName,
 		projectRootPath,
@@ -104,9 +106,23 @@ func buildProjectComponent() (core.Component, error) {
 	), nil
 }
 
-func projectSuccess(core.Component) string {
-	return `Success.
+func projectSuccess(component core.Component) string {
+	project := component.(*components.ProjectComponent)
+	nameLowercase := strcase.ToSnake(project.ProjectName())
+	return fmt.Sprintf(
+		`Success.
 
-Examine 'README.md' in the project root directory.
-`
+Examine 'README.md' in the project root directory for more info.
+
+Check the application by running it in docker container:
+
+  sudo docker build -t %s:latest .
+  docker run -p 8000:8000 %s:latest ./application start-server --bind 0.0.0.0:8000 --workers=5
+
+You can read CMake configuration and build process logs in /var/log/app after building the image:
+
+  docker run %s:latest cat /var/log/app/configure.log
+  docker run %s:latest cat /var/log/app/build.log
+`, nameLowercase, nameLowercase, nameLowercase, nameLowercase,
+	)
 }

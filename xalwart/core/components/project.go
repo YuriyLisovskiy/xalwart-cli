@@ -58,6 +58,10 @@ func (s ProjectComponent) UseStandardORM() bool {
 	return s.useStandardORM
 }
 
+func (s ProjectComponent) FrameworkBaseDockerImage() string {
+	return core.FrameworkBaseDockerImage
+}
+
 func NewProjectComponent(
 	header core.Header,
 	templateBox core.TemplateBox,

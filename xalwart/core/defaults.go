@@ -8,8 +8,10 @@ import (
 )
 
 const (
-	FrameworkName      = "xalwart"
-	FrameworkNamespace = "xw"
+	FrameworkName            = "xalwart"
+	FrameworkNamespace       = "xw"
+	FrameworkLatestVersion   = "0.0.0"
+	FrameworkBaseDockerImage = FrameworkName + "/framework:" + FrameworkLatestVersion + "-alpine"
 
 	AppName    = FrameworkName
 	AppVersion = "0.1.1"

@@ -50,25 +50,28 @@ func TestHeaderComponent_NumberSignTemplateNotFound(t *testing.T) {
 }
 
 func TestHeaderComponent_FrameworkName(t *testing.T) {
-	header, _ := NewHeaderComponent(&templateBoxMock{Templates: map[string]string{
-		"c-like.txt": "",
-		"number-sign.txt": "",
-	}})
-	frameworkNameActual := header.FrameworkName()
-	frameworkNameExpected := core.FrameworkName
-	if frameworkNameActual != frameworkNameExpected {
-		t.Errorf("Expected %s, received %s", frameworkNameExpected, frameworkNameActual)
+	header := HeaderComponent{}
+	actual := header.FrameworkName()
+	expected := core.FrameworkName
+	if actual != expected {
+		t.Errorf("Expected %s, received %s", expected, actual)
 	}
 }
 
 func TestHeaderComponent_FrameworkNamespace(t *testing.T) {
-	header, _ := NewHeaderComponent(&templateBoxMock{Templates: map[string]string{
-		"c-like.txt": "",
-		"number-sign.txt": "",
-	}})
-	frameworkNamespaceActual := header.FrameworkNamespace()
-	frameworkNamespaceExpected := core.FrameworkNamespace
-	if frameworkNamespaceActual != frameworkNamespaceExpected {
-		t.Errorf("Expected %s, received %s", frameworkNamespaceExpected, frameworkNamespaceActual)
+	header := HeaderComponent{}
+	actual := header.FrameworkNamespace()
+	expected := core.FrameworkNamespace
+	if actual != expected {
+		t.Errorf("Expected %s, received %s", expected, actual)
+	}
+}
+
+func TestHeaderComponent_FrameworkLatestVersion(t *testing.T) {
+	header := HeaderComponent{}
+	actual := header.FrameworkLatestVersion()
+	expected := core.FrameworkLatestVersion
+	if actual != expected {
+		t.Errorf("Expected %s, received %s", expected, actual)
 	}
 }

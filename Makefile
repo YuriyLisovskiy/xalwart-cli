@@ -1,4 +1,5 @@
 APP_NAME = xalwart
+INSTALL_DIR = /usr/local/bin
 
 .PHONY: clean build run install
 
@@ -8,7 +9,7 @@ clean:
 	@rm -rf bin/*
 
 build:
-	@echo "Compiling target..."
+	@echo "Compiling $(APP_NAME)..."
 	@mkdir -p bin
 	@rm -rf bin/$(APP_NAME)
 	@go build -o bin/$(APP_NAME) xalwart/main.go
@@ -18,5 +19,7 @@ run:
 	@go run cli/main.go
 
 install:
-	cp bin/$(APP_NAME) /usr/local/bin
-	chmod a+x /usr/local/bin/$(APP_NAME)
+	@echo "Installing $(APP_NAME) to $(INSTALL_DIR)"
+	@cp bin/$(APP_NAME) $(INSTALL_DIR)
+	@chmod a+x $(INSTALL_DIR)/$(APP_NAME)
+	@echo "Done."
