@@ -3,9 +3,9 @@ package add
 import (
 	"fmt"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/templates"
 )
 
 const commandCommandDescription = `Create new command component.
@@ -28,7 +28,7 @@ func buildCommandComponent() (core.Component, error) {
 
 	return components.NewCommandComponent(
 		header,
-		utils.GetCommandTemplateBox(),
+		templates.CommandTemplateBox,
 		nameVar,
 		rootPathVar,
 		customFileNameVar,

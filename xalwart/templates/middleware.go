@@ -1,4 +1,31 @@
-<% .Header.CLikeCopyrightNotice %>
+package templates
+
+import "github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
+
+var MiddlewareTemplateBox = core.NewFileTemplateBoxWithTemplates(
+	[]core.Template{
+		core.NewFileTemplateWithContent(
+			"_name_.h.txt", `<% .Header.CLikeCopyrightNotice %>
+
+#pragma once
+
+// <% .Header.FrameworkName %>
+#include <<% .Header.FrameworkName %>/middleware/base.h>
+
+<% if .IsClassBased %>
+class <% .FullName %>
+{
+public:
+	<% .FullName %>();
+
+	<% .Header.FrameworkNamespace %>::middleware::Function operator() (const <% .Header.FrameworkNamespace %>::middleware::Function& next);
+};
+<% else %>
+extern <% .Header.FrameworkNamespace %>::middleware::Function <% .FullName %>(const <% .Header.FrameworkNamespace %>::middleware::Function& next);
+<% end %>`,
+		),
+		core.NewFileTemplateWithContent(
+			"_name_.cpp.txt", `<% .Header.CLikeCopyrightNotice %>
 
 #include "./<% .FileName %>.h"
 
@@ -40,4 +67,7 @@
         return response;
 	};
 }
-<% end %>
+<% end %>`,
+		),
+	},
+)

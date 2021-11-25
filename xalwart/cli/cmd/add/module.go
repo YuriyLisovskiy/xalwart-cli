@@ -3,9 +3,9 @@ package add
 import (
 	"fmt"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/templates"
 	"github.com/iancoleman/strcase"
 )
 
@@ -30,7 +30,7 @@ func buildModuleComponent() (core.Component, error) {
 
 	return components.NewModuleComponent(
 		header,
-		utils.GetModuleTemplateBox(),
+		templates.ModuleTemplateBox,
 		nameVar,
 		rootPathVar,
 		customFileNameVar,

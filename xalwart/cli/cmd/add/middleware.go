@@ -3,9 +3,9 @@ package add
 import (
 	"fmt"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/templates"
 )
 
 var middlewareIsClassBased = false
@@ -38,7 +38,7 @@ func buildMiddlewareComponent() (core.Component, error) {
 
 	return components.NewMiddlewareComponent(
 		header,
-		utils.GetMiddlewareTemplateBox(),
+		templates.MiddlewareTemplateBox,
 		nameVar,
 		rootPathVar,
 		customFileNameVar,

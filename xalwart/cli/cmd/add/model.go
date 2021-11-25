@@ -3,9 +3,9 @@ package add
 import (
 	"fmt"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/templates"
 )
 
 var (
@@ -51,7 +51,7 @@ func buildModelComponent() (core.Component, error) {
 
 	return components.NewModelComponent(
 		header,
-		utils.GetModelTemplateBox(),
+		templates.ModelTemplateBox,
 		nameVar,
 		rootPathVar,
 		customFileNameVar,

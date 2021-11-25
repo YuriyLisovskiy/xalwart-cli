@@ -9,6 +9,7 @@ import (
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/templates"
 	"github.com/iancoleman/strcase"
 )
 
@@ -85,7 +86,7 @@ func validateProjectName() error {
 }
 
 func buildProjectComponent() (core.Component, error) {
-	header, err := components.NewHeaderComponent(utils.GetCopyrightNoticesTemplateBox())
+	header, err := components.NewHeaderComponent(templates.CopyrightNoticesTemplateBox)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +98,7 @@ func buildProjectComponent() (core.Component, error) {
 
 	return components.NewProjectComponent(
 		*header,
-		utils.GetProjectTemplateBox(),
+		templates.ProjectTemplateBox,
 		secretKey,
 		projectName,
 		projectRootPath,
