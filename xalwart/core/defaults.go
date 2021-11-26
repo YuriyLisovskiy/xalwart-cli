@@ -14,7 +14,7 @@ const (
 	FrameworkBaseDockerImage = FrameworkName + "/framework:" + FrameworkLatestVersion + "-alpine"
 
 	AppName    = FrameworkName
-	AppVersion = "0.1.1"
+	AppVersion = "0.1.0"
 
 	CLIAppDocumentationLink = "https://github.com/YuriyLisovskiy/xalwart-cli/wiki"
 )
