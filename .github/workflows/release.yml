@@ -5,10 +5,45 @@ on:
       - 'v*.*.*'
 jobs:
   build:
-    uses: YuriyLisovskiy/xalwart-cli/.github/workflows/build.yml@master
-    with:
-      app_name: xalwart
-      release: true
+    name: Build the App
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go_version:
+          - 1.17.x
+        target_os:
+          - linux
+          - darwin
+        target_arch:
+          - arm64
+          - amd64
+    env:
+      BUILD_DIR: ./build
+      ARCHIVE_PREFIX: xalwart-cli
+      APP_NAME: xalwart
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go_version }}
+      - name: Build
+        run: |
+          mkdir -p $BUILD_DIR
+          GOOS=${{ matrix.target_os }} GOARCH=${{ matrix.target_arch }} \
+            go build -o $BUILD_DIR/${{ env.APP_NAME }} ./xalwart/main.go
+      - name: Create an archive for release
+        run: |
+          tar -cvzf ${{ env.ARCHIVE_PREFIX }}-${GITHUB_REF#refs/tags/}-${{ matrix.target_os }}-${{ matrix.target_arch }}.tar.gz \
+              LICENSE -C $BUILD_DIR ${{ env.APP_NAME }}
+      - name: Upload an archive to artifacts for release
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.ARCHIVE_PREFIX }}-${GITHUB_REF#refs/tags/}-${{ matrix.target_os }}-${{ matrix.target_arch }}
+          path: ${{ env.ARCHIVE_PREFIX }}-${GITHUB_REF#refs/tags/}-${{ matrix.target_os }}-${{ matrix.target_arch }}.tar.gz
+          retention-days: 1
   create_release:
     needs: build
     name: Upload Release Assets
