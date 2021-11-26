@@ -13,6 +13,10 @@ on:
         required: false
         type: number
         default: 7
+      release:
+        required: false
+        type: boolean
+        default: false
 jobs:
   build:
     name: Build the App
@@ -47,12 +51,26 @@ jobs:
           GOOS=${{ matrix.target_os }} GOARCH=${{ matrix.target_arch }} \
             packr2 build -o ../$BUILD_DIR/${{ inputs.app_name }} ./main.go
       - name: Create an archive
+        if: ${{ !inputs.release }}
         run: |
           tar -cvzf ${{ inputs.archive_prefix }}-${{ matrix.target_os }}-${{ matrix.target_arch }}.tar.gz \
               LICENSE -C $BUILD_DIR ${{ inputs.app_name }}
       - name: Upload an archive to artifacts
+        if: ${{ !inputs.release }}
         uses: actions/upload-artifact@v2
         with:
           name: ${{ inputs.archive_prefix }}-${{ matrix.target_os }}-${{ matrix.target_arch }}
           path: ${{ inputs.archive_prefix }}-${{ matrix.target_os }}-${{ matrix.target_arch }}.tar.gz
+          retention-days: ${{ inputs.retention_days }}
+      - name: Create an archive for release
+        if: ${{ inputs.release }}
+        run: |
+          tar -cvzf ${{ inputs.archive_prefix }}-${GITHUB_REF#refs/tags/}-${{ matrix.target_os }}-${{ matrix.target_arch }}.tar.gz \
+              LICENSE -C $BUILD_DIR ${{ inputs.app_name }}
+      - name: Upload an archive to artifacts for release
+        if: ${{ inputs.release }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ inputs.archive_prefix }}-${GITHUB_REF#refs/tags/}-${{ matrix.target_os }}-${{ matrix.target_arch }}
+          path: ${{ inputs.archive_prefix }}-${GITHUB_REF#refs/tags/}-${{ matrix.target_os }}-${{ matrix.target_arch }}.tar.gz
           retention-days: ${{ inputs.retention_days }}
