@@ -11,9 +11,7 @@ clean:
 build:
 	@echo "Compiling $(APP_NAME)..."
 	@mkdir -p bin
-	@cd xalwart/ && ${HOME}/go/bin/packr2
 	@go build -o ./bin/$(APP_NAME) ./xalwart/main.go
-	@cd xalwart/ && ${HOME}/go/bin/packr2 clean
 	@echo "Done."
 
 run:

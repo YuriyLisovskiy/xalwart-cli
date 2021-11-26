@@ -1,4 +1,4 @@
-package add
+package new_
 
 import (
 	"errors"
@@ -15,7 +15,7 @@ import (
 )
 
 var RootCommand = &cobra.Command{
-	Use:   "add",
+	Use:   "new",
 	Short: "Create new component for existing project",
 }
 
@@ -26,6 +26,7 @@ func init() {
 	RootCommand.AddCommand(migrationCommand)
 	RootCommand.AddCommand(modelCommand)
 	RootCommand.AddCommand(moduleCommand)
+	RootCommand.AddCommand(projectCommand)
 }
 
 func initDefaultFlags(component string, flags *pflag.FlagSet) {
