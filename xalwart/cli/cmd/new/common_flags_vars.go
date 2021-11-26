@@ -1,4 +1,4 @@
-package add
+package new_
 
 var (
 	nameVar           string

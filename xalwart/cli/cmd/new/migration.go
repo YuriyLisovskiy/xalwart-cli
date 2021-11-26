@@ -1,11 +1,11 @@
-package add
+package new_
 
 import (
 	"fmt"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/templates"
 )
 
 var migrationIsInitial = false
@@ -35,7 +35,7 @@ func buildMigrationComponent() (core.Component, error) {
 
 	return components.NewMigrationComponent(
 		header,
-		utils.GetMigrationTemplateBox(),
+		templates.MigrationTemplateBox,
 		nameVar,
 		rootPathVar,
 		customFileNameVar,

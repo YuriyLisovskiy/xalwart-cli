@@ -2,6 +2,9 @@ package core
 
 type Template interface {
 	Render(Component) error
+	Path() string
+	String() string
+	SetTargetPath(string)
 }
 
 type TemplateBox interface {

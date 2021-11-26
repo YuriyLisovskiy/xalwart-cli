@@ -1,4 +1,11 @@
-<% .Header.CLikeCopyrightNotice %>
+package templates
+
+import "github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
+
+var ModelTemplateBox = core.NewFileTemplateBoxWithTemplates(
+	[]core.Template{
+		core.NewFileTemplateWithContent(
+			"_name_.h.txt", `<% .Header.CLikeCopyrightNotice %>
 
 #pragma once
 
@@ -30,3 +37,35 @@ public:
 	[[nodiscard]]
 	nlohmann::json to_json() const override;<% end %>
 };
+`,
+		),
+		core.NewFileTemplateWithContent(
+			"_name_.cpp.txt", `<% .Header.CLikeCopyrightNotice %>
+
+#include "./<% .FileName %>.h"
+
+
+std::string <% .ClassName %>::to_string() const
+{
+    if (this->is_null())
+    {
+     	return "null";
+    }
+
+    return "<% .Name | to_camel_case %> [" + std::to_string(this->id) + "]";
+}
+<% if .IsJsonSerializable %>
+
+nlohmann::json <% .ClassName %>::to_json() const
+{
+	if (this->is_null())
+	{
+		return nullptr;
+	}
+
+	return {{"id", this->id}};
+}
+<% end %>`,
+		),
+	},
+)

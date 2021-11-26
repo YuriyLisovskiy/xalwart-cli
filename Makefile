@@ -11,12 +11,11 @@ clean:
 build:
 	@echo "Compiling $(APP_NAME)..."
 	@mkdir -p bin
-	@rm -rf bin/$(APP_NAME)
-	@go build -o bin/$(APP_NAME) xalwart/main.go
+	@go build -o ./bin/$(APP_NAME) ./xalwart/main.go
 	@echo "Done."
 
 run:
-	@go run cli/main.go
+	@go run ./xalwart/main.go
 
 install:
 	@echo "Installing $(APP_NAME) to $(INSTALL_DIR)"

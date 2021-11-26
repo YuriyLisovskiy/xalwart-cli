@@ -1,4 +1,4 @@
-package add
+package new_
 
 import (
 	"errors"
@@ -9,12 +9,13 @@ import (
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/utils"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core/components"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/templates"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
 var RootCommand = &cobra.Command{
-	Use:   "add",
+	Use:   "new",
 	Short: "Create new component for existing project",
 }
 
@@ -25,6 +26,7 @@ func init() {
 	RootCommand.AddCommand(migrationCommand)
 	RootCommand.AddCommand(modelCommand)
 	RootCommand.AddCommand(moduleCommand)
+	RootCommand.AddCommand(projectCommand)
 }
 
 func initDefaultFlags(component string, flags *pflag.FlagSet) {
@@ -57,5 +59,5 @@ func getComponentCommandBuilder(name, longDescription string) *utils.ComponentCo
 }
 
 func getDefaultHeader() (core.Header, error) {
-	return components.NewHeaderComponent(utils.GetCopyrightNoticesTemplateBox())
+	return components.NewHeaderComponent(templates.CopyrightNoticesTemplateBox)
 }

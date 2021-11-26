@@ -6,23 +6,19 @@ import (
 	"os"
 	"path"
 	"text/template"
-
-	"github.com/gobuffalo/packd"
-	"github.com/gobuffalo/packr/v2"
 )
 
 type FileTemplate struct {
-	file         packd.File
 	templatePath string
 	targetPath   string
+	content      string
 }
 
-func NewFileTemplate(file packd.File, templatePath string, targetPath string) (*FileTemplate, error) {
+func NewFileTemplateWithContent(templatePath string, content string) *FileTemplate {
 	return &FileTemplate{
-		file:         file,
 		templatePath: templatePath,
-		targetPath:   targetPath,
-	}, nil
+		content:      content,
+	}
 }
 
 func (t *FileTemplate) Render(component Component) error {
@@ -40,7 +36,7 @@ func (t *FileTemplate) Render(component Component) error {
 	tmpl, err := template.New(t.templatePath).
 		Funcs(DefaultFunctions).
 		Delims("<%", "%>").
-		Parse(t.file.String())
+		Parse(t.String())
 	if err != nil {
 		return err
 	}
@@ -58,39 +54,46 @@ func (t *FileTemplate) Render(component Component) error {
 	return nil
 }
 
+func (t FileTemplate) Path() string {
+	return t.templatePath
+}
+
+func (t FileTemplate) String() string {
+	return t.content
+}
+
+func (t *FileTemplate) SetTargetPath(targetPath string) {
+	t.targetPath = targetPath
+}
+
 type FileTemplateBox struct {
-	box *packr.Box
+	templates map[string]Template
 }
 
 func (b *FileTemplateBox) Walk(function func(Template) error, component Component, overwrite bool) error {
-	if b.box == nil {
-		return errors.New("template box is nil")
+	for _, item := range b.templates {
+		targetPath := component.GetTargetPath(item.Path())
+		if b.fileExists(targetPath) && !overwrite {
+			fmt.Println(fmt.Sprintf("Warning: ignoring '%s', file already exists", targetPath))
+			return nil
+		}
+
+		item.SetTargetPath(targetPath)
+		if err := function(item); err != nil {
+			return err
+		}
 	}
 
-	return b.box.Walk(
-		func(templatePath string, file packd.File) error {
-			targetPath := component.GetTargetPath(templatePath)
-			if b.fileExists(targetPath) && !overwrite {
-				fmt.Println(fmt.Sprintf("Warning: ignoring '%s', file already exists", targetPath))
-				return nil
-			}
-
-			fileTemplate, err := NewFileTemplate(file, templatePath, targetPath)
-			if err != nil {
-				return err
-			}
-
-			return function(fileTemplate)
-		},
-	)
+	return nil
 }
 
 func (b *FileTemplateBox) FindString(name string) (string, error) {
-	if b.box == nil {
-		return "", errors.New("template box is nil")
+	item, exists := b.templates[name]
+	if !exists {
+		return "", errors.New("template does not exist")
 	}
 
-	return b.box.FindString(name)
+	return item.String(), nil
 }
 
 func (b FileTemplateBox) fileExists(fileName string) bool {
@@ -102,6 +105,11 @@ func (b FileTemplateBox) fileExists(fileName string) bool {
 	return !info.IsDir()
 }
 
-func NewFileTemplateBox(boxName string) *FileTemplateBox {
-	return &FileTemplateBox{box: packr.New(boxName, fmt.Sprintf("../templates/%s", boxName))}
+func NewFileTemplateBoxWithTemplates(templates []Template) *FileTemplateBox {
+	templatesMap := map[string]Template{}
+	for _, item := range templates {
+		templatesMap[item.Path()] = item
+	}
+
+	return &FileTemplateBox{templates: templatesMap}
 }

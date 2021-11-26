@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/cmd/add"
+	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/cli/cmd/new"
 	"github.com/YuriyLisovskiy/xalwart-cli/xalwart/core"
 	"github.com/iancoleman/strcase"
 	"github.com/spf13/cobra"
@@ -31,8 +31,7 @@ func init() {
 	versionTemplate = fmt.Sprintf("%s (%s, %s)\n", versionTemplate, runtime.GOOS, runtime.GOARCH)
 	rootCommand.SetVersionTemplate(versionTemplate)
 
-	rootCommand.AddCommand(add.RootCommand)
-	rootCommand.AddCommand(projectCommand)
+	rootCommand.AddCommand(new_.RootCommand)
 	rootCommand.AddCommand(versionCommand)
 }
 

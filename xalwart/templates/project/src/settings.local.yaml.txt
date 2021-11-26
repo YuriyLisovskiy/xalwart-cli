@@ -1,7 +1,0 @@
-<% .Header.NumberSignCopyrightNotice %>
-# Do not push this configuration file to public repositories.
-
-secret_key: '<% .SecretKey %>'
-
-allowed_hosts:
-  - '*'

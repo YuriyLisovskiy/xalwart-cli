@@ -5,10 +5,10 @@ on:
       - 'v*.*.*'
 jobs:
   build:
-    uses: YuriyLisovskiy/xalwart-cli/.github/workflows/build.yml@${GITHUB_REF#refs/tags/}
+    uses: YuriyLisovskiy/xalwart-cli/.github/workflows/build.yml@master
     with:
-      tag: ${GITHUB_REF#refs/tags/}
       app_name: xalwart
+      archive_prefix: xalwart-cli-${GITHUB_REF#refs/tags/}
   create_release:
     needs: build
     name: Upload Release Assets
