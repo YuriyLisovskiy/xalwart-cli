@@ -6,7 +6,6 @@ on:
 jobs:
   build:
     name: Build the App
-    needs: test
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
